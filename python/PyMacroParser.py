@@ -22,7 +22,7 @@ class PyMacroParser:
             # 空行
             if _line == "":
                 continue
-        
+
             restr = ""
             preC = ''
             isDouble = False
@@ -33,7 +33,7 @@ class PyMacroParser:
             }
 
             def storeData(_data):
-                if info["head"] is None and _data in HEADLIST:
+                if info["head"] is None and _data in self.HEADLIST:
                     info["head"] = _data
                 elif info["head"] is not None and info["key"] is None:
                     info["key"] = _data
