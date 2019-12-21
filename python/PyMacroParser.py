@@ -6,10 +6,9 @@ class macros:
         self.value = value
 
 
-HEADLIST = ["#else", "#endif", "#ifdef", "#ifndef", "#undef", "#define"]
-
-
 class PyMacroParser:
+
+    HEADLIST = ["#else", "#endif", "#ifdef", "#ifndef", "#undef", "#define"]
 
     def __init__(self):
         self.preDefineList = []
