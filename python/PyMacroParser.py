@@ -11,7 +11,7 @@ class PyMacroParser:
     HEADLIST = ["#else", "#endif", "#ifdef", "#ifndef", "#undef", "#define"]
 
     def __init__(self):
-        self.preDefineList = []
+        self.preDefineDict = {}
         self.loadList = []
 
     def load(self, f):
@@ -39,7 +39,7 @@ class PyMacroParser:
                 elif info["head"] is not None and info["key"] is None:
                     info["key"] = _data
                 elif info["head"] is not None and info["key"] is not None and info["value"] is None:
-                    info["value"] = _data
+                    info["value"] = self.__analysisValue(_data)
                 else:
                     # throw exception
                     print("extra data")
@@ -112,23 +112,24 @@ class PyMacroParser:
                 print("{}, {}, {}".format(info["head"], info["key"], info["value"]))
 
     def preDefine(self, s):
-        self.preDefineList = []
+        self.preDefineDict = {}
 
         if s == "":
             return
         else:
-            slist = s.split(',')
+            slist = s.split(';')
             for sl in slist:
-                self.preDefineList.append(sl)
+                self.preDefineDict[sl.strip()] = None
 
     def dumpDict(self):
-        print(self.__analysisMacros())
+        reDict = self.__analysisMacros()
+        print(reDict)
 
     def dump(self, f):
         pass
 
     def __analysisMacros(self):
-        macrosDict = {}
+        macrosDict = self.preDefineDict.copy()
         ifStack = []
 
         def top(stack):
@@ -143,12 +144,10 @@ class PyMacroParser:
 
             elif _macros.head == "#undef" and (len(ifStack) == 0 or top(ifStack)):
                 if _macros.key in macrosDict:
-                    macrosDict.pop(_macros.key)
-                elif _macros.key in self.preDefineList:
-                    self.preDefineList.pop(_macros.key)
+                    del macrosDict[_macros.key]
 
             elif _macros.head == "#ifdef" or _macros.head == "#ifndef":
-                condition = _macros.key in macrosDict or _macros.key in self.preDefineList
+                condition = _macros.key in macrosDict
                 if _macros.head == "#ifndef":
                     condition = not condition
                 if len(ifStack) == 0:
@@ -188,3 +187,84 @@ class PyMacroParser:
         f.close()
 
         return lineList
+
+    def __analysisValue(self, data):
+        lengh = len(data)
+
+        # 处理bool类型
+        if data == "true":
+            return True
+        elif data == "false":
+            return False
+
+        # 处理整型 & 浮点型
+        try:
+            isNegative = True if data[0] == '-' else False
+            if isNegative:
+                newData = data[1:]
+            else:
+                newData = data
+
+            if len(newData) > 2 and newData[1] == '.':
+                if newData[len(newData) - 1] == 'f':
+                    re = float(newData[:-1])
+                else:
+                    re = float(newData)
+
+            elif len(newData) > 3 and newData[:2] == "0x":
+                re = int(newData, 16)
+            else:
+                re = int(newData)
+
+            return -re if isNegative else re
+        except Exception:
+            pass
+
+        # 处理字符
+        if lengh >= 3 and data[0] == '\'' and data[-1] == '\'':
+            try:
+                re = ord(data[1:-1])
+                return re
+            except Exception:
+                pass
+
+        # 处理字符串
+        if lengh > 2 and data[0] == '\"' and data[-1] == '\"':
+            return data[1:-1]
+        elif lengh > 3 and data[:2] == "L\"" and data[-1] == '\"':
+            return data[2:-1].decode("utf-8")
+
+        # 处理聚集
+        if lengh >= 3 and data[0] == '{' and data[-1] == '}':
+            reList = []
+            newData = data[1:-1]
+            
+            counter = 0
+            restr = ""
+            restrList = []
+            for c in newData:
+                if c == "," and counter == 0:
+                    if restr != "":
+                        restrList.append(restr)
+                        restr = ""
+                elif c == '{':
+                    restr += c
+                    counter += 1
+                elif c == '}':
+                    restr += c
+                    counter -= 1
+                else:
+                    restr += c
+            if restr != "":
+                restrList.append(restr)
+
+            for dl in restrList:
+                dl = dl.strip()
+                re = self.__analysisValue(dl)
+                reList.append(re)
+            return tuple(reList)
+
+        # throw exception
+        print("error data, {}".format(data))
+
+        
