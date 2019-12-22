@@ -25,7 +25,8 @@ class PyMacroParser:
 
             restr = ""
             preC = ''
-            isDouble = False
+            initializerCounter = 0
+            isInitializer, isDouble = False, False
             info = {
                 "head": None,
                 "key": None,
@@ -41,17 +42,18 @@ class PyMacroParser:
                     info["value"] = _data
                 else:
                     # throw exception
+                    print("extra data")
                     pass
 
             for c in _line:
-                if (c == " " or c == "\n") and not isAnnotation and not isDouble:
+                if (c == " " or c == "\n") and not isAnnotation and not isDouble and not isInitializer:
                     if restr == "":
                         continue
                     else:
                         storeData(restr)
                         restr = ""
 
-                elif c != " " and not isAnnotation and not isDouble:
+                elif c != " " and not isAnnotation and not isDouble and not isInitializer:
                     if c == "/" and preC == "/":
                         if restr != '/':
                             storeData(restr[:-1])
@@ -64,6 +66,10 @@ class PyMacroParser:
                         restr = ""
                     elif c == "\"":
                         isDouble = True
+                        restr += c
+                    elif c == '{':
+                        isInitializer = True
+                        initializerCounter += 1
                         restr += c
                     else:
                         restr += c
@@ -79,9 +85,24 @@ class PyMacroParser:
                         restr += c
                         isDouble = False
                     else:
+                        restr += c\
+                
+                elif isInitializer:
+                    if c == '}':
+                        restr += c
+                        initializerCounter -= 1
+                        if initializerCounter == 0:
+                            isInitializer = False
+                            storeData(restr)
+                            restr = ""
+                    elif c == '{':
+                        restr += c
+                        initializerCounter += 1
+                    else:
                         restr += c
                 else:
                     # throw exception
+                    print("extra #")
                     pass
 
                 preC = c
@@ -93,7 +114,7 @@ class PyMacroParser:
     def preDefine(self, s):
         self.preDefineList = []
 
-        if s == "": 
+        if s == "":
             return
         else:
             slist = s.split(',')
@@ -101,10 +122,60 @@ class PyMacroParser:
                 self.preDefineList.append(sl)
 
     def dumpDict(self):
-        pass
+        print(self.__analysisMacros())
 
     def dump(self, f):
         pass
+
+    def __analysisMacros(self):
+        macrosDict = {}
+        ifStack = []
+
+        def top(stack):
+            return False if len(stack) < 1 else stack[len(stack)-1]
+
+        def underTop(stack):
+            return False if len(stack) <= 1 else stack[len(stack)-2]
+
+        for _macros in self.loadList:
+            if _macros.head == "#define" and (len(ifStack) == 0 or top(ifStack)):
+                macrosDict[_macros.key] = _macros.value
+
+            elif _macros.head == "#undef" and (len(ifStack) == 0 or top(ifStack)):
+                if _macros.key in macrosDict:
+                    macrosDict.pop(_macros.key)
+                elif _macros.key in self.preDefineList:
+                    self.preDefineList.pop(_macros.key)
+
+            elif _macros.head == "#ifdef" or _macros.head == "#ifndef":
+                condition = _macros.key in macrosDict or _macros.key in self.preDefineList
+                if _macros.head == "#ifndef":
+                    condition = not condition
+                if len(ifStack) == 0:
+                    ifStack.append(condition)
+                else:
+                    ifStack.append(top(ifStack) and condition)
+
+            elif _macros.head == "#else":
+                if underTop(ifStack) or (len(ifStack) == 1 and top(ifStack)):
+                    condition = ifStack.pop()
+                    ifStack.append(not condition)
+                elif len(ifStack) == 0:
+                    # throw exception
+                    print("extra #else")
+
+            elif _macros.head == "#endif":
+                if len(ifStack) > 0:
+                    ifStack.pop()
+                else:
+                    # throw exception
+                    print("extra #endif")
+
+            else:
+                # throw exception
+                print("extra head:{}".format(_macros.head))
+
+        return macrosDict
 
     def __fileToLineList(self, fileName):
         lineList = []
@@ -117,48 +188,3 @@ class PyMacroParser:
         f.close()
 
         return lineList
-
-    def __splitLine(self, _line):
-        _lineBlock = _line.split(' ')
-
-        # 剔除空块
-        _lineBlock = [i for i in _lineBlock if(len(str(i)) != 0)]
-
-        if len(_lineBlock) == 0:
-            return None, None, None
-
-        head = [
-            {"#else", "#endif"},
-            {"#ifdef", "#ifndef", "#undef"},
-            {"#define"}
-        ]
-
-        _block = _lineBlock[0]
-        if _block in head[0]:
-            return _block, None, None
-
-        elif _block in head[1]:
-            if len(_lineBlock) == 2:
-                return _block, _lineBlock[1], None
-            else:
-                # throw exception
-                pass
-
-        elif _block in head[2]:
-            if len(_lineBlock) == 2:
-                return _block, _lineBlock[1], None
-            elif len(_lineBlock) == 3:
-                return _block, _lineBlock[1], _lineBlock[2]
-            else:
-                # throw exception
-                pass
-
-        else:
-            # throw exception
-            pass
-
-    def __removeAnnotation(self, _lineList):
-        for _line in _lineList:
-            if "//" not in _line and "/*" not in _line:
-                continue
-
