@@ -244,50 +244,60 @@ class PyMacroParser:
     def __isLStr(self, s):
         return len(s) >= 3 and s[:2] == "L\"" and s[-1] == '\"'
 
-    def __isFloat(self, s):
-        floatHou = ['f','l']
+    def isFloat(self, s):
+        floatHou = ['f', 'l']
+        isf = False
         if s[-1].lower() in floatHou:
-            s = s[:-1]
+            isf = True
+            newS = s[:-1]
+        else:
+            newS = s
         
-        if 'e' in s:
-            slist = s.split('e')
-            return self.__isFloat(slist[0]) and self.__isInt(slist[1])
-        elif '.' in s:
-            slist = s.split('.')
-            if len(slist) > 2:
-                return False
-            else:
-                return self.__isInt(slist[0]) and self.__isInt(slist[1])
+        if isf or 'e' in newS or '.' in newS:
+            try:
+                re = float(newS)
+                return True, re
+            except Exception:
+                return False, None
+        else:
+            return False, None
 
-    def __isInt(self, s):
-        int1 = ['u','l']
+    def isInt(self, s):
+        int1 = ['u', 'l']
         int2 = ['ul', 'lu', 'll']
         int3 = ['ull']
 
         if len(s) >= 3 and s[-3:] in int3:
-            s = s[:-3]
+            newS = s[:-3]
         elif len(s) >= 2 and s[-2:] in int2:
-            s = s[:-2]
+            newS = s[:-2]
         elif len(s) >= 1 and s[-1] in int1:
-            s = s[:-1]
+            newS = s[:-1]
+        else:
+            newS = s
         
         isN = False
-        if len(s) >= 1:
+        if len(newS) >= 1:
             if s[0] == '+':
-                s = s[1:]
+                newS = newS[1:]
             elif s[0] == '-':
-                s = s[1:]
+                newS = newS[1:]
                 isN = True
 
-        s = s.strip()
+        newS = newS.strip()
+        if not newS.isalnum():
+            return False, None
         try:
-            re = int(s)
-            re = re if isN else -re
+            if len(newS) >= 2 and newS[:2] == "0x":
+                re = int(newS, 16)
+            elif len(newS) >= 1 and newS[:1] == "0":
+                re = int(newS, 8)
+            else:
+                re = int(newS)
+            re = -re if isN else re
             return True, re
         except Exception:
             return False, None
-
-
 
     def __analysisValue(self, data):
         lengh = len(data)
@@ -343,29 +353,17 @@ class PyMacroParser:
             return tuple(reList)
         
         # 处理整型 & 浮点型
-        try:
-            isNegative = True if data[0] == '-' else False
-            if isNegative:
-                newData = data[1:]
-            else:
-                newData = data if data[0] != '+' else data[1:]
+        isI, re = self.isInt(data)
+        if isI:
+            return re
+        
+        isF, re = self.isFloat(data)
+        if isF:
+            return re
 
-            if len(newData) > 2 and newData[1] == '.':
-                if newData[len(newData) - 1] == 'f':
-                    re = float(newData[:-1])
-                else:
-                    re = float(newData)
-
-            elif len(newData) >= 3 and newData[:2] == "0x":
-                re = int(newData, 16)
-            else:
-                re = int(newData)
-
-            return -re if isNegative else re
-        except Exception:
-            raise Exception("")
+        return data
 
         # throw exception
-        raise Exception("error data, {}".format(data))
+        # raise Exception("error data, {}".format(data))
 
         
