@@ -17,7 +17,7 @@
 #else
 
 #define data5 {5.0, 7.5, 3.8}
-#define data6 'c'
+#define data6 ' '
 
 #endif //end MC2
 

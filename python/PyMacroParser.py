@@ -8,7 +8,8 @@ class macros:
 
 class PyMacroParser:
 
-    HEADLIST = ["#else", "#endif", "#ifdef", "#ifndef", "#undef", "#define"]
+    HEADLIST = {"#else" : 0, "#endif" : 0, "#ifdef" : 1, "#ifndef" : 1, "#undef" : 1, "#define" : 2}
+    FLOAT1 = ['f']
 
     def __init__(self):
         self.preDefineDict = {}
@@ -16,7 +17,6 @@ class PyMacroParser:
 
     def load(self, f):
         _lineList = self.__fileToLineList(f)
-
         isAnnotation = False
         for _line in _lineList:
             # 空行
@@ -26,7 +26,7 @@ class PyMacroParser:
             restr = ""
             preC = ''
             initializerCounter = 0
-            isInitializer, isDouble = False, False
+            isInitializer, isDouble, isSingle = False, False, False
             info = {
                 "head": None,
                 "key": None,
@@ -34,26 +34,32 @@ class PyMacroParser:
             }
 
             def storeData(_data):
+                _data = _data.strip()
                 if info["head"] is None and _data in self.HEADLIST:
                     info["head"] = _data
                 elif info["head"] is not None and info["key"] is None:
-                    info["key"] = _data
+                    if self.HEADLIST[info["head"]] < 1:
+                        raise Exception("error define, extra key {}".format(_data))
+                    else:
+                        info["key"] = _data
                 elif info["head"] is not None and info["key"] is not None and info["value"] is None:
-                    info["value"] = self.__analysisValue(_data)
+                    if self.HEADLIST[info["head"]] < 2:
+                        raise Exception("error define, extra value {}".format(_data))
+                    else:
+                        info["value"] = self.__analysisValue(_data)
                 else:
                     # throw exception
-                    print("extra data")
-                    pass
+                    raise Exception("error define, extra data {}".format(_data))
 
             for c in _line:
-                if (c == " " or c == "\n") and not isAnnotation and not isDouble and not isInitializer:
+                if (c == " " or c == "\n" or c == "\t") and not isAnnotation and not isDouble and not isInitializer and not isSingle:
                     if restr == "":
                         continue
                     else:
                         storeData(restr)
                         restr = ""
 
-                elif c != " " and not isAnnotation and not isDouble and not isInitializer:
+                elif c != " " and not isAnnotation and not isDouble and not isInitializer and not isSingle:
                     if c == "/" and preC == "/":
                         if restr != '/':
                             storeData(restr[:-1])
@@ -66,6 +72,9 @@ class PyMacroParser:
                         restr = ""
                     elif c == "\"":
                         isDouble = True
+                        restr += c
+                    elif c == "\'":
+                        isSingle = True
                         restr += c
                     elif c == '{':
                         isInitializer = True
@@ -85,7 +94,14 @@ class PyMacroParser:
                         restr += c
                         isDouble = False
                     else:
-                        restr += c\
+                        restr += c
+
+                elif isSingle:
+                    if c == '\'':
+                        restr += c
+                        isSingle = False
+                    else:
+                        restr += c
                 
                 elif isInitializer:
                     if c == '}':
@@ -100,16 +116,11 @@ class PyMacroParser:
                         initializerCounter += 1
                     else:
                         restr += c
-                else:
-                    # throw exception
-                    print("extra #")
-                    pass
 
                 preC = c
 
             if info["head"] is not None:
                 self.loadList.append(macros(info["head"], info['key'], info['value']))
-                print("{}, {}, {}".format(info["head"], info["key"], info["value"]))
 
     def preDefine(self, s):
         self.preDefineDict = {}
@@ -126,7 +137,47 @@ class PyMacroParser:
         print(reDict)
 
     def dump(self, f):
-        pass
+        reDict = self.__analysisMacros()
+        head = "#define"
+
+        file = open(f, "w")
+        for re in reDict.keys():
+            key = re
+            value = reDict[re]
+            if value == None:
+                file.writelines("{} {}\n".format(head, key))
+            else:
+                newValue = self.__anyToString(value)
+                file.writelines("{} {} {}\n".format(head, key, newValue))
+        file.close()
+    
+    def __tupleToInitializer(self, tup):
+        re = "{"
+        for t in tup:
+            if t is tuple:
+                re += self.__tupleToInitializer(t)
+            else:
+                re += str(self.__anyToString(t))
+            re += ", "
+        re = (re if len(re) < 3 else re[:-2]) + "}"
+        return re
+
+    def __anyToString(self, value):
+        if isinstance(value, tuple):
+            newValue = self.__tupleToInitializer(value)
+        elif isinstance(value, unicode):
+            newValue = value.encode("utf-8")
+            newValue = "L\"" + newValue + "\""
+        elif isinstance(value, str):
+            newValue = "\"" + value + "\""
+        elif isinstance(value, bool):
+            if value:
+                newValue = "true"
+            else:
+                newValue = "false"
+        else:
+            newValue = value
+        return newValue
 
     def __analysisMacros(self):
         macrosDict = self.preDefineDict.copy()
@@ -161,18 +212,14 @@ class PyMacroParser:
                     ifStack.append(not condition)
                 elif len(ifStack) == 0:
                     # throw exception
-                    print("extra #else")
+                    raise Exception("extra #else")
 
             elif _macros.head == "#endif":
                 if len(ifStack) > 0:
                     ifStack.pop()
                 else:
                     # throw exception
-                    print("extra #endif")
-
-            else:
-                # throw exception
-                print("extra head:{}".format(_macros.head))
+                    raise Exception("extra #endif")
 
         return macrosDict
 
@@ -188,6 +235,60 @@ class PyMacroParser:
 
         return lineList
 
+    def __isChar(self, s):
+        return len(s) >= 2 and s[0] == '\'' and s[-1] == '\''
+
+    def __isStr(self, s):
+        return len(s) >= 2 and s[0] == '\"' and s[-1] == '\"'
+
+    def __isLStr(self, s):
+        return len(s) >= 3 and s[:2] == "L\"" and s[-1] == '\"'
+
+    def __isFloat(self, s):
+        floatHou = ['f','l']
+        if s[-1].lower() in floatHou:
+            s = s[:-1]
+        
+        if 'e' in s:
+            slist = s.split('e')
+            return self.__isFloat(slist[0]) and self.__isInt(slist[1])
+        elif '.' in s:
+            slist = s.split('.')
+            if len(slist) > 2:
+                return False
+            else:
+                return self.__isInt(slist[0]) and self.__isInt(slist[1])
+
+    def __isInt(self, s):
+        int1 = ['u','l']
+        int2 = ['ul', 'lu', 'll']
+        int3 = ['ull']
+
+        if len(s) >= 3 and s[-3:] in int3:
+            s = s[:-3]
+        elif len(s) >= 2 and s[-2:] in int2:
+            s = s[:-2]
+        elif len(s) >= 1 and s[-1] in int1:
+            s = s[:-1]
+        
+        isN = False
+        if len(s) >= 1:
+            if s[0] == '+':
+                s = s[1:]
+            elif s[0] == '-':
+                s = s[1:]
+                isN = True
+
+        s = s.strip()
+        try:
+            re = int(s)
+            re = re if isN else -re
+            return True, re
+        except Exception:
+            return False, None
+
+
+
     def __analysisValue(self, data):
         lengh = len(data)
 
@@ -197,41 +298,18 @@ class PyMacroParser:
         elif data == "false":
             return False
 
-        # 处理整型 & 浮点型
-        try:
-            isNegative = True if data[0] == '-' else False
-            if isNegative:
-                newData = data[1:]
-            else:
-                newData = data
-
-            if len(newData) > 2 and newData[1] == '.':
-                if newData[len(newData) - 1] == 'f':
-                    re = float(newData[:-1])
-                else:
-                    re = float(newData)
-
-            elif len(newData) > 3 and newData[:2] == "0x":
-                re = int(newData, 16)
-            else:
-                re = int(newData)
-
-            return -re if isNegative else re
-        except Exception:
-            pass
-
         # 处理字符
         if lengh >= 3 and data[0] == '\'' and data[-1] == '\'':
             try:
                 re = ord(data[1:-1])
                 return re
             except Exception:
-                pass
+                raise Exception("")
 
         # 处理字符串
-        if lengh > 2 and data[0] == '\"' and data[-1] == '\"':
+        if lengh >= 2 and data[0] == '\"' and data[-1] == '\"':
             return data[1:-1]
-        elif lengh > 3 and data[:2] == "L\"" and data[-1] == '\"':
+        elif lengh >= 3 and data[:2] == "L\"" and data[-1] == '\"':
             return data[2:-1].decode("utf-8")
 
         # 处理聚集
@@ -263,8 +341,31 @@ class PyMacroParser:
                 re = self.__analysisValue(dl)
                 reList.append(re)
             return tuple(reList)
+        
+        # 处理整型 & 浮点型
+        try:
+            isNegative = True if data[0] == '-' else False
+            if isNegative:
+                newData = data[1:]
+            else:
+                newData = data if data[0] != '+' else data[1:]
+
+            if len(newData) > 2 and newData[1] == '.':
+                if newData[len(newData) - 1] == 'f':
+                    re = float(newData[:-1])
+                else:
+                    re = float(newData)
+
+            elif len(newData) >= 3 and newData[:2] == "0x":
+                re = int(newData, 16)
+            else:
+                re = int(newData)
+
+            return -re if isNegative else re
+        except Exception:
+            raise Exception("")
 
         # throw exception
-        print("error data, {}".format(data))
+        raise Exception("error data, {}".format(data))
 
         
