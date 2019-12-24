@@ -1,1 +1,0 @@
-#define STRDATA 25e-4

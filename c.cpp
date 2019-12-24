@@ -1,1 +1,1 @@
-#define STRDATA 0.0025
+#define STRDATA 1267

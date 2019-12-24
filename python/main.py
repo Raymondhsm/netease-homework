@@ -12,7 +12,7 @@ import PyMacroParser
 
 a1 = PyMacroParser.PyMacroParser()
 # a2 = PyMacroParser.PyMacroParser()
-a1.load("C:/Users/huangshaoming/Desktop/wy/python/abc.cpp")
+a1.load("abc.cpp")
 # filename = "b.cpp"
 # a1.dump(filename)
 # a2.load(filename)

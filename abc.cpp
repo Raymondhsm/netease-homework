@@ -1,0 +1,1 @@
+#define STRDATA 0X4F3L

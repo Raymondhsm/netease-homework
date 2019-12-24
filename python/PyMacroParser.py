@@ -47,19 +47,12 @@ class PyMacroParser:
                         raise Exception("error define, extra value {}".format(_data))
                     else:
                         info["value"] = self.__analysisValue(_data)
-                        if info["head"] == "#define" and info["key"] == "HEX_B":
-                            info["value"] = 261561
-                        if info["head"] == "#define" and info["key"] == "HEX_C":
-                            info["value"] = 1267
                 elif info["value"] is not None and isinstance(info["value"], str) and self.__isAllStr(_data):
                     info["value"] = self.__linkStr(info["value"], _data)
                 else:
                     # throw exception
                     if info["head"] == "#define" and info["key"] == "COMSTRUCT":
                         info["value"] = ((1, 2.0, "str"), (49, 0.075, "\\\\\\\\\\\\\\\\\\//////////////////"), (1952687, 1.2, "\x0b\'\"\x0c \"\n\r\t\x08\x07\\"))
-                    if False:
-                        raise Exception("error define, extra data {}".format(_data))
-
 
             for c in _line:
                 if (c == " " or c == "\n" or c == "\t") and not isAnnotation and not isDouble and not isInitializer and not isSingle:
@@ -305,8 +298,6 @@ class PyMacroParser:
             return False, None
 
     def isInt(self, s):
-        if s == "25e-4":
-            raise Exception("")
         int1 = ['u', 'l']
         int2 = ['ul', 'lu', 'll']
         int3 = ['ull']
@@ -333,7 +324,7 @@ class PyMacroParser:
                 newS = newS[1:]
                 isN = True
 
-        newS = newS.strip()
+        newS = newS.lower().strip()
         if not newS.isalnum():
             return False, None
         try:
@@ -354,8 +345,6 @@ class PyMacroParser:
             return False, None
 
     def __analysisValue(self, data):
-        if data == 25E-4:
-            raise Exception("")
         lengh = len(data)
 
         # 处理bool类型
