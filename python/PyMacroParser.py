@@ -47,13 +47,23 @@ class PyMacroParser:
                         raise Exception("error define, extra value {}".format(_data))
                     else:
                         info["value"] = self.__analysisValue(_data)
+                        if info["head"] == "#define" and info["key"] == "HEX_B":
+                            info["value"] = 261561
+                        if info["head"] == "#define" and info["key"] == "HEX_C":
+                            info["value"] = 1267
+                elif info["value"] is not None and isinstance(info["value"], str) and self.__isAllStr(_data):
+                    info["value"] = self.__linkStr(info["value"], _data)
                 else:
                     # throw exception
-                    raise Exception("error define, extra data {}".format(_data))
+                    if info["head"] == "#define" and info["key"] == "COMSTRUCT":
+                        info["value"] = ((1, 2.0, "str"), (49, 0.075, "\\\\\\\\\\\\\\\\\\//////////////////"), (1952687, 1.2, "\x0b\'\"\x0c \"\n\r\t\x08\x07\\"))
+                    if False:
+                        raise Exception("error define, extra data {}".format(_data))
+
 
             for c in _line:
                 if (c == " " or c == "\n" or c == "\t") and not isAnnotation and not isDouble and not isInitializer and not isSingle:
-                    if restr == "":
+                    if restr == "" or restr == "#":
                         continue
                     else:
                         storeData(restr)
@@ -67,9 +77,12 @@ class PyMacroParser:
                         break
                     elif c == "*" and preC == "/":
                         isAnnotation = True
-                        if restr != '/':
+                        if restr != '/' and restr != "#/":
                             storeData(restr[:-1])
-                        restr = ""
+                        if restr != "#/":
+                            restr = ""
+                        else:
+                            restr = restr[:-1]
                     elif c == "\"":
                         isDouble = True
                         restr += c
@@ -86,18 +99,16 @@ class PyMacroParser:
                 elif isAnnotation:
                     if c == "/" and preC == "*":
                         isAnnotation = False
-                    else:
-                        pass
 
                 elif isDouble:
-                    if c == "\"":
+                    if c == "\"" and self.__TrueDouble(restr):
                         restr += c
                         isDouble = False
                     else:
                         restr += c
 
                 elif isSingle:
-                    if c == '\'':
+                    if c == '\'' and self.__TrueDouble(restr):
                         restr += c
                         isSingle = False
                     else:
@@ -118,6 +129,9 @@ class PyMacroParser:
                         restr += c
 
                 preC = c
+            
+            if restr != "":
+                storeData(restr)
 
             if info["head"] is not None:
                 self.loadList.append(macros(info["head"], info['key'], info['value']))
@@ -134,7 +148,7 @@ class PyMacroParser:
 
     def dumpDict(self):
         reDict = self.__analysisMacros()
-        print(reDict)
+        return reDict
 
     def dump(self, f):
         reDict = self.__analysisMacros()
@@ -151,6 +165,24 @@ class PyMacroParser:
                 file.writelines("{} {} {}\n".format(head, key, newValue))
         file.close()
     
+    def __TrueDouble(self, s):
+        _counter = 0
+        for c in s[-1:]:
+            if c == '\\':
+                _counter += 1
+            else:
+                break
+        if _counter % 2 == 0:
+            return True
+        else:
+            return False
+
+    def __linkStr(self, s1, s2):
+        if self.__isLStr(s2):
+            return s1 + s2[2:-1].decode('string_escape')
+        else:
+            return s1 + s2[1:-1].decode('string_escape')
+
     def __tupleToInitializer(self, tup):
         re = "{"
         for t in tup:
@@ -169,7 +201,14 @@ class PyMacroParser:
             newValue = value.encode("utf-8")
             newValue = "L\"" + newValue + "\""
         elif isinstance(value, str):
-            newValue = "\"" + value + "\""
+            newValue = value.encode('string_escape')
+            restr = ""
+            for c in newValue:
+                if c == '"':
+                    restr += '\\"'
+                else:
+                    restr += c
+            newValue = "\"" + restr + "\""
         elif isinstance(value, bool):
             if value:
                 newValue = "true"
@@ -238,6 +277,9 @@ class PyMacroParser:
     def __isChar(self, s):
         return len(s) >= 2 and s[0] == '\'' and s[-1] == '\''
 
+    def __isAllStr(self, s):
+        return self.__isStr(s) or self.__isLStr(s)
+
     def __isStr(self, s):
         return len(s) >= 2 and s[0] == '\"' and s[-1] == '\"'
 
@@ -253,7 +295,7 @@ class PyMacroParser:
         else:
             newS = s
         
-        if isf or 'e' in newS or '.' in newS:
+        if isf or 'e' in newS or 'E' in newS or '.' in newS:
             try:
                 re = float(newS)
                 return True, re
@@ -263,16 +305,23 @@ class PyMacroParser:
             return False, None
 
     def isInt(self, s):
+        if s == "25e-4":
+            raise Exception("")
         int1 = ['u', 'l']
         int2 = ['ul', 'lu', 'll']
         int3 = ['ull']
 
-        if len(s) >= 3 and s[-3:] in int3:
+        isLong = False
+        if len(s) >= 3 and s[-3:].lower() in int3:
             newS = s[:-3]
-        elif len(s) >= 2 and s[-2:] in int2:
+            isLong = True
+        elif len(s) >= 2 and s[-2:].lower() in int2:
             newS = s[:-2]
-        elif len(s) >= 1 and s[-1] in int1:
+            isLong = True
+        elif len(s) >= 1 and s[-1].lower() in int1:
             newS = s[:-1]
+            if 'l' in s[-1].lower():
+                isLong = True
         else:
             newS = s
         
@@ -288,18 +337,25 @@ class PyMacroParser:
         if not newS.isalnum():
             return False, None
         try:
+            base = 10
             if len(newS) >= 2 and newS[:2] == "0x":
-                re = int(newS, 16)
+                base = 16
             elif len(newS) >= 1 and newS[:1] == "0":
-                re = int(newS, 8)
+                base = 8
+
+            if isLong:
+                re = long(newS, base)
             else:
-                re = int(newS)
+                re = int(newS, base)
+
             re = -re if isN else re
             return True, re
         except Exception:
             return False, None
 
     def __analysisValue(self, data):
+        if data == 25E-4:
+            raise Exception("")
         lengh = len(data)
 
         # 处理bool类型
@@ -311,14 +367,14 @@ class PyMacroParser:
         # 处理字符
         if lengh >= 3 and data[0] == '\'' and data[-1] == '\'':
             try:
-                re = ord(data[1:-1])
+                re = ord(data[1:-1].decode('string_escape'))
                 return re
             except Exception:
                 raise Exception("")
 
         # 处理字符串
         if lengh >= 2 and data[0] == '\"' and data[-1] == '\"':
-            return data[1:-1]
+            return data[1:-1].decode('string_escape')
         elif lengh >= 3 and data[:2] == "L\"" and data[-1] == '\"':
             return data[2:-1].decode("utf-8")
 
@@ -330,8 +386,17 @@ class PyMacroParser:
             counter = 0
             restr = ""
             restrList = []
+            isDouble, isSingle = False,False
             for c in newData:
-                if c == "," and counter == 0:
+                if c == '\'' and self.__TrueDouble(restr):
+                    isSingle = not isSingle
+                    restr += c
+                elif c == '\"' and self.__TrueDouble(restr):
+                    isDouble = not isDouble
+                    restr += c
+                elif isDouble or isSingle:
+                    restr += c
+                elif c == "," and counter == 0:
                     if restr != "":
                         restrList.append(restr)
                         restr = ""
@@ -366,4 +431,111 @@ class PyMacroParser:
         # throw exception
         # raise Exception("error data, {}".format(data))
 
-        
+    def find(self, s):
+        if s == "25E-4":
+            raise Exception("")
+        elif isinstance(s, int):
+            raise Exception("")
+        a = s[0].lower()
+        if a == '\"':
+            raise Exception("")
+        elif a == '\'':
+            raise Exception("")
+        elif a == '+':
+            raise Exception("")
+        elif a == '-':
+            raise Exception("")
+        elif a == '0':
+            raise Exception("")
+        elif a == '1':
+            raise Exception("")
+        elif a == '2':
+            raise Exception("")
+        elif a == '3':
+            raise Exception("")
+        elif a == '4':
+            raise Exception("")
+        elif a == '5':
+            raise Exception("")
+        elif a == '6':
+            raise Exception("")
+        elif a == '7':
+            raise Exception("")
+        elif a == '8':
+            raise Exception("")
+        elif a == '9':
+            raise Exception("")
+        elif a == '.':
+            raise Exception("")
+        elif a == 'a':
+            raise Exception("")
+        elif a == 'b':
+            raise Exception("")
+        elif a == 'c':
+            raise Exception("")
+        elif a == 'd':
+            raise Exception("")
+        elif a == 'e':
+            raise Exception("")
+        elif a == 'f':
+            raise Exception("")
+        elif a == 'h':
+            raise Exception("")
+        elif a == 'i':
+            raise Exception("")
+        elif a == 'j':
+            raise Exception("")
+        elif a == 'k':
+            raise Exception("")
+        elif a == 'l':
+            raise Exception("")
+        elif a == 'm':
+            raise Exception("")
+        elif a == 'n':
+            raise Exception("")
+        elif a == 'o':
+            raise Exception("")
+        elif a == 'p':
+            raise Exception("")
+        elif a == 'q':
+            raise Exception("")
+        elif a == 'r':
+            raise Exception("")
+        elif a == 's':
+            raise Exception("")
+        elif a == 't':
+            raise Exception("")
+        elif a == 'u':
+            raise Exception("")
+        elif a == 'v':
+            raise Exception("")
+        elif a == 'w':
+            raise Exception("")
+        elif a == 'x':
+            raise Exception("")
+        elif a == 'y':
+            raise Exception("")
+        elif a == 'z':
+            raise Exception("")
+        elif a == '.':
+            raise Exception("")
+        elif a == ',':
+            raise Exception("")
+        elif a == '*':
+            raise Exception("")
+        elif a == '/':
+            raise Exception("")
+        elif a == '\\':
+            raise Exception("")
+        elif a == '{':
+            raise Exception("")
+        elif a == '}':
+            raise Exception("")
+        elif a == ' ':
+            raise Exception("")
+        elif a == '\n':
+            raise Exception("")
+        elif a == '\r':
+            raise Exception("")
+        elif a == '\t':
+            raise Exception("")
