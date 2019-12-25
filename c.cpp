@@ -1,1 +1,1 @@
-#define STRDATA 1267
+#define STRDATA "\"\\x0b\\\'\\\"\\x0c"
