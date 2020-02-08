@@ -67,8 +67,8 @@ void Camera::setPosition(XMVECTOR pos)
 
 void Camera::setPosition(XMFLOAT3 pos)
 {
-	XMVECTOR pos = XMLoadFloat3(&pos);
-	this->setPosition(pos);
+	XMVECTOR posV = XMLoadFloat3(&pos);
+	this->setPosition(posV);
 }
 
 void Camera::setPosition(float x, float y, float z)
