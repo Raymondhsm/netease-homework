@@ -45,7 +45,7 @@ void Camera::UpdateFrustum(float fovAngleY, float aspectRatio, float nearZ, floa
 	this->m_nearZ = nearZ;
 	this->m_farZ = farZ;
 
-	XMMATRIX P = XMMatrixPerspectiveFovLH(fovAngleY, aspectRatio, nearZ, farZ);
+	XMMATRIX P = XMMatrixPerspectiveFovRH(fovAngleY, aspectRatio, nearZ, farZ);
 	XMStoreFloat4x4(&m_proj, P);
 }
 
@@ -54,9 +54,9 @@ void Camera::UpdateViewMatrix()
 	XMVECTOR pos = XMLoadFloat3(&m_pos);
 	XMVECTOR lookDirection = XMLoadFloat3(&m_look);
 	XMVECTOR focusPos = pos + lookDirection;
-	XMVECTOR up = XMLoadFloat3(&m_up);
+	XMVECTOR up = { 0.0f,1.0f,0.0f,0.0f };
 
-	XMStoreFloat4x4(&m_view, XMMatrixTranspose(XMMatrixLookAtRH(pos, focusPos, up)));
+	XMStoreFloat4x4(&m_view, XMMatrixLookAtRH(pos, focusPos, up));
 }
 
 void Camera::setPosition(XMVECTOR pos)
