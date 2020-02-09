@@ -73,12 +73,15 @@
     <ClCompile Include="Common\DDSTextureLoader.cpp">
       <Filter>通用</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>通用</Filter>
-    </ClCompile>
     <ClCompile Include="Common\InputController.cpp">
       <Filter>通用</Filter>
     </ClCompile>
+    <ClCompile Include="Common\Camera.cpp">
+      <Filter>通用</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelAssemble.cpp" />
+    <ClCompile Include="SkyboxRender.cpp" />
+    <ClCompile Include="ObjectRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
@@ -90,18 +93,36 @@
     <ClInclude Include="Common\DDSTextureLoader.h">
       <Filter>通用</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>通用</Filter>
-    </ClInclude>
     <ClInclude Include="Common\InputController.h">
       <Filter>通用</Filter>
     </ClInclude>
+    <ClInclude Include="Common\Camera.h">
+      <Filter>通用</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelAssemble.h" />
+    <ClInclude Include="SkyboxRender.h" />
+    <ClInclude Include="ObjectRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\StoreLogo.png">
       <Filter>资产</Filter>
     </Image>
-    <Image Include="Assets\texture.dds">
+    <Image Include="Assets\back.dds">
+      <Filter>资产</Filter>
+    </Image>
+    <Image Include="Assets\bottom.dds">
+      <Filter>资产</Filter>
+    </Image>
+    <Image Include="Assets\front.dds">
+      <Filter>资产</Filter>
+    </Image>
+    <Image Include="Assets\left.dds">
+      <Filter>资产</Filter>
+    </Image>
+    <Image Include="Assets\right.dds">
+      <Filter>资产</Filter>
+    </Image>
+    <Image Include="Assets\top.dds">
       <Filter>资产</Filter>
     </Image>
   </ItemGroup>
@@ -118,5 +139,14 @@
     <FxCompile Include="Content\TexturePixelShader.hlsl">
       <Filter>内容</Filter>
     </FxCompile>
+    <FxCompile Include="Content\SkyboxPS.hlsl">
+      <Filter>内容</Filter>
+    </FxCompile>
+    <FxCompile Include="Content\SkyboxVS.hlsl">
+      <Filter>内容</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Job.rc" />
   </ItemGroup>
 </Project>

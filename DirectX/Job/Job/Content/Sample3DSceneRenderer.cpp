@@ -17,8 +17,16 @@ Sample3DSceneRenderer::Sample3DSceneRenderer(const std::shared_ptr<DX::DeviceRes
 	m_tracking(false),
 	m_deviceResources(deviceResources)
 {
+	ic = ref new InputController();
+	static const XMFLOAT3 eye = { 10.0f, 10.0f, 10.0f };
+	static const XMFLOAT3 at = { -10.0f, -10.0f, -10.0f };
+	static const XMFLOAT3 up = { 0.0f, 1.0f, 0.0f };
+	cam = new Camera(eye, at, up);
+
 	CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources();
+
+
 }
 
 // 当窗口的大小改变时初始化视图参数。
@@ -35,49 +43,30 @@ void Sample3DSceneRenderer::CreateWindowSizeDependentResources()
 		fovAngleY *= 2.0f;
 	}
 
-	// 请注意，OrientationTransform3D 矩阵在此处是后乘的，
-	// 以正确确定场景的方向，使之与显示方向匹配。
-	// 对于交换链的目标位图进行的任何绘制调用
-	// 交换链呈现目标。对于到其他目标的绘制调用，
-	// 不应应用此转换。
+	cam->UpdateFrustum(fovAngleY, aspectRatio, 0.01f, 100.0f);
 
-	// 此示例使用行主序矩阵利用右手坐标系。
-	XMMATRIX perspectiveMatrix = XMMatrixPerspectiveFovRH(
-		fovAngleY,
-		aspectRatio,
-		0.01f,
-		100.0f
-		);
-
-	XMFLOAT4X4 orientation = m_deviceResources->GetOrientationTransform3D();
-
-	XMMATRIX orientationMatrix = XMLoadFloat4x4(&orientation);
-
-	XMStoreFloat4x4(
-		&m_constantBufferData.projection,
-		XMMatrixTranspose(perspectiveMatrix * orientationMatrix)
-		);
-
-	// 眼睛位于(0,0.7,1.5)，并沿着 Y 轴使用向上矢量查找点(0,-0.1,0)。
-	static const XMVECTORF32 eye = { 0.0f, 0.7f, 1.5f, 0.0f };
-	static const XMVECTORF32 at = { 0.0f, -0.1f, 0.0f, 0.0f };
-	static const XMVECTORF32 up = { 0.0f, 1.0f, 0.0f, 0.0f };
-
-	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(XMMatrixLookAtRH(eye, at, up)));
+	XMStoreFloat4x4(&m_constantBufferData.projection, XMMatrixTranspose(cam->GetProj()));
+	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(cam->GetView()));
 }
 
 // 每个帧调用一次，旋转立方体，并计算模型和视图矩阵。
 void Sample3DSceneRenderer::Update(DX::StepTimer const& timer)
 {
-	if (!m_tracking)
-	{
+	if (true) {
 		// 将度转换成弧度，然后将秒转换为旋转角度
 		float radiansPerSecond = XMConvertToRadians(m_degreesPerSecond);
 		double totalRotation = timer.GetTotalSeconds() * radiansPerSecond;
 		float radians = static_cast<float>(fmod(totalRotation, XM_2PI));
 
 		Rotate(radians);
+
+		/*XMMATRIX old = cam->GetView();
+		cam->YawDegree(1);
+		XMMATRIX New = cam->GetView();
+		XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(cam->GetView()));*/
 	}
+	
+
 }
 
 // 将 3D 立方体模型旋转一定数量的弧度。
@@ -127,28 +116,12 @@ void Sample3DSceneRenderer::Render()
 		0,
 		0,
 		0
-		);
+	);
 
 	// 每个顶点都是 VertexPosTex 结构的一个实例。
 	UINT stride = sizeof(VertexPosTex);
 	UINT offset = 0;
-	context->IASetVertexBuffers(
-		0,
-		1,
-		m_vertexBuffer.GetAddressOf(),
-		&stride,
-		&offset
-		);
-
-	context->IASetIndexBuffer(
-		m_indexBuffer.Get(),
-		DXGI_FORMAT_R16_UINT, // 每个索引都是一个 16 位无符号整数(short)。
-		0
-		);
-
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	context->IASetInputLayout(m_inputLayout.Get());
+	
 
 	// 附加我们的顶点着色器。
 	context->VSSetShader(
@@ -175,12 +148,15 @@ void Sample3DSceneRenderer::Render()
 
 	context->PSSetShaderResources(0, 1, m_TexSRV.GetAddressOf());
 
-	// 绘制对象。
-	context->DrawIndexed(
-		m_indexCount,
-		0,
-		0
-		);
+
+
+	context->IASetVertexBuffers(0, 1, m_vertexBuffer1.GetAddressOf(), &stride, &offset);
+	context->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->IASetInputLayout(m_inputLayout.Get());
+	context->DrawIndexed(m_indexCount, 0, 0);
+
+	 
 }
 
 void Sample3DSceneRenderer::CreateDeviceDependentResources()
@@ -239,22 +215,22 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 	});
 
 	// 加载两个着色器后，创建网格。
-	auto createCubeTask = (createPSTask && createVSTask).then([this] () {
+	auto createCubeTask = (createPSTask && createVSTask).then([this]() {
 
 		// 加载网格顶点。每个顶点都有一个位置和一个颜色。
-		static const VertexPosTex cubeVertices[] = 
+		static const VertexPosTex cubeVertices[] =
 		{
 			{XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT2(0.0f, 0.0f)},
 			{XMFLOAT3(-0.5f, -0.5f,  0.5f), XMFLOAT2(0.0f, 0.0f)},
 			{XMFLOAT3(-0.5f,  0.5f, -0.5f), XMFLOAT2(0.0f, 1.0f)},
 			{XMFLOAT3(-0.5f,  0.5f,  0.5f), XMFLOAT2(0.0f, 1.0f)},
-			{XMFLOAT3( 0.5f, -0.5f, -0.5f), XMFLOAT2(1.0f, 0.0f)},
-			{XMFLOAT3( 0.5f, -0.5f,  0.5f), XMFLOAT2(1.0f, 0.0f)},
-			{XMFLOAT3( 0.5f,  0.5f, -0.5f), XMFLOAT2(1.0f, 1.0f)},
-			{XMFLOAT3( 0.5f,  0.5f,  0.5f), XMFLOAT2(1.0f, 1.0f)},
+			{XMFLOAT3(0.5f, -0.5f, -0.5f), XMFLOAT2(1.0f, 0.0f)},
+			{XMFLOAT3(0.5f, -0.5f,  0.5f), XMFLOAT2(1.0f, 0.0f)},
+			{XMFLOAT3(0.5f,  0.5f, -0.5f), XMFLOAT2(1.0f, 1.0f)},
+			{XMFLOAT3(0.5f,  0.5f,  0.5f), XMFLOAT2(1.0f, 1.0f)},
 		};
 
-		D3D11_SUBRESOURCE_DATA vertexBufferData = {0};
+		D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
 		vertexBufferData.pSysMem = cubeVertices;
 		vertexBufferData.SysMemPitch = 0;
 		vertexBufferData.SysMemSlicePitch = 0;
@@ -264,8 +240,37 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 				&vertexBufferDesc,
 				&vertexBufferData,
 				&m_vertexBuffer
-				)
-			);
+			)
+		);
+
+		// 加载网格顶点。每个顶点都有一个位置和一个颜色。
+		static const VertexPosTex cubeVertices1[] =
+		{
+			{XMFLOAT3(1.5f, -0.5f, -10.5f), XMFLOAT2(0.0f, 0.0f)},
+			{XMFLOAT3(1.5f, -0.5f,  0.5f), XMFLOAT2(0.0f, 0.0f)},
+			{XMFLOAT3(1.5f,  0.5f, -0.5f), XMFLOAT2(0.0f, 1.0f)},
+			{XMFLOAT3(1.5f,  0.5f,  0.5f), XMFLOAT2(0.0f, 1.0f)},
+			{XMFLOAT3(2.5f, -0.5f, -0.5f), XMFLOAT2(1.0f, 0.0f)},
+			{XMFLOAT3(2.5f, -0.5f,  0.5f), XMFLOAT2(1.0f, 0.0f)},
+			{XMFLOAT3(2.5f,  0.5f, -0.5f), XMFLOAT2(1.0f, 1.0f)},
+			{XMFLOAT3(2.5f,  0.5f,  0.5f), XMFLOAT2(1.0f, 1.0f)},
+		};
+
+		D3D11_SUBRESOURCE_DATA vertexBufferData1 = { 0 };
+		vertexBufferData1.pSysMem = cubeVertices1;
+		vertexBufferData1.SysMemPitch = 0;
+		vertexBufferData1.SysMemSlicePitch = 0;
+		CD3D11_BUFFER_DESC vertexBufferDesc1(sizeof(cubeVertices1), D3D11_BIND_VERTEX_BUFFER);
+		DX::ThrowIfFailed(
+			m_deviceResources->GetD3DDevice()->CreateBuffer(
+				&vertexBufferDesc1,
+				&vertexBufferData1,
+				&m_vertexBuffer1
+			)
+		);
+
+		/*const ID3D11Buffer* vv[] = {m_vertexBuffer.Get(), m_vertexBuffer1.Get() };
+		m_vertexBufferA = vv;*/
 
 		// 加载网格索引。每三个索引表示
 		// 要在屏幕上呈现的三角形。
@@ -274,8 +279,8 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 		// 此网格的第一个三角形。
 		static const unsigned short cubeIndices [] =
 		{
-			0,2,1, // -x
-			1,2,3,
+			8,10,9, // -x
+			9,10,11,
 
 			4,5,6, // +x
 			5,7,6,
@@ -328,5 +333,7 @@ void Sample3DSceneRenderer::ReleaseDeviceDependentResources()
 	m_pixelShader.Reset();
 	m_constantBuffer.Reset();
 	m_vertexBuffer.Reset();
+	m_vertexBuffer1.Reset();
+	//m_vertexBufferA.Reset();
 	m_indexBuffer.Reset();
 }

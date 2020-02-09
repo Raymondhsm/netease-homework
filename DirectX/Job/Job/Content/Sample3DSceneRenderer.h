@@ -34,6 +34,8 @@ namespace Job
 		// 立体几何的 Direct3D 资源。
 		Microsoft::WRL::ComPtr<ID3D11InputLayout>	m_inputLayout;
 		Microsoft::WRL::ComPtr<ID3D11Buffer>		m_vertexBuffer;
+		Microsoft::WRL::ComPtr<ID3D11Buffer>		m_vertexBuffer1;
+		//Microsoft::WRL::ComPtr<ID3D11Buffer*>		m_vertexBufferA;
 		Microsoft::WRL::ComPtr<ID3D11Buffer>		m_indexBuffer;
 		Microsoft::WRL::ComPtr<ID3D11VertexShader>	m_vertexShader;
 		Microsoft::WRL::ComPtr<ID3D11PixelShader>	m_pixelShader;
@@ -50,6 +52,7 @@ namespace Job
 		bool	m_tracking;
 
 		InputController^ ic;
+		Camera *cam;
 	};
 }
 
