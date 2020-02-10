@@ -170,9 +170,10 @@ void Camera::Right(float distance)
 
 void Camera::Pitch(float angle)
 {
-	XMMATRIX ratationX = XMMatrixRotationX(angle);
+	XMVECTOR right = XMLoadFloat3(&m_right);
+	XMMATRIX r = XMMatrixRotationAxis(right, angle);
 	XMVECTOR oldLook = XMLoadFloat3(&m_look);
-	XMVECTOR newLook = XMVector3Transform(oldLook, ratationX);
+	XMVECTOR newLook = XMVector3Transform(oldLook, r);
 
 	this->setlookDirection(newLook);
 }
