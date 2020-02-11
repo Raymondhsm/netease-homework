@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{8db45bcd-f944-4568-99c3-897e36219f90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{05c9034c-b275-4b0c-afec-a3d92f55fb92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HSLS">
+      <UniqueIdentifier>{3cea61fb-c279-4cd5-9645-b80c7f0930bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renders">
+      <UniqueIdentifier>{7704c09a-3c04-4b44-958c-b831c9b9d80e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Apps">
+      <UniqueIdentifier>{ac77afcf-ffa2-4446-9d3c-cf8190627fa6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Apps\D3DApp.h">
+      <Filter>Apps</Filter>
+    </ClInclude>
+    <ClInclude Include="Apps\StepTimer.h">
+      <Filter>Apps</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Apps\D3DApp.cpp">
+      <Filter>Apps</Filter>
+    </ClCompile>
+    <ClCompile Include="Apps\StepTimer.cpp">
+      <Filter>Apps</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+</Project>
