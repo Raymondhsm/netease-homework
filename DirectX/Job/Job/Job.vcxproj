@@ -263,6 +263,7 @@
     <ClInclude Include="Common\DDSTextureLoader.h" />
     <ClInclude Include="Common\DeviceResources.h" />
     <ClInclude Include="Common\InputController.h" />
+    <ClInclude Include="Common\ObjReader.h" />
     <ClInclude Include="Content\CarRenderer.h" />
     <ClInclude Include="JobMain.h" />
     <ClInclude Include="Common\DirectXHelper.h" />
@@ -281,6 +282,7 @@
     <ClCompile Include="Common\DDSTextureLoader.cpp" />
     <ClCompile Include="Common\DeviceResources.cpp" />
     <ClCompile Include="Common\InputController.cpp" />
+    <ClCompile Include="Common\ObjReader.cpp" />
     <ClCompile Include="Content\CarRenderer.cpp" />
     <ClCompile Include="JobMain.cpp" />
     <ClCompile Include="Content\SampleFpsTextRenderer.cpp" />

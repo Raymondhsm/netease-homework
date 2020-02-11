@@ -1,8 +1,8 @@
 ﻿#include "pch.h"
 #include "Sample3DSceneRenderer.h"
 #include "Common/DDSTextureLoader.h"
-
 #include "..\Common\DirectXHelper.h"
+#include <fstream>
 
 using namespace Job;
 
@@ -22,6 +22,7 @@ Sample3DSceneRenderer::Sample3DSceneRenderer(const std::shared_ptr<DX::DeviceRes
 	static const XMFLOAT3 at = { -10.0f, -10.0f, -10.0f };
 	static const XMFLOAT3 up = { 0.0f, 1.0f, 0.0f };
 	cam = new Camera(eye, at, up);
+	objReader = new ObjReader();
 
 	CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources();
@@ -47,6 +48,13 @@ void Sample3DSceneRenderer::CreateWindowSizeDependentResources()
 
 	XMStoreFloat4x4(&m_constantBufferData.projection, XMMatrixTranspose(cam->GetProj()));
 	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(cam->GetView()));
+
+
+	//objReader->ReadObj("C:/Users/Administrator/source/repos/Project10/Project10/Debug/map.obj");
+	//auto a = objReader->objParts;
+
+	//std::ifstream wi(L"C:/Users/Administrator/source/repos/Project10/Project10/Debug/map.obj");
+	//if (wi.is_open()) return;
 }
 
 // 每个帧调用一次，旋转立方体，并计算模型和视图矩阵。
@@ -243,34 +251,6 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 			)
 		);
 
-		// 加载网格顶点。每个顶点都有一个位置和一个颜色。
-		static const VertexPosTex cubeVertices1[] =
-		{
-			{XMFLOAT3(1.5f, -0.5f, -10.5f), XMFLOAT2(0.0f, 0.0f)},
-			{XMFLOAT3(1.5f, -0.5f,  0.5f), XMFLOAT2(0.0f, 0.0f)},
-			{XMFLOAT3(1.5f,  0.5f, -0.5f), XMFLOAT2(0.0f, 1.0f)},
-			{XMFLOAT3(1.5f,  0.5f,  0.5f), XMFLOAT2(0.0f, 1.0f)},
-			{XMFLOAT3(2.5f, -0.5f, -0.5f), XMFLOAT2(1.0f, 0.0f)},
-			{XMFLOAT3(2.5f, -0.5f,  0.5f), XMFLOAT2(1.0f, 0.0f)},
-			{XMFLOAT3(2.5f,  0.5f, -0.5f), XMFLOAT2(1.0f, 1.0f)},
-			{XMFLOAT3(2.5f,  0.5f,  0.5f), XMFLOAT2(1.0f, 1.0f)},
-		};
-
-		D3D11_SUBRESOURCE_DATA vertexBufferData1 = { 0 };
-		vertexBufferData1.pSysMem = cubeVertices1;
-		vertexBufferData1.SysMemPitch = 0;
-		vertexBufferData1.SysMemSlicePitch = 0;
-		CD3D11_BUFFER_DESC vertexBufferDesc1(sizeof(cubeVertices1), D3D11_BIND_VERTEX_BUFFER);
-		DX::ThrowIfFailed(
-			m_deviceResources->GetD3DDevice()->CreateBuffer(
-				&vertexBufferDesc1,
-				&vertexBufferData1,
-				&m_vertexBuffer1
-			)
-		);
-
-		/*const ID3D11Buffer* vv[] = {m_vertexBuffer.Get(), m_vertexBuffer1.Get() };
-		m_vertexBufferA = vv;*/
 
 		// 加载网格索引。每三个索引表示
 		// 要在屏幕上呈现的三角形。
@@ -315,7 +295,7 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 
 		//加载纹理
 		DX::ThrowIfFailed(
-			CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/texture.dds", nullptr, m_TexSRV.GetAddressOf())
+			CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/back.dds", nullptr, m_TexSRV.GetAddressOf())
 		);
 	});
 

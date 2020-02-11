@@ -20,7 +20,7 @@ JobMain::JobMain(const std::shared_ptr<DX::DeviceResources>& deviceResources) :
 	// TODO: 将此替换为应用程序内容的初始化。
 	//m_carRenderer = std::unique_ptr<CarRenderer>(new CarRenderer(m_deviceResources));
 
-	//m_sceneRenderer = std::unique_ptr<Sample3DSceneRenderer>(new Sample3DSceneRenderer(m_deviceResources));
+	m_sceneRenderer = std::unique_ptr<Sample3DSceneRenderer>(new Sample3DSceneRenderer(m_deviceResources));
 
 	m_fpsTextRenderer = std::unique_ptr<SampleFpsTextRenderer>(new SampleFpsTextRenderer(m_deviceResources));
 
@@ -44,7 +44,7 @@ JobMain::~JobMain()
 void JobMain::CreateWindowSizeDependentResources() 
 {
 	// TODO: 将此替换为应用程序内容的与大小相关的初始化。
-	//m_sceneRenderer->CreateWindowSizeDependentResources();
+	m_sceneRenderer->CreateWindowSizeDependentResources();
 	//m_carRenderer->CreateWindowSizeDependentResources();
 	m_skyRenderer->CreateWindowSizeDependentResources();
 }
@@ -61,7 +61,7 @@ void JobMain::Update()
 		else if (m_inputController->isBack()) m_camera->PitchDegree(1);
 
 		// TODO: 将此替换为应用程序内容的更新函数。
-		//m_sceneRenderer->Update(m_timer);
+		m_sceneRenderer->Update(m_timer);
 		m_fpsTextRenderer->Update(m_timer);
 		//m_carRenderer->Update(m_timer);
 		m_skyRenderer->Update(m_timer);
@@ -94,7 +94,7 @@ bool JobMain::Render()
 
 	// 呈现场景对象。
 	// TODO: 将此替换为应用程序内容的渲染函数。
-	//m_sceneRenderer->Render();
+	m_sceneRenderer->Render();
 	m_fpsTextRenderer->Render();
 	//m_carRenderer->Render();
 	m_skyRenderer->Render();
@@ -105,7 +105,7 @@ bool JobMain::Render()
 // 通知呈现器，需要释放设备资源。
 void JobMain::OnDeviceLost()
 {
-	//m_sceneRenderer->ReleaseDeviceDependentResources();
+	m_sceneRenderer->ReleaseDeviceDependentResources();
 	m_fpsTextRenderer->ReleaseDeviceDependentResources();
 	//m_carRenderer->ReleaseDeviceDependentResources();
 	m_skyRenderer->ReleaseDeviceDependentResources();
@@ -114,7 +114,7 @@ void JobMain::OnDeviceLost()
 // 通知呈现器，现在可重新创建设备资源。
 void JobMain::OnDeviceRestored()
 {
-	//m_sceneRenderer->CreateDeviceDependentResources();
+	m_sceneRenderer->CreateDeviceDependentResources();
 	m_fpsTextRenderer->CreateDeviceDependentResources();
 	//m_carRenderer->CreateDeviceDependentResources();
 	m_skyRenderer->CreateDeviceDependentResources();

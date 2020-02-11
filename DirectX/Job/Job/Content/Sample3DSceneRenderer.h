@@ -5,6 +5,7 @@
 #include "..\Common\StepTimer.h"
 #include "../Common/InputController.h"
 #include "../Common/Camera.h"
+#include "../Common/ObjReader.h"
 
 namespace Job
 {
@@ -53,6 +54,7 @@ namespace Job
 
 		InputController^ ic;
 		Camera *cam;
+		ObjReader *objReader;
 	};
 }
 

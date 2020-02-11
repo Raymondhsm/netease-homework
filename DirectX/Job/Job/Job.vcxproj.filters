@@ -82,6 +82,9 @@
     <ClCompile Include="ModelAssemble.cpp" />
     <ClCompile Include="SkyboxRender.cpp" />
     <ClCompile Include="ObjectRenderer.cpp" />
+    <ClCompile Include="Common\ObjReader.cpp">
+      <Filter>通用</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
@@ -102,12 +105,12 @@
     <ClInclude Include="ModelAssemble.h" />
     <ClInclude Include="SkyboxRender.h" />
     <ClInclude Include="ObjectRenderer.h" />
+    <ClInclude Include="Common\ObjReader.h">
+      <Filter>通用</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\StoreLogo.png">
-      <Filter>资产</Filter>
-    </Image>
-    <Image Include="Assets\back.dds">
       <Filter>资产</Filter>
     </Image>
     <Image Include="Assets\bottom.dds">
@@ -123,6 +126,9 @@
       <Filter>资产</Filter>
     </Image>
     <Image Include="Assets\top.dds">
+      <Filter>资产</Filter>
+    </Image>
+    <Image Include="Assets\back.dds">
       <Filter>资产</Filter>
     </Image>
   </ItemGroup>
