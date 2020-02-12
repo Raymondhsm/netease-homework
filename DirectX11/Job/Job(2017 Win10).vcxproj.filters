@@ -25,6 +25,12 @@
     <ClInclude Include="Apps\StepTimer.h">
       <Filter>Apps</Filter>
     </ClInclude>
+    <ClInclude Include="Apps\DeviceResources.h">
+      <Filter>Apps</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\DirectXHelper.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Apps\D3DApp.cpp">
@@ -34,5 +40,8 @@
       <Filter>Apps</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Apps\DeviceResources.cpp">
+      <Filter>Apps</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

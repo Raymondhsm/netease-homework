@@ -20,11 +20,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Apps\D3DApp.h" />
+    <ClInclude Include="Apps\DeviceResources.h" />
     <ClInclude Include="Apps\StepTimer.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Utils\DirectXHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Apps\D3DApp.cpp" />
+    <ClCompile Include="Apps\DeviceResources.cpp" />
     <ClCompile Include="Apps\StepTimer.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
