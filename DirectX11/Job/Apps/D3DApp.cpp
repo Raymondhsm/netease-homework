@@ -33,12 +33,15 @@ D3DApp::D3DApp(HINSTANCE hInstance):
 	m_pRenderTargetView(nullptr),
 	m_pDepthStencilView(nullptr)
 {
-	//CreateDeviceIndependentResources();
-	//CreateDeviceResources();
+	ZeroMemory(&m_ScreenViewport, sizeof(D3D11_VIEWPORT));
+	g_pd3dApp = this;
+
+	if(!Initialize())
+		MessageBox(0, L"Initialize Failed!", 0, 0);
 }
 
 // 初始化创建窗口
-bool D3DApp::InitMainWindow()
+bool D3DApp::CreateMainWindow()
 {
 	WNDCLASS wc;
 	wc.style = CS_HREDRAW | CS_VREDRAW;
@@ -78,7 +81,7 @@ bool D3DApp::InitMainWindow()
 	return true;
 }
 
-bool D3DApp::InitDirect3D()
+bool D3DApp::CreateDeviceDependentResource()
 {
 	HRESULT hr = S_OK;
 
@@ -147,29 +150,54 @@ bool D3DApp::InitDirect3D()
 	return true;
 }
 
-void D3DApp::UpdateRenderTargetSize()
-{
-	return;
-}
-
-void D3DApp::HandleDeviceLost()
-{
-	return;
-}
-
 int D3DApp::Run()
 {
-	return 0;
+	MSG msg = { 0 };
+
+	m_Timer.ResetElapsedTime();
+
+	while (msg.message != WM_QUIT)
+	{
+		if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		else
+		{
+			
+
+			if (!m_AppPaused)
+			{
+				m_Timer.Tick([&]()
+				{
+					Update();
+				});
+				if (Render())
+				{
+					Present();
+				}
+			}
+			else
+			{
+				Sleep(100);
+			}
+		}
+	}
+
+	return (int)msg.wParam;
 }
 
 bool D3DApp::Initialize()
 {
-	return InitMainWindow() && InitDirect3D();
+	if (!(CreateMainWindow() && CreateDeviceDependentResource()))
+		return false;
+	CreateWindowSizeDependentResource();
+	return true;
 }
 
 void D3DApp::CreateWindowSizeDependentResource()
 {
-	UpdateRenderTargetSize();
 
 	// 如果交换链为空 创建
 	if (m_pSwapChain == nullptr)
@@ -293,7 +321,8 @@ void D3DApp::CreateWindowSizeDependentResource()
 		if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET)
 		{
 			// 如果出于任何原因移除了设备，将需要创建一个新的设备和交换链。
-			HandleDeviceLost();
+			m_pSwapChain = nullptr;
+			Initialize();
 
 			return;
 		}
@@ -305,42 +334,115 @@ void D3DApp::CreateWindowSizeDependentResource()
 
 }
 
-bool D3DApp::CreateDeviceDependentResource()
-{
-	return false;
-}
-
-bool D3DApp::Update()
-{
-	return false;
-}
-
-bool D3DApp::Render()
-{
-	return false;
-}
-
-bool D3DApp::Present()
-{
-	return false;
-}
 
 LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	return LRESULT();
+	switch (msg)
+	{
+	case WM_ACTIVATE:
+		if (LOWORD(wParam) == WA_INACTIVE)
+		{
+			m_AppPaused = true;
+		}
+		else
+		{
+			m_AppPaused = false;
+		}
+		return 0;
+
+	case WM_SIZE:
+		m_ClientWidth = LOWORD(lParam);
+		m_ClientHeight = HIWORD(lParam);
+		if (m_pd3dDevice)
+		{
+			if (wParam == SIZE_MINIMIZED)
+			{
+				m_AppPaused = true;
+				m_Minimized = true;
+				m_Maximized = false;
+			}
+			else if (wParam == SIZE_MAXIMIZED)
+			{
+				m_AppPaused = false;
+				m_Minimized = false;
+				m_Maximized = true;
+				CreateWindowSizeDependentResource();
+			}
+			else if (wParam == SIZE_RESTORED)
+			{
+				if (m_Minimized)
+				{
+					m_AppPaused = false;
+					m_Minimized = false;
+					CreateWindowSizeDependentResource();
+				}
+				else if (m_Maximized)
+				{
+					m_AppPaused = false;
+					m_Maximized = false;
+					CreateWindowSizeDependentResource();
+				}
+				else if (m_Resizing)
+				{
+					
+				}
+				else 
+				{
+					CreateWindowSizeDependentResource();
+				}
+			}
+		}
+		return 0;
+
+	case WM_ENTERSIZEMOVE:
+		m_AppPaused = true;
+		m_Resizing = true;
+		return 0;
+
+	case WM_EXITSIZEMOVE:
+		m_AppPaused = false;
+		m_Resizing = false;
+		CreateWindowSizeDependentResource();
+		return 0;
+
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		return 0;
+
+	case WM_MENUCHAR:
+		return MAKELRESULT(0, MNC_CLOSE);
+
+	case WM_GETMINMAXINFO:
+		((MINMAXINFO*)lParam)->ptMinTrackSize.x = 200;
+		((MINMAXINFO*)lParam)->ptMinTrackSize.y = 200;
+		return 0;
+
+	case WM_LBUTTONDOWN:
+	case WM_MBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+		return 0;
+	case WM_LBUTTONUP:
+	case WM_MBUTTONUP:
+	case WM_RBUTTONUP:
+		return 0;
+	case WM_MOUSEMOVE:
+		return 0;
+	}
+
+	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
 HINSTANCE D3DApp::GetAppInst() const
 {
-	return HINSTANCE();
+	return m_hAppInst;
 }
 
 HWND D3DApp::GetMainWnd() const
 {
-	return HWND();
+	return m_hMainWnd;
 }
 
 float D3DApp::GetAspectRatio() const
 {
-	return 0.0f;
+	return static_cast<float>(m_ClientWidth) / m_ClientHeight;
 }

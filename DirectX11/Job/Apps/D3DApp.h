@@ -14,9 +14,10 @@ public:
 	virtual bool Initialize();
 	virtual void CreateWindowSizeDependentResource();
 	virtual bool CreateDeviceDependentResource();
-	virtual bool Update();
-	virtual bool Render();
-	virtual bool Present();
+	virtual bool CreateMainWindow();      // 窗口初始化
+	virtual bool Update() = 0;
+	virtual bool Render() = 0;
+	virtual bool Present() = 0;
 
 	virtual LRESULT MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -25,10 +26,6 @@ public:
 	float		GetAspectRatio()const;             // 获取屏幕宽高比
 
 protected:
-	bool InitMainWindow();      // 窗口初始化
-	bool InitDirect3D();
-	void UpdateRenderTargetSize();
-	void HandleDeviceLost();
 
 	HINSTANCE	m_hAppInst;				// 应用实例句柄
 	HWND		m_hMainWnd;				// 主窗口句柄
