@@ -67,7 +67,7 @@ bool D3DApp::CreateMainWindow()
 	int width = R.right - R.left;
 	int height = R.bottom - R.top;
 
-	m_hMainWnd = CreateWindow(L"D3DWndClassName", m_MainWndCaption.c_str(),
+	m_hMainWnd = CreateWindow(L"D3DWndClassName",m_MainWndCaption.c_str(),
 		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, 0, 0, m_hAppInst, 0);
 	if (!m_hMainWnd)
 	{
@@ -188,6 +188,18 @@ int D3DApp::Run()
 	return (int)msg.wParam;
 }
 
+void D3DApp::HandleDeviceLost()
+{
+	m_pSwapChain = nullptr;
+
+	OnDeviceLost();
+
+	CreateDeviceDependentResource();
+	//CreateWindowSizeDependentResource();
+
+	OnDeviceRestore();
+}
+
 bool D3DApp::Initialize()
 {
 	if (!(CreateMainWindow() && CreateDeviceDependentResource()))
@@ -198,6 +210,12 @@ bool D3DApp::Initialize()
 
 void D3DApp::CreateWindowSizeDependentResource()
 {
+	// 清除特定于上一窗口大小的上下文。
+	ID3D11RenderTargetView* nullViews[] = { nullptr };
+	m_pd3dContext->OMSetRenderTargets(ARRAYSIZE(nullViews), nullViews, nullptr);
+	m_pRenderTargetView = nullptr;
+	m_pDepthStencilView = nullptr;
+	m_pd3dContext->Flush1(D3D11_CONTEXT_TYPE_ALL, nullptr);
 
 	// 如果交换链为空 创建
 	if (m_pSwapChain == nullptr)
@@ -255,57 +273,6 @@ void D3DApp::CreateWindowSizeDependentResource()
 		DXHelper::ThrowIfFailed(
 			dxgiDevice->SetMaximumFrameLatency(1)
 		);
-
-		// 创建交换链后台缓冲区的渲染目标视图。
-		ComPtr<ID3D11Texture2D1> backBuffer;
-		DXHelper::ThrowIfFailed(
-			m_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&backBuffer))
-		);
-
-		DXHelper::ThrowIfFailed(
-			m_pd3dDevice->CreateRenderTargetView1(
-				backBuffer.Get(),
-				nullptr,
-				&m_pRenderTargetView
-			)
-		);
-
-		// 根据需要创建用于 3D 渲染的深度模具视图。
-		CD3D11_TEXTURE2D_DESC1 depthStencilDesc(
-			DXGI_FORMAT_D24_UNORM_S8_UINT,
-			lround(m_ClientWidth),
-			lround(m_ClientHeight),
-			1, // 此深度模具视图只有一个纹理。
-			1, // 使用单一 mipmap 级别。
-			D3D11_BIND_DEPTH_STENCIL
-		);
-
-		DXHelper::ThrowIfFailed(
-			m_pd3dDevice->CreateTexture2D1(
-				&depthStencilDesc,
-				nullptr,
-				&m_pDepthStencilBuffer
-			)
-		);
-
-		CD3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc(D3D11_DSV_DIMENSION_TEXTURE2D);
-		DXHelper::ThrowIfFailed(
-			m_pd3dDevice->CreateDepthStencilView(
-				m_pDepthStencilBuffer.Get(),
-				&depthStencilViewDesc,
-				&m_pDepthStencilView
-			)
-		);
-
-		// 设置用于确定整个窗口的 3D 渲染视区。
-		m_ScreenViewport = CD3D11_VIEWPORT(
-			0.0f,
-			0.0f,
-			m_ClientWidth,
-			m_ClientHeight
-		);
-
-		m_pd3dContext->RSSetViewports(1, &m_ScreenViewport);
 	}
 	else
 	{
@@ -321,8 +288,7 @@ void D3DApp::CreateWindowSizeDependentResource()
 		if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET)
 		{
 			// 如果出于任何原因移除了设备，将需要创建一个新的设备和交换链。
-			m_pSwapChain = nullptr;
-			Initialize();
+			HandleDeviceLost();
 
 			return;
 		}
@@ -331,6 +297,57 @@ void D3DApp::CreateWindowSizeDependentResource()
 			DXHelper::ThrowIfFailed(hr);
 		}
 	}
+
+	// 创建交换链后台缓冲区的渲染目标视图。
+	ComPtr<ID3D11Texture2D1> backBuffer;
+	DXHelper::ThrowIfFailed(
+		m_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&backBuffer))
+	);
+
+	DXHelper::ThrowIfFailed(
+		m_pd3dDevice->CreateRenderTargetView1(
+			backBuffer.Get(),
+			nullptr,
+			&m_pRenderTargetView
+		)
+	);
+
+	// 根据需要创建用于 3D 渲染的深度模具视图。
+	CD3D11_TEXTURE2D_DESC1 depthStencilDesc(
+		DXGI_FORMAT_D24_UNORM_S8_UINT,
+		lround(m_ClientWidth),
+		lround(m_ClientHeight),
+		1, // 此深度模具视图只有一个纹理。
+		1, // 使用单一 mipmap 级别。
+		D3D11_BIND_DEPTH_STENCIL
+	);
+
+	DXHelper::ThrowIfFailed(
+		m_pd3dDevice->CreateTexture2D1(
+			&depthStencilDesc,
+			nullptr,
+			&m_pDepthStencilBuffer
+		)
+	);
+
+	CD3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc(D3D11_DSV_DIMENSION_TEXTURE2D);
+	DXHelper::ThrowIfFailed(
+		m_pd3dDevice->CreateDepthStencilView(
+			m_pDepthStencilBuffer.Get(),
+			&depthStencilViewDesc,
+			&m_pDepthStencilView
+		)
+	);
+
+	// 设置用于确定整个窗口的 3D 渲染视区。
+	m_ScreenViewport = CD3D11_VIEWPORT(
+		0.0f,
+		0.0f,
+		m_ClientWidth,
+		m_ClientHeight
+	);
+
+	m_pd3dContext->RSSetViewports(1, &m_ScreenViewport);
 
 }
 
