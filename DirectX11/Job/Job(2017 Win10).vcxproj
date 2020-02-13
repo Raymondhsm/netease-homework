@@ -22,6 +22,7 @@
     <ClInclude Include="Apps\D3DApp.h" />
     <ClInclude Include="Apps\DeviceResources.h" />
     <ClInclude Include="Apps\StepTimer.h" />
+    <ClInclude Include="GameController.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Utils\DirectXHelper.h" />
   </ItemGroup>
@@ -29,6 +30,7 @@
     <ClCompile Include="Apps\D3DApp.cpp" />
     <ClCompile Include="Apps\DeviceResources.cpp" />
     <ClCompile Include="Apps\StepTimer.cpp" />
+    <ClCompile Include="GameController.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -31,6 +31,7 @@
     <ClInclude Include="Utils\DirectXHelper.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="GameController.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Apps\D3DApp.cpp">
@@ -43,5 +44,6 @@
     <ClCompile Include="Apps\DeviceResources.cpp">
       <Filter>Apps</Filter>
     </ClCompile>
+    <ClCompile Include="GameController.cpp" />
   </ItemGroup>
 </Project>

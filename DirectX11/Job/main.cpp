@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "GameController.h"
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE prevInstance,
 	_In_ LPSTR cmdLine, _In_ int showCmd)
@@ -12,5 +13,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE prevInstance,
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-	return 0;
+	GameController theApp(hInstance);
+	return theApp.Run();
 }

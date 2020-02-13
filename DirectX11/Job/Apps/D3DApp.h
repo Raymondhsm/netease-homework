@@ -15,9 +15,9 @@ public:
 	virtual void CreateWindowSizeDependentResource();
 	virtual bool CreateDeviceDependentResource();
 	virtual bool CreateMainWindow();      // ´°¿Ú³õÊ¼»¯
-	virtual bool Update() = 0;
+	virtual void Update() = 0;
 	virtual bool Render() = 0;
-	virtual bool Present() = 0;
+	virtual void Present() = 0;
 
 	virtual LRESULT MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
