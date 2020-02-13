@@ -25,9 +25,3 @@ void StepTimer::ResetElapsedTime()
 	m_framesThisSecond = 0;
 	m_qpcSecondCounter = 0;
 }
-
-//template<typename TUpdate>
-//inline void StepTimer::Tick(const TUpdate & update)
-//{
-//
-//}
