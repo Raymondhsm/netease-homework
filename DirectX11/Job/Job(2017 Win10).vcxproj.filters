@@ -45,5 +45,8 @@
       <Filter>Apps</Filter>
     </ClCompile>
     <ClCompile Include="GameController.cpp" />
+    <ClCompile Include="Utils\DirectXHelper.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

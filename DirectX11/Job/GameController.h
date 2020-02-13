@@ -10,6 +10,8 @@ public:
 	void Update();
 	bool Render();
 	void Present();
+	void OnDeviceLost();
+	void OnDeviceRestore();
 	void CreateWindowSizeDependentResource();
 };
 
