@@ -20,19 +20,42 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Apps\D3DApp.h" />
-    <ClInclude Include="Apps\DeviceResources.h" />
     <ClInclude Include="Apps\StepTimer.h" />
+    <ClInclude Include="Component\Camera.h" />
     <ClInclude Include="GameController.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Renders\SkyboxRender.h" />
+    <ClInclude Include="Utils\DDSTextureLoader.h" />
     <ClInclude Include="Utils\DirectXHelper.h" />
+    <ClInclude Include="Utils\ShaderStructures.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Apps\D3DApp.cpp" />
-    <ClCompile Include="Apps\DeviceResources.cpp" />
     <ClCompile Include="Apps\StepTimer.cpp" />
+    <ClCompile Include="Component\Camera.cpp" />
     <ClCompile Include="GameController.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Renders\SkyboxRender.cpp" />
+    <ClCompile Include="Utils\DDSTextureLoader.cpp" />
     <ClCompile Include="Utils\DirectXHelper.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="HSLS\SkyboxPS.hlsl">
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="HSLS\SkyboxVS.hlsl">
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\back.dds" />
+    <Image Include="Assets\bottom.dds" />
+    <Image Include="Assets\front.dds" />
+    <Image Include="Assets\left.dds" />
+    <Image Include="Assets\right.dds" />
+    <Image Include="Assets\top.dds" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -92,7 +115,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(ProjectDir)</OutDir>
-    <IntDir>VS2017_Win10\$(Configuration)\</IntDir>
+    <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(ProjectDir)</OutDir>
@@ -121,12 +144,19 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <PrecompiledHeaderFile>stdafx.h;pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;D3DCompiler.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+      <ObjectFileOutput>HSLS\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -137,12 +167,21 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(IntermediateOutputPath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile>
+      <ObjectFileOutput>HSLS\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

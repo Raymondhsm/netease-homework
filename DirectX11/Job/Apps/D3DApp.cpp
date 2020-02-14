@@ -1,6 +1,6 @@
-#include "../pch.h"
+#include "pch.h"
 #include "D3DApp.h"
-#include "../Utils/DirectXHelper.h"
+#include "Utils/DirectXHelper.h"
 
 namespace
 {

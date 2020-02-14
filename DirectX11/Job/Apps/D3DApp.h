@@ -1,5 +1,5 @@
 #pragma once
-#include "StepTimer.h"
+#include "Apps/StepTimer.h"
 #include <string>
 
 
@@ -7,7 +7,6 @@ class D3DApp
 {
 public:
 	D3DApp(HINSTANCE hInstance);
-	virtual ~D3DApp() {};
 
 	int Run();
 	void HandleDeviceLost();
@@ -27,6 +26,10 @@ public:
 	HINSTANCE	GetAppInst()const;                 // 获取应用实例的句柄
 	HWND		GetMainWnd()const;                 // 获取主窗口句柄
 	float		GetAspectRatio()const;             // 获取屏幕宽高比
+
+	ID3D11Device3*			GetD3DDevice()const			{ return m_pd3dDevice.Get(); }
+	ID3D11DeviceContext3*	GetD3DDeviceContext()const	{ return m_pd3dContext.Get(); }
+
 
 protected:
 
@@ -52,11 +55,6 @@ protected:
 
 	// 缓存的设备属性。
 	D3D_FEATURE_LEVEL	m_d3dFeatureLevel;
-	
-	// Direct3D 11.1
-	//ComPtr<ID3D11Device1> m_pd3dDevice1;                  // D3D11.1设备
-	//ComPtr<ID3D11DeviceContext1> m_pd3dImmediateContext1; // D3D11.1设备上下文
-	//ComPtr<IDXGISwapChain1> m_pSwapChain1;                // D3D11.1交换链
 	
 	// 常用资源
 	ComPtr<ID3D11Texture2D1> m_pDepthStencilBuffer;        // 深度模板缓冲区

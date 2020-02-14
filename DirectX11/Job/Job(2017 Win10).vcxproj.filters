@@ -16,6 +16,9 @@
     <Filter Include="Apps">
       <UniqueIdentifier>{ac77afcf-ffa2-4446-9d3c-cf8190627fa6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Component">
+      <UniqueIdentifier>{3360225a-469b-4b3f-8bc6-c5ff522e215c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -25,13 +28,22 @@
     <ClInclude Include="Apps\StepTimer.h">
       <Filter>Apps</Filter>
     </ClInclude>
-    <ClInclude Include="Apps\DeviceResources.h">
-      <Filter>Apps</Filter>
-    </ClInclude>
     <ClInclude Include="Utils\DirectXHelper.h">
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="GameController.h" />
+    <ClInclude Include="Component\Camera.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Renders\SkyboxRender.h">
+      <Filter>Renders</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\ShaderStructures.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\DDSTextureLoader.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Apps\D3DApp.cpp">
@@ -41,12 +53,46 @@
       <Filter>Apps</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Apps\DeviceResources.cpp">
-      <Filter>Apps</Filter>
-    </ClCompile>
     <ClCompile Include="GameController.cpp" />
     <ClCompile Include="Utils\DirectXHelper.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
+    <ClCompile Include="Component\Camera.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Renders\SkyboxRender.cpp">
+      <Filter>Renders</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\DDSTextureLoader.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="HSLS\SkyboxPS.hlsl">
+      <Filter>HSLS</Filter>
+    </FxCompile>
+    <FxCompile Include="HSLS\SkyboxVS.hlsl">
+      <Filter>HSLS</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\back.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\bottom.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\front.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\left.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\right.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\top.dds">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
 </Project>

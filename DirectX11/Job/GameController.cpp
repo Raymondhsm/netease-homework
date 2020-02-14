@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "GameController.h"
 #include "Utils/DirectXHelper.h"
 #include <sstream>
@@ -5,7 +6,15 @@
 GameController::GameController(HINSTANCE hInstance):
 	D3DApp(hInstance)
 {
+	m_camera = std::shared_ptr<Job::Camera>(new Job::Camera());
+
 	// initialize function
+	m_skyRenderer = std::unique_ptr<Job::SkyboxRender>(new Job::SkyboxRender(std::shared_ptr<D3DApp>(this), m_camera));
+}
+
+GameController::~GameController()
+{
+	m_skyRenderer.release();
 }
 
 void GameController::Update()
@@ -14,7 +23,11 @@ void GameController::Update()
 	outs.precision(6);
 	outs << m_MainWndCaption << L"    " << L"FPS: " << m_Timer.GetFramesPerSecond();
 	SetWindowText(m_hMainWnd, outs.str().c_str());
+
+	m_camera->YawDegree(1);
+
 	//update function
+	m_skyRenderer->Update(m_Timer);
 }
 
 bool GameController::Render()
@@ -33,6 +46,7 @@ bool GameController::Render()
 	m_pd3dContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	// render function
+	m_skyRenderer->Render();
 
 	return true;
 }
@@ -53,12 +67,13 @@ void GameController::Present()
 void GameController::OnDeviceLost()
 {
 	//release function
+	m_skyRenderer->ReleaseDeviceDependentResources();
 }
 
 void GameController::OnDeviceRestore()
 {
 	// createDeviceDependent function
-
+	m_skyRenderer->CreateDeviceDependentResources();
 
 	CreateWindowSizeDependentResource();
 }
@@ -67,6 +82,15 @@ void GameController::CreateWindowSizeDependentResource()
 {
 	D3DApp::CreateWindowSizeDependentResource();
 
-	// CreateWindowSizeDependentResource function
+	float aspectRatio = GetAspectRatio();
+	float fovAngleY = 70.0f * XM_PI / 180.0f;
 
+	if (aspectRatio < 1.0f)
+	{
+		fovAngleY *= 2.0f;
+	}
+	m_camera->UpdateFrustum(fovAngleY, aspectRatio, 0.01f, 1500.0f);
+
+	// CreateWindowSizeDependentResource function
+	m_skyRenderer->CreateWindowSizeDependentResources();
 }

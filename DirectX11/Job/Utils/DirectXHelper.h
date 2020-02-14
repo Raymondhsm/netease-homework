@@ -2,14 +2,14 @@
 #ifndef DIRECTXHELPER_H_
 #define DIRECTXHELPER_H_
 
-#include "../pch.h"
+
 #include <ppltasks.h>
 
 namespace DXHelper
 {
 	HRESULT WINAPI DXTraceW(_In_z_ const WCHAR* strFile, _In_ DWORD dwLine, _In_ HRESULT hr, _In_ bool bPopMsgBox);
 
-	inline void ThrowIfFailed(HRESULT hr, wchar_t* message = L"Failed")
+	inline void ThrowIfFailed(HRESULT hr, const wchar_t* message = L"Failed")
 	{
 		if (FAILED(hr))
 		{
@@ -21,6 +21,14 @@ namespace DXHelper
 #endif
 		}
 	}
+
+#define SAFE_RELEASE(p) { if ((p)) { (p)->Release(); (p) = nullptr; } }
+	HRESULT CreateShaderFromFile(
+		const WCHAR* csoFileNameInOut,
+		const WCHAR* hlslFileName,
+		LPCSTR entryPoint,
+		LPCSTR shaderModel,
+		ID3DBlob** ppBlobOut);
 }
 
 
