@@ -195,7 +195,7 @@ void D3DApp::HandleDeviceLost()
 	OnDeviceLost();
 
 	CreateDeviceDependentResource();
-	//CreateWindowSizeDependentResource();
+	CreateWindowSizeDependentResource();
 
 	OnDeviceRestore();
 }
@@ -434,17 +434,26 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		((MINMAXINFO*)lParam)->ptMinTrackSize.y = 200;
 		return 0;
 
-	case WM_LBUTTONDOWN:
-	case WM_MBUTTONDOWN:
-	case WM_RBUTTONDOWN:
-		return 0;
-	case WM_LBUTTONUP:
-	case WM_MBUTTONUP:
-	case WM_RBUTTONUP:
-		return 0;
+	case WM_INPUT:
 	case WM_MOUSEMOVE:
+	case WM_LBUTTONDOWN:
+	case WM_LBUTTONUP:
+	case WM_RBUTTONDOWN:
+	case WM_RBUTTONUP:
+	case WM_MBUTTONDOWN:
+	case WM_MBUTTONUP:
+	case WM_MOUSEWHEEL:
+	case WM_XBUTTONDOWN:
+	case WM_XBUTTONUP:
+	case WM_MOUSEHOVER:
+	case WM_KEYDOWN:
+	case WM_SYSKEYDOWN:
+	case WM_KEYUP:
+	case WM_SYSKEYUP:
+		OnInputEvent(msg, wParam, lParam);
 		return 0;
 	}
+
 
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }

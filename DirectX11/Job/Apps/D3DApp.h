@@ -20,6 +20,7 @@ public:
 	virtual void Present() = 0;
 	virtual void OnDeviceLost() = 0;
 	virtual void OnDeviceRestore() = 0;
+	virtual void OnInputEvent(UINT message, WPARAM wParam, LPARAM lParam) = 0;
 
 	virtual LRESULT MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

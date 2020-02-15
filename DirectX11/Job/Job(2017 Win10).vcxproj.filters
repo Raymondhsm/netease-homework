@@ -32,9 +32,6 @@
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="GameController.h" />
-    <ClInclude Include="Component\Camera.h">
-      <Filter>Component</Filter>
-    </ClInclude>
     <ClInclude Include="Renders\SkyboxRender.h">
       <Filter>Renders</Filter>
     </ClInclude>
@@ -43,6 +40,12 @@
     </ClInclude>
     <ClInclude Include="Utils\DDSTextureLoader.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Component\Camera.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Component\InputController.h">
+      <Filter>Component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -57,14 +60,17 @@
     <ClCompile Include="Utils\DirectXHelper.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Component\Camera.cpp">
-      <Filter>Component</Filter>
-    </ClCompile>
     <ClCompile Include="Renders\SkyboxRender.cpp">
       <Filter>Renders</Filter>
     </ClCompile>
     <ClCompile Include="Utils\DDSTextureLoader.cpp">
       <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Component\Camera.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Component\InputController.cpp">
+      <Filter>Component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
