@@ -7,20 +7,25 @@
 
 namespace DXHelper
 {
-	HRESULT WINAPI DXTraceW(_In_z_ const WCHAR* strFile, _In_ DWORD dwLine, _In_ HRESULT hr, _In_ bool bPopMsgBox);
+	HRESULT WINAPI DXTraceW(_In_z_ const WCHAR* strFile, _In_ DWORD dwLine, _In_ HRESULT hr, _In_opt_ const WCHAR* strMsg, _In_ bool bPopMsgBox);
 
-	inline void ThrowIfFailed(HRESULT hr, const wchar_t* message = L"Failed")
-	{
-		if (FAILED(hr))
-		{
 #if defined(DEBUG) | defined(_DEBUG)
-			DXHelper::DXTraceW(__FILEW__, (DWORD)__LINE__, hr, true);
-#else
-			// 在此行中设置断点，以捕获 Win32 API 错误。
-			MessageBox(0, message, 0, 0);
-#endif
-		}
+#ifndef ThrowIfFailed
+#define ThrowIfFailed(x)												\
+	{															\
+		HRESULT hresult = (x);										\
+		if(FAILED(hresult))											\
+		{														\
+			DXHelper::DXTraceW(__FILEW__, (DWORD)__LINE__, hresult, L#x, true);\
+		}														\
 	}
+#endif
+#else
+#ifndef ThrowIfFailed
+#define ThrowIfFailed(x) (x)
+#endif 
+#endif
+
 
 #define SAFE_RELEASE(p) { if ((p)) { (p)->Release(); (p) = nullptr; } }
 	HRESULT CreateShaderFromFile(

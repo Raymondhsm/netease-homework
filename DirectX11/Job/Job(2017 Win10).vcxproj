@@ -24,11 +24,14 @@
     <ClInclude Include="Component\Camera.h" />
     <ClInclude Include="Component\InputController.h" />
     <ClInclude Include="GameController.h" />
+    <ClInclude Include="Renders\GameRenderer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Renders\SkyboxRender.h" />
     <ClInclude Include="Utils\DDSTextureLoader.h" />
     <ClInclude Include="Utils\DirectXHelper.h" />
+    <ClInclude Include="Utils\ObjReader.h" />
     <ClInclude Include="Utils\ShaderStructures.h" />
+    <ClInclude Include="Utils\WICTextureLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Apps\D3DApp.cpp" />
@@ -36,12 +39,35 @@
     <ClCompile Include="Component\Camera.cpp" />
     <ClCompile Include="Component\InputController.cpp" />
     <ClCompile Include="GameController.cpp" />
+    <ClCompile Include="Renders\GameRenderer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Renders\SkyboxRender.cpp" />
     <ClCompile Include="Utils\DDSTextureLoader.cpp" />
     <ClCompile Include="Utils\DirectXHelper.cpp" />
+    <ClCompile Include="Utils\ObjReader.cpp" />
+    <ClCompile Include="Utils\WICTextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="HSLS\GamePS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="HSLS\GameVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="HSLS\SkyboxPS.hlsl">
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>

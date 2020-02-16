@@ -127,7 +127,7 @@ bool D3DApp::CreateDeviceDependentResource()
 	// 如果初始化失败，则回退到 WARP 设备。
 	if (FAILED(hr))
 	{
-		DXHelper::ThrowIfFailed(
+		ThrowIfFailed(
 			D3D11CreateDevice(
 				nullptr,
 				D3D_DRIVER_TYPE_WARP, // 创建 WARP 设备而不是硬件设备。
@@ -144,8 +144,8 @@ bool D3DApp::CreateDeviceDependentResource()
 	}
 
 	// 将指针存储到 Direct3D 11.3 API 设备和即时上下文中。
-	DXHelper::ThrowIfFailed(device.As(&m_pd3dDevice));
-	DXHelper::ThrowIfFailed(context.As(&m_pd3dContext));
+	ThrowIfFailed(device.As(&m_pd3dDevice));
+	ThrowIfFailed(context.As(&m_pd3dContext));
 
 	return true;
 }
@@ -225,15 +225,15 @@ void D3DApp::CreateWindowSizeDependentResource()
 		ComPtr<IDXGIAdapter> dxgiAdapter;
 		ComPtr<IDXGIFactory4> dxgiFactory;
 
-		DXHelper::ThrowIfFailed(
+		ThrowIfFailed(
 			m_pd3dDevice.As(&dxgiDevice), L"dxgiDevice failed"
 		);
 
-		DXHelper::ThrowIfFailed(
+		ThrowIfFailed(
 			dxgiDevice->GetAdapter(&dxgiAdapter), L"dxgiAdapter failed"
 		);
 
-		DXHelper::ThrowIfFailed(
+		ThrowIfFailed(
 			dxgiAdapter->GetParent(IID_PPV_ARGS(&dxgiFactory)), L"dxgiFactory failed"
 		);
 
@@ -256,7 +256,7 @@ void D3DApp::CreateWindowSizeDependentResource()
 		swapChainFullscreenDesc.Windowed = TRUE;
 
 		ComPtr<IDXGISwapChain1> swapChain;
-		DXHelper::ThrowIfFailed(
+		ThrowIfFailed(
 			dxgiFactory->CreateSwapChainForHwnd(
 				m_pd3dDevice.Get(),
 				m_hMainWnd,
@@ -266,11 +266,11 @@ void D3DApp::CreateWindowSizeDependentResource()
 				&swapChain
 			)
 		);
-		DXHelper::ThrowIfFailed(
+		ThrowIfFailed(
 			swapChain.As(&m_pSwapChain)
 		);
 
-		DXHelper::ThrowIfFailed(
+		ThrowIfFailed(
 			dxgiDevice->SetMaximumFrameLatency(1)
 		);
 	}
@@ -294,17 +294,17 @@ void D3DApp::CreateWindowSizeDependentResource()
 		}
 		else
 		{
-			DXHelper::ThrowIfFailed(hr);
+			ThrowIfFailed(hr);
 		}
 	}
 
 	// 创建交换链后台缓冲区的渲染目标视图。
 	ComPtr<ID3D11Texture2D1> backBuffer;
-	DXHelper::ThrowIfFailed(
+	ThrowIfFailed(
 		m_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&backBuffer))
 	);
 
-	DXHelper::ThrowIfFailed(
+	ThrowIfFailed(
 		m_pd3dDevice->CreateRenderTargetView1(
 			backBuffer.Get(),
 			nullptr,
@@ -322,7 +322,7 @@ void D3DApp::CreateWindowSizeDependentResource()
 		D3D11_BIND_DEPTH_STENCIL
 	);
 
-	DXHelper::ThrowIfFailed(
+	ThrowIfFailed(
 		m_pd3dDevice->CreateTexture2D1(
 			&depthStencilDesc,
 			nullptr,
@@ -331,7 +331,7 @@ void D3DApp::CreateWindowSizeDependentResource()
 	);
 
 	CD3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc(D3D11_DSV_DIMENSION_TEXTURE2D);
-	DXHelper::ThrowIfFailed(
+	ThrowIfFailed(
 		m_pd3dDevice->CreateDepthStencilView(
 			m_pDepthStencilBuffer.Get(),
 			&depthStencilViewDesc,

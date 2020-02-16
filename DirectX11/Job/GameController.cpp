@@ -3,7 +3,7 @@
 #include "Utils/DirectXHelper.h"
 #include <sstream>
 
-GameController::GameController(HINSTANCE hInstance):
+GameController::GameController(HINSTANCE hInstance) :
 	D3DApp(hInstance)
 {
 	m_camera = std::shared_ptr<Job::Camera>(new Job::Camera());
@@ -11,27 +11,43 @@ GameController::GameController(HINSTANCE hInstance):
 
 	// initialize function
 	m_skyRenderer = std::unique_ptr<Job::SkyboxRender>(new Job::SkyboxRender(std::shared_ptr<D3DApp>(this), m_camera));
+	m_gameRender = std::unique_ptr<Job::GameRenderer>(new Job::GameRenderer(std::shared_ptr<D3DApp>(this), m_camera));
 }
 
 GameController::~GameController()
 {
 	m_skyRenderer.release();
+	m_gameRender.release();
 }
 
 void GameController::Update()
 {
+	
+
 	std::wostringstream outs;
 	outs.precision(6);
 	outs << m_MainWndCaption << L"    " << L"FPS: " << m_Timer.GetFramesPerSecond();
-	outs << L"     " << m_inputController->IsKeyPressed(InputController::A) << L"-" << m_inputController->IsKeyReleased(InputController::A);
-	outs << L"    " << m_inputController->GetKeyState(InputController::A);
+	outs << L"     " << m_inputController->GetMouseMoveDeltaX() << L"-" << m_inputController->GetMouseMoveDeltaY();
+	outs << L"    " << m_inputController->GetKeyState(InputController::W);
 	SetWindowText(m_hMainWnd, outs.str().c_str());
 
-	m_inputController->Update();
-	m_camera->YawDegree(1);
+
+	
+	float x = m_inputController->GetMouseMoveDeltaX();
+	float y = m_inputController->GetMouseMoveDeltaY();
+
+	if (m_inputController->GetKeyState(InputController::W)) m_camera->Forward(1);
+	if (m_inputController->GetKeyState(InputController::D)) m_camera->Left(1);
+	if (m_inputController->GetKeyState(InputController::S)) m_camera->Back(1);
+	if (m_inputController->GetKeyState(InputController::A)) m_camera->Right(1);
+	m_camera->PitchDegree(y);
+	m_camera->YawDegree(-x);
 
 	//update function
 	m_skyRenderer->Update(m_Timer);
+	m_gameRender->Update(m_Timer);
+
+	m_inputController->Update();
 }
 
 bool GameController::Render()
@@ -51,6 +67,7 @@ bool GameController::Render()
 
 	// render function
 	m_skyRenderer->Render();
+	m_gameRender->Render();
 
 	return true;
 }
@@ -64,7 +81,7 @@ void GameController::Present()
 	}
 	else
 	{
-		DXHelper::ThrowIfFailed(hr);
+		ThrowIfFailed(hr);
 	}
 }
 
@@ -72,12 +89,14 @@ void GameController::OnDeviceLost()
 {
 	//release function
 	m_skyRenderer->ReleaseDeviceDependentResources();
+	m_gameRender->ReleaseDeviceDependentResources();
 }
 
 void GameController::OnDeviceRestore()
 {
 	// createDeviceDependent function
 	m_skyRenderer->CreateDeviceDependentResources();
+	m_gameRender->CreateDeviceDependentResources();
 
 	CreateWindowSizeDependentResource();
 }
@@ -97,6 +116,7 @@ void GameController::CreateWindowSizeDependentResource()
 
 	// CreateWindowSizeDependentResource function
 	m_skyRenderer->CreateWindowSizeDependentResources();
+	m_gameRender->CreateWindowSizeDependentResources();
 }
 
 void GameController::OnInputEvent(UINT message, WPARAM wParam, LPARAM lParam)

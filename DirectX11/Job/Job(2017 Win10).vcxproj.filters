@@ -47,6 +47,15 @@
     <ClInclude Include="Component\InputController.h">
       <Filter>Component</Filter>
     </ClInclude>
+    <ClInclude Include="Utils\WICTextureLoader.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\ObjReader.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Renders\GameRenderer.h">
+      <Filter>Renders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Apps\D3DApp.cpp">
@@ -72,12 +81,27 @@
     <ClCompile Include="Component\InputController.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="Utils\WICTextureLoader.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\ObjReader.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Renders\GameRenderer.cpp">
+      <Filter>Renders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="HSLS\SkyboxPS.hlsl">
       <Filter>HSLS</Filter>
     </FxCompile>
     <FxCompile Include="HSLS\SkyboxVS.hlsl">
+      <Filter>HSLS</Filter>
+    </FxCompile>
+    <FxCompile Include="HSLS\GameVS.hlsl">
+      <Filter>HSLS</Filter>
+    </FxCompile>
+    <FxCompile Include="HSLS\GamePS.hlsl">
       <Filter>HSLS</Filter>
     </FxCompile>
   </ItemGroup>

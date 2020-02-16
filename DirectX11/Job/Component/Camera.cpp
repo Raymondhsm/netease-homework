@@ -6,7 +6,7 @@ using namespace Job;
 
 Camera::Camera():
 	m_pos(0.f, 0.f, 0.f),
-	m_look(0.f, 0.f, 1.f),
+	m_look(0.f, 0.f, -1.f),
 	m_up(0.f, 1.f, 0.f),
 	m_right(1.f, 0.f, 0.f)
 {

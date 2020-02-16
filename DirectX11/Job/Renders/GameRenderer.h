@@ -1,0 +1,55 @@
+#pragma once
+#include "Apps/StepTimer.h"
+#include "Utils/ShaderStructures.h"
+#include "Component/Camera.h"
+#include "Utils/ObjReader.h"
+#include "Apps/D3DApp.h"
+#include <vector>
+
+using namespace Microsoft::WRL;
+using namespace std;
+
+namespace Job
+{
+	
+
+	class GameRenderer
+	{
+	public:
+		GameRenderer(const std::shared_ptr<D3DApp>& deviceResources, const std::shared_ptr<Camera> &camera);
+		void CreateDeviceDependentResources();
+		void CreateWindowSizeDependentResources();
+		void ReleaseDeviceDependentResources();
+		void Update(StepTimer const& timer);
+		void Render();
+
+	private:
+		// 缓存的设备资源指针。
+		std::shared_ptr<D3DApp> m_deviceResources;
+		std::shared_ptr<Camera> m_camera;
+
+		ObjReader m_objReader;
+
+		// 立体几何的 Direct3D 资源。
+		ComPtr<ID3D11InputLayout>	m_inputLayout;
+		ComPtr<ID3D11Buffer>		m_vertexBuffer;
+		ComPtr<ID3D11Buffer>		m_indexBuffer;
+		ComPtr<ID3D11VertexShader>	m_vertexShader;
+		ComPtr<ID3D11PixelShader>	m_pixelShader;
+		ComPtr<ID3D11Buffer>		m_MVPConstantBuffer;
+		ComPtr<ID3D11Buffer>		m_LightConstantBuffer;
+
+		vector<ObjModel>			m_mapModel;
+
+		// 纹理
+		ComPtr<ID3D11ShaderResourceView> m_TexFrontSRV;
+
+		// 立体几何的系统资源。
+		ModelViewProjectionConstantBuffer	m_constantBufferData;
+		__int32	m_indexCount;
+		bool m_loadingComplete;
+
+
+	};
+}
+
