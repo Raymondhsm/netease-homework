@@ -4,6 +4,7 @@
 #include "Component/Camera.h"
 #include "Utils/ObjReader.h"
 #include "Apps/D3DApp.h"
+#include "Component/Model.h"
 #include <vector>
 
 using namespace Microsoft::WRL;
@@ -39,7 +40,7 @@ namespace Job
 		ComPtr<ID3D11Buffer>		m_MVPConstantBuffer;
 		ComPtr<ID3D11Buffer>		m_LightConstantBuffer;
 
-		vector<ObjModel>			m_mapModel;
+		Model			m_mapModel;
 
 		// Œ∆¿Ì
 		ComPtr<ID3D11ShaderResourceView> m_TexFrontSRV;

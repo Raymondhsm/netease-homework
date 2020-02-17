@@ -56,6 +56,9 @@
     <ClInclude Include="Renders\GameRenderer.h">
       <Filter>Renders</Filter>
     </ClInclude>
+    <ClInclude Include="Component\Model.h">
+      <Filter>Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Apps\D3DApp.cpp">
@@ -89,6 +92,9 @@
     </ClCompile>
     <ClCompile Include="Renders\GameRenderer.cpp">
       <Filter>Renders</Filter>
+    </ClCompile>
+    <ClCompile Include="Component\Model.cpp">
+      <Filter>Component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

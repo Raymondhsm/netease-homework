@@ -91,36 +91,36 @@ void SkyboxRender::CreateDeviceDependentResources()
 	//auto createCubeTask = (createVSTask && createPSTask).then([this]() {
 		// 创建网格位置和颜色
 		static const VertexPosTex vertices[] = {
-			{XMFLOAT3(800.0f, 800.0f, 800.0f), XMFLOAT2(0.0f, 0.0f)},
-			{XMFLOAT3(800.0f, -800.0f, 800.0f), XMFLOAT2(0.0f, 1.0f)},
-			{XMFLOAT3(-800.0f, 800.0f, 800.0f), XMFLOAT2(1.0f, 0.0f)},
-			{XMFLOAT3(-800.0f, -800.0f, 800.0f), XMFLOAT2(1.0f, 1.0f)},
+			{XMFLOAT3(3000.0f, 3000.0f, 3000.0f), XMFLOAT2(0.0f, 0.0f)},
+			{XMFLOAT3(3000.0f, -3000.0f, 3000.0f), XMFLOAT2(0.0f, 1.0f)},
+			{XMFLOAT3(-3000.0f, 3000.0f, 3000.0f), XMFLOAT2(1.0f, 0.0f)},
+			{XMFLOAT3(-3000.0f, -3000.0f, 3000.0f), XMFLOAT2(1.0f, 1.0f)},
 
-			{XMFLOAT3(800.0f, 800.0f, 800.0f), XMFLOAT2(1.0f, 0.0f)},
-			{XMFLOAT3(800.0f, -800.0f, 800.0f), XMFLOAT2(1.0f, 1.0f)},
-			{XMFLOAT3(800.0f, 800.0f, -800.0f), XMFLOAT2(0.0f, 0.0f)},
-			{XMFLOAT3(800.0f, -800.0f, -800.0f), XMFLOAT2(0.0f, 1.0f)},
+			{XMFLOAT3(3000.0f, 3000.0f, 3000.0f), XMFLOAT2(1.0f, 0.0f)},
+			{XMFLOAT3(3000.0f, -3000.0f, 3000.0f), XMFLOAT2(1.0f, 1.0f)},
+			{XMFLOAT3(3000.0f, 3000.0f, -3000.0f), XMFLOAT2(0.0f, 0.0f)},
+			{XMFLOAT3(3000.0f, -3000.0f, -3000.0f), XMFLOAT2(0.0f, 1.0f)},
 
-			{XMFLOAT3(-800.0f, 800.0f, 800.0f), XMFLOAT2(0.0f, 0.0f)},
-			{XMFLOAT3(-800.0f, -800.0f, 800.0f), XMFLOAT2(0.0f, 1.0f)},
-			{XMFLOAT3(-800.0f, 800.0f, -800.0f), XMFLOAT2(1.0f, 0.0f)},
-			{XMFLOAT3(-800.0f, -800.0f, -800.0f), XMFLOAT2(1.0f, 1.0f)},
+			{XMFLOAT3(-3000.0f, 3000.0f, 3000.0f), XMFLOAT2(0.0f, 0.0f)},
+			{XMFLOAT3(-3000.0f, -3000.0f, 3000.0f), XMFLOAT2(0.0f, 1.0f)},
+			{XMFLOAT3(-3000.0f, 3000.0f, -3000.0f), XMFLOAT2(1.0f, 0.0f)},
+			{XMFLOAT3(-3000.0f, -3000.0f, -3000.0f), XMFLOAT2(1.0f, 1.0f)},
 
-			{XMFLOAT3(-800.0f, 800.0f, -800.0f), XMFLOAT2(0.0f, 0.0f)},
-			{XMFLOAT3(-800.0f, -800.0f, -800.0f), XMFLOAT2(0.0f, 1.0f)},
-			{XMFLOAT3(800.0f, 800.0f, -800.0f), XMFLOAT2(1.0f, 0.0f)},
-			{XMFLOAT3(800.0f, -800.0f, -800.0f), XMFLOAT2(1.0f, 1.0f)},
+			{XMFLOAT3(-3000.0f, 3000.0f, -3000.0f), XMFLOAT2(0.0f, 0.0f)},
+			{XMFLOAT3(-3000.0f, -3000.0f, -3000.0f), XMFLOAT2(0.0f, 1.0f)},
+			{XMFLOAT3(3000.0f, 3000.0f, -3000.0f), XMFLOAT2(1.0f, 0.0f)},
+			{XMFLOAT3(3000.0f, -3000.0f, -3000.0f), XMFLOAT2(1.0f, 1.0f)},
 
-			{XMFLOAT3(800.0f, -800.0f, 800.0f), XMFLOAT2(0.0f, 0.0f)},
-			{XMFLOAT3(800.0f, -800.0f, -800.0f), XMFLOAT2(0.0f, 1.0f)},
-			{XMFLOAT3(-800.0f, -800.0f, 800.0f), XMFLOAT2(1.0f, 0.0f)},
-			{XMFLOAT3(-800.0f, -800.0f, -800.0f), XMFLOAT2(1.0f, 1.0f)},
+			{XMFLOAT3(3000.0f, -3000.0f, 3000.0f), XMFLOAT2(0.0f, 0.0f)},
+			{XMFLOAT3(3000.0f, -3000.0f, -3000.0f), XMFLOAT2(0.0f, 1.0f)},
+			{XMFLOAT3(-3000.0f, -3000.0f, 3000.0f), XMFLOAT2(1.0f, 0.0f)},
+			{XMFLOAT3(-3000.0f, -3000.0f, -3000.0f), XMFLOAT2(1.0f, 1.0f)},
 
-			{XMFLOAT3(800.0f, 800.0f, -800.0f), XMFLOAT2(0.0f, 0.0f)},
-			{XMFLOAT3(800.0f, 800.0f, 800.0f), XMFLOAT2(0.0f, 1.0f)},
-			{XMFLOAT3(-800.0f, 800.0f, -800.0f), XMFLOAT2(1.0f, 0.0f)},
-			{XMFLOAT3(-800.0f, 800.0f, 800.0f), XMFLOAT2(1.0f, 1.0f)},
-			{XMFLOAT3(-800.0f, 800.0f, -800.0f), XMFLOAT2(1.0f, 0.0f)}
+			{XMFLOAT3(3000.0f, 3000.0f, -3000.0f), XMFLOAT2(0.0f, 0.0f)},
+			{XMFLOAT3(3000.0f, 3000.0f, 3000.0f), XMFLOAT2(0.0f, 1.0f)},
+			{XMFLOAT3(-3000.0f, 3000.0f, -3000.0f), XMFLOAT2(1.0f, 0.0f)},
+			{XMFLOAT3(-3000.0f, 3000.0f, 3000.0f), XMFLOAT2(1.0f, 1.0f)},
+			{XMFLOAT3(-3000.0f, 3000.0f, -3000.0f), XMFLOAT2(1.0f, 0.0f)}
 		};
 
 		// 创建顶点缓冲数据

@@ -1,5 +1,5 @@
 # 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
-# 创建的文件:17.02.2020 19:12:06
+# 创建的文件:18.02.2020 00:41:44
 
 newmtl mapModel_wire_177028149
 	Ns 32.000000
@@ -14,48 +14,6 @@ newmtl mapModel_wire_177028149
 	Ke 0.000000 0.000000 0.000000
 	map_Ka mapTex\3Dxy_img_17.jpg
 	map_Kd mapTex\3Dxy_img_17.jpg
-
-newmtl mapModel_wire_027177088
-	Ns 32.000000
-	Ni 1.500000
-	d 1.000000
-	Tr 0.000000
-	Tf 1.000000 1.000000 1.000000 
-	illum 2
-	Ka 0.105882 0.694118 0.345098
-	Kd 0.105882 0.694118 0.345098
-	Ks 0.350000 0.350000 0.350000
-	Ke 0.000000 0.000000 0.000000
-	map_Ka mapTex\3Dxy_img_21.jpg
-	map_Kd mapTex\3Dxy_img_21.jpg
-
-newmtl mapModel_wire_008110135
-	Ns 32.000000
-	Ni 1.500000
-	d 1.000000
-	Tr 0.000000
-	Tf 1.000000 1.000000 1.000000 
-	illum 2
-	Ka 0.031373 0.431373 0.529412
-	Kd 0.031373 0.431373 0.529412
-	Ks 0.350000 0.350000 0.350000
-	Ke 0.000000 0.000000 0.000000
-	map_Ka mapTex\3Dxy_img_16.jpg
-	map_Kd mapTex\3Dxy_img_16.jpg
-
-newmtl mapModel_wire_228184153
-	Ns 32.000000
-	Ni 1.500000
-	d 1.000000
-	Tr 0.000000
-	Tf 1.000000 1.000000 1.000000 
-	illum 2
-	Ka 0.894118 0.721569 0.600000
-	Kd 0.894118 0.721569 0.600000
-	Ks 0.350000 0.350000 0.350000
-	Ke 0.000000 0.000000 0.000000
-	map_Ka mapTex\3Dxy_img_22.jpg
-	map_Kd mapTex\3Dxy_img_22.jpg
 
 newmtl mapModel_wire_154215229
 	Ns 32.000000
@@ -98,20 +56,6 @@ newmtl Material__32
 	Ke 0.000000 0.000000 0.000000
 	map_Ka mapTex\3Dxy_img_6.jpg
 	map_Kd mapTex\3Dxy_img_6.jpg
-
-newmtl mapModel_wire_088088225
-	Ns 32.000000
-	Ni 1.500000
-	d 1.000000
-	Tr 0.000000
-	Tf 1.000000 1.000000 1.000000 
-	illum 2
-	Ka 0.345098 0.345098 0.882353
-	Kd 0.345098 0.345098 0.882353
-	Ks 0.350000 0.350000 0.350000
-	Ke 0.000000 0.000000 0.000000
-	map_Ka mapTex\3Dxy_img_5.jpg
-	map_Kd mapTex\3Dxy_img_5.jpg
 
 newmtl mapModel_wire_006135058
 	Ns 32.000000
@@ -225,34 +169,6 @@ newmtl mapModel_wire_057008136
 	map_Ka mapTex\3Dxy_img_13.jpg
 	map_Kd mapTex\3Dxy_img_13.jpg
 
-newmtl mapModel_wire_138008110
-	Ns 32.000000
-	Ni 1.500000
-	d 1.000000
-	Tr 0.000000
-	Tf 1.000000 1.000000 1.000000 
-	illum 2
-	Ka 0.541176 0.031373 0.431373
-	Kd 0.541176 0.031373 0.431373
-	Ks 0.350000 0.350000 0.350000
-	Ke 0.000000 0.000000 0.000000
-	map_Ka mapTex\3Dxy_img_18.jpg
-	map_Kd mapTex\3Dxy_img_18.jpg
-
-newmtl mapModel_wire_154185229
-	Ns 32.000000
-	Ni 1.500000
-	d 1.000000
-	Tr 0.000000
-	Tf 1.000000 1.000000 1.000000 
-	illum 2
-	Ka 0.603922 0.725490 0.898039
-	Kd 0.603922 0.725490 0.898039
-	Ks 0.350000 0.350000 0.350000
-	Ke 0.000000 0.000000 0.000000
-	map_Ka mapTex\3Dxy_img_15.jpg
-	map_Kd mapTex\3Dxy_img_15.jpg
-
 newmtl mapModel_wire_085028177
 	Ns 32.000000
 	Ni 1.500000
@@ -281,34 +197,6 @@ newmtl mapModel_wire_086086086
 	map_Ka mapTex\3Dxy_img_19.jpg
 	map_Kd mapTex\3Dxy_img_19.jpg
 
-newmtl mapModel_wire_135110008
-	Ns 32.000000
-	Ni 1.500000
-	d 1.000000
-	Tr 0.000000
-	Tf 1.000000 1.000000 1.000000 
-	illum 2
-	Ka 0.529412 0.431373 0.031373
-	Kd 0.529412 0.431373 0.031373
-	Ks 0.350000 0.350000 0.350000
-	Ke 0.000000 0.000000 0.000000
-	map_Ka mapTex\3Dxy_img_25.jpg
-	map_Kd mapTex\3Dxy_img_25.jpg
-
-newmtl mapModel_wire_027177027
-	Ns 32.000000
-	Ni 1.500000
-	d 1.000000
-	Tr 0.000000
-	Tf 1.000000 1.000000 1.000000 
-	illum 2
-	Ka 0.105882 0.694118 0.105882
-	Kd 0.105882 0.694118 0.105882
-	Ks 0.350000 0.350000 0.350000
-	Ke 0.000000 0.000000 0.000000
-	map_Ka mapTex\3Dxy_img_28.jpg
-	map_Kd mapTex\3Dxy_img_28.jpg
-
 newmtl mapModel_wire_177088027
 	Ns 32.000000
 	Ni 1.500000
@@ -322,20 +210,6 @@ newmtl mapModel_wire_177088027
 	Ke 0.000000 0.000000 0.000000
 	map_Ka mapTex\3Dxy_img_46.jpg
 	map_Kd mapTex\3Dxy_img_46.jpg
-
-newmtl mapModel_wire_198225087
-	Ns 32.000000
-	Ni 1.500000
-	d 1.000000
-	Tr 0.000000
-	Tf 1.000000 1.000000 1.000000 
-	illum 2
-	Ka 0.776471 0.882353 0.341176
-	Kd 0.776471 0.882353 0.341176
-	Ks 0.350000 0.350000 0.350000
-	Ke 0.000000 0.000000 0.000000
-	map_Ka mapTex\3Dxy_img_32.jpg
-	map_Kd mapTex\3Dxy_img_32.jpg
 
 newmtl Material__45
 	Ns 10.000000
@@ -407,20 +281,6 @@ newmtl Material__25
 	map_Ka mapTex\3Dxy_img_38.jpg
 	map_Kd mapTex\3Dxy_img_38.jpg
 
-newmtl Material__26
-	Ns 10.000000
-	Ni 1.500000
-	d 1.000000
-	Tr 0.000000
-	Tf 1.000000 1.000000 1.000000 
-	illum 2
-	Ka 0.588000 0.588000 0.588000
-	Kd 0.588000 0.588000 0.588000
-	Ks 0.000000 0.000000 0.000000
-	Ke 0.000000 0.000000 0.000000
-	map_Ka mapTex\3Dxy_img_41.jpg
-	map_Kd mapTex\3Dxy_img_41.jpg
-
 newmtl Material__28
 	Ns 10.000000
 	Ni 1.500000
@@ -434,34 +294,6 @@ newmtl Material__28
 	Ke 0.000000 0.000000 0.000000
 	map_Ka mapTex\3Dxy_img_41.jpg
 	map_Kd mapTex\3Dxy_img_41.jpg
-
-newmtl Material__30
-	Ns 10.000000
-	Ni 1.500000
-	d 1.000000
-	Tr 0.000000
-	Tf 1.000000 1.000000 1.000000 
-	illum 2
-	Ka 0.588000 0.588000 0.588000
-	Kd 0.588000 0.588000 0.588000
-	Ks 0.000000 0.000000 0.000000
-	Ke 0.000000 0.000000 0.000000
-	map_Ka mapTex\3Dxy_img_39.jpg
-	map_Kd mapTex\3Dxy_img_39.jpg
-
-newmtl Material__29
-	Ns 10.000000
-	Ni 1.500000
-	d 1.000000
-	Tr 0.000000
-	Tf 1.000000 1.000000 1.000000 
-	illum 2
-	Ka 0.588000 0.588000 0.588000
-	Kd 0.588000 0.588000 0.588000
-	Ks 0.000000 0.000000 0.000000
-	Ke 0.000000 0.000000 0.000000
-	map_Ka mapTex\3Dxy_img_40.jpg
-	map_Kd mapTex\3Dxy_img_40.jpg
 
 newmtl mapModel_wire_166229229
 	Ns 32.000000
@@ -505,46 +337,6 @@ newmtl mapModel_wire_184155229
 	map_Ka mapTex\3Dxy_img_14.jpg
 	map_Kd mapTex\3Dxy_img_14.jpg
 
-newmtl mapModel_wire_145028177
-	Ns 32.000000
-	Ni 1.500000
-	d 1.000000
-	Tr 0.000000
-	Tf 1.000000 1.000000 1.000000 
-	illum 2
-	Ka 0.568627 0.109804 0.694118
-	Kd 0.568627 0.109804 0.694118
-	Ks 0.350000 0.350000 0.350000
-	Ke 0.000000 0.000000 0.000000
-	map_Ka mapTex\3Dxy_img_29.jpg
-	map_Kd mapTex\3Dxy_img_29.jpg
-
-newmtl Material__51
-	Ns 10.000000
-	Ni 1.500000
-	d 1.000000
-	Tr 0.000000
-	Tf 1.000000 1.000000 1.000000 
-	illum 2
-	Ka 0.588000 0.588000 0.588000
-	Kd 0.588000 0.588000 0.588000
-	Ks 0.000000 0.000000 0.000000
-	Ke 0.000000 0.000000 0.000000
-	map_Kd mapTex\3Dxy_img_3.png
-
-newmtl Material__52
-	Ns 10.000000
-	Ni 1.500000
-	d 1.000000
-	Tr 0.000000
-	Tf 1.000000 1.000000 1.000000 
-	illum 2
-	Ka 0.588000 0.588000 0.588000
-	Kd 0.588000 0.588000 0.588000
-	Ks 0.000000 0.000000 0.000000
-	Ke 0.000000 0.000000 0.000000
-	map_Kd mapTex\3Dxy_img_3.png
-
 newmtl mapModel_wire_143225087
 	Ns 32.000000
 	Ni 1.500000
@@ -572,59 +364,3 @@ newmtl mapModel_wire_177027088
 	Ke 0.000000 0.000000 0.000000
 	map_Ka mapTex\3Dxy_img_4.jpg
 	map_Kd mapTex\3Dxy_img_4.jpg
-
-newmtl Material__36
-	Ns 10.000000
-	Ni 1.500000
-	d 1.000000
-	Tr 0.000000
-	Tf 1.000000 1.000000 1.000000 
-	illum 2
-	Ka 0.588000 0.588000 0.588000
-	Kd 0.588000 0.588000 0.588000
-	Ks 0.000000 0.000000 0.000000
-	Ke 0.000000 0.000000 0.000000
-	map_Ka mapTex\3Dxy_img_6.jpg
-	map_Kd mapTex\3Dxy_img_6.jpg
-
-newmtl Material__41
-	Ns 10.000000
-	Ni 1.500000
-	d 1.000000
-	Tr 0.000000
-	Tf 1.000000 1.000000 1.000000 
-	illum 2
-	Ka 0.588000 0.588000 0.588000
-	Kd 0.588000 0.588000 0.588000
-	Ks 0.000000 0.000000 0.000000
-	Ke 0.000000 0.000000 0.000000
-	map_Ka mapTex\3Dxy_img_12.jpg
-	map_Kd mapTex\3Dxy_img_12.jpg
-
-newmtl Material__42
-	Ns 10.000000
-	Ni 1.500000
-	d 1.000000
-	Tr 0.000000
-	Tf 1.000000 1.000000 1.000000 
-	illum 2
-	Ka 0.588000 0.588000 0.588000
-	Kd 0.588000 0.588000 0.588000
-	Ks 0.000000 0.000000 0.000000
-	Ke 0.000000 0.000000 0.000000
-	map_Ka mapTex\3Dxy_img_9.jpg
-	map_Kd mapTex\3Dxy_img_9.jpg
-
-newmtl Material__38
-	Ns 10.000000
-	Ni 1.500000
-	d 1.000000
-	Tr 0.000000
-	Tf 1.000000 1.000000 1.000000 
-	illum 2
-	Ka 0.588000 0.588000 0.588000
-	Kd 0.588000 0.588000 0.588000
-	Ks 0.000000 0.000000 0.000000
-	Ke 0.000000 0.000000 0.000000
-	map_Ka mapTex\3Dxy_img_6.jpg
-	map_Kd mapTex\3Dxy_img_6.jpg

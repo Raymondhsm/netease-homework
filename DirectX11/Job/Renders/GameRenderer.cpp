@@ -74,9 +74,9 @@ void GameRenderer::Render()
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	context->IASetInputLayout(m_inputLayout.Get());
 	context->VSSetConstantBuffers1(0, 1, m_MVPConstantBuffer.GetAddressOf(), nullptr, nullptr);
-	for (int i = 0; i < m_mapModel.size(); i++)
+	for (int i = 0; i < m_mapModel.GetObjModels().size(); i++)
 	{
-		auto objdata = m_mapModel[i];
+		auto objdata = m_mapModel.GetObjModels()[i];
 		// 设置顶点缓冲
 		context->IASetVertexBuffers(0, 1, objdata.vertexBuffer.GetAddressOf(), &stride, &offset);
 		// 设置索引缓冲
@@ -164,12 +164,9 @@ void GameRenderer::CreateDeviceDependentResources()
 
 
 	// 创建网格
-	if (!m_objReader.ReadObj(L"Assets/test.obj"))
+	if (!m_objReader.ReadObj(L"Assets/model2.obj"))
 		return;
-	for (int i = 0; i < m_objReader.objParts.size(); i++)
-	{
-		m_mapModel.push_back(ObjModel(m_deviceResources->GetD3DDevice(), m_objReader.objParts[i]));
-	}
+	m_mapModel = Model(m_deviceResources->GetD3DDevice(), &m_objReader);
 
 
 

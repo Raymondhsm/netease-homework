@@ -97,7 +97,7 @@ bool ObjReader::ReadObj(const wchar_t * objFileName)
 			float u, v;
 			wfin >> u >> v;
 			v = 1.0f - v;
-			texCoords.emplace_back(XMFLOAT2(u, v));
+			texCoords.emplace_back(XMFLOAT2(u , v ));
 		}
 		else if (wstr == L"vn")
 		{
@@ -172,7 +172,7 @@ bool ObjReader::ReadObj(const wchar_t * objFileName)
 			// 顶点位置索引/纹理坐标索引/法向量索引
 			// 原来右手坐标系下顶点顺序是逆时针排布
 			// 现在需要转变为左手坐标系就需要将三角形顶点反过来输入
-			for (int i = 2; i >= 0; --i)
+			for (int i = 0; i < 3; i++)
 			{
 				wfin >> vpi[i] >> ignore >> vti[i] >> ignore >> vni[i];
 			}
