@@ -1,17 +1,22 @@
 #include "pch.h"
 #include "Utils/DirectXHelper.h"
-#include "Utils/WICTextureLoader.h"
 #include "GameRenderer.h"
 
 using namespace Job;
 using namespace Windows::Foundation;
 using namespace DXHelper;
+using namespace DirectX;
 
-GameRenderer::GameRenderer(const std::shared_ptr<D3DApp>& deviceResources, const std::shared_ptr<Camera>& camera) :
+GameRenderer::GameRenderer(const std::shared_ptr<D3DApp>& deviceResources,
+	const std::shared_ptr<Camera>& camera, const std::shared_ptr<InputController>& input) :
 	m_indexCount(0),
 	m_deviceResources(deviceResources),
-	m_camera(camera)
+	m_camera(camera),
+	m_input(input)
 {
+	m_mapModel = Model(m_deviceResources->GetD3DDevice());
+	m_carModel = Model(m_deviceResources->GetD3DDevice());
+
 	CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources();
 }
@@ -38,6 +43,41 @@ void GameRenderer::Update(StepTimer const & timer)
 {
 	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(m_camera->GetView()));
 	XMStoreFloat4x4(&m_constantBufferData.model, XMMatrixTranspose(XMMatrixScaling(1.f, 1.f, 1.f)));
+
+	XMFLOAT3 eyePos = m_camera->getPosition();
+	m_lightConstantBufferData.eyePos = XMFLOAT4(eyePos.x, eyePos.y, eyePos.z, 1.0f);
+
+	if (m_input->GetKeyState(InputController::W))
+	{
+		for (int i = 1; i < 5; i++)
+			m_carModel.SetModelMatrix(i, XMMatrixRotationX(XM_PI / 17));
+	}
+	if (m_input->GetKeyState(InputController::S))
+	{
+		for (int i = 1; i < 5; i++)
+			m_carModel.SetModelMatrix(i, XMMatrixRotationX(XM_PI / 17));
+	}
+	if (m_input->IsKeyPressed(InputController::A)) 
+	{
+		m_carModel.SetModelMatrix(1, XMMatrixRotationY(XM_PI / 4));
+		m_carModel.SetModelMatrix(2, XMMatrixRotationY(XM_PI / 4));
+	}
+	if (m_input->IsKeyPressed(InputController::D))
+	{
+		m_carModel.SetModelMatrix(1, XMMatrixRotationY(-XM_PI / 4));
+		m_carModel.SetModelMatrix(2, XMMatrixRotationY(-XM_PI / 4));
+	}
+	if (m_input->IsKeyReleased(InputController::A))
+	{
+		m_carModel.SetModelMatrix(1, XMMatrixRotationY(-XM_PI / 4));
+		m_carModel.SetModelMatrix(2, XMMatrixRotationY(-XM_PI / 4));
+	}
+	if (m_input->IsKeyReleased(InputController::D))
+	{
+		m_carModel.SetModelMatrix(1, XMMatrixRotationY(XM_PI / 4));
+		m_carModel.SetModelMatrix(2, XMMatrixRotationY(XM_PI / 4));
+	}
+
 }
 
 void GameRenderer::Render()
@@ -52,7 +92,7 @@ void GameRenderer::Render()
 	context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
 
 	// 将缓冲数据发送到常量缓冲区
-	context->UpdateSubresource1(m_MVPConstantBuffer.Get(), 0, NULL, &m_constantBufferData, 0, 0, 0);
+	
 
 	// 设置顶点数据
 	UINT stride = sizeof(VertexPosNorTex);
@@ -73,6 +113,32 @@ void GameRenderer::Render()
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	context->IASetInputLayout(m_inputLayout.Get());
+	//context->VSSetConstantBuffers1(0, 1, m_MVPConstantBuffer.GetAddressOf(), nullptr, nullptr);
+
+	for (int i = 0; i < m_carModel.GetObjModels().size(); i++)
+	{
+		auto objdata = m_carModel.GetObjModels()[i];
+		// 设置顶点缓冲
+		context->IASetVertexBuffers(0, 1, objdata.vertexBuffer.GetAddressOf(), &stride, &offset);
+		// 设置索引缓冲
+		context->IASetIndexBuffer(objdata.indexBuffer.Get(), objdata.indexFormat, 0);
+		// 设置纹理
+		context->PSSetShaderResources(0, 1, objdata.texSRV.GetAddressOf());
+		// 设置VS常量缓冲区
+		XMStoreFloat4x4(&m_constantBufferData.model, XMMatrixTranspose(m_carModel.GetModelMatrix(i)));
+		context->UpdateSubresource1(m_MVPConstantBuffer.Get(), 0, NULL, &m_constantBufferData, 0, 0, 0);
+		context->VSSetConstantBuffers1(0, 1, m_MVPConstantBuffer.GetAddressOf(), nullptr, nullptr);
+		// 设置PS常量缓冲区
+		m_lightConstantBufferData.material = objdata.material;
+		context->UpdateSubresource1(m_LightConstantBuffer.Get(), 0, NULL, &m_lightConstantBufferData, 0, 0, 0);
+		context->PSSetConstantBuffers1(0, 1, m_LightConstantBuffer.GetAddressOf(), nullptr, nullptr);
+		// 绘图
+		context->DrawIndexed(objdata.indexCount, 0, 0);
+	}
+
+	// 设置VS常量缓冲区
+	XMStoreFloat4x4(&m_constantBufferData.model, XMMatrixTranspose(XMMatrixScaling(1.f, 1.f, 1.f)));
+	context->UpdateSubresource1(m_MVPConstantBuffer.Get(), 0, NULL, &m_constantBufferData, 0, 0, 0);
 	context->VSSetConstantBuffers1(0, 1, m_MVPConstantBuffer.GetAddressOf(), nullptr, nullptr);
 	for (int i = 0; i < m_mapModel.GetObjModels().size(); i++)
 	{
@@ -84,8 +150,9 @@ void GameRenderer::Render()
 		// 设置纹理
 		context->PSSetShaderResources(0, 1, objdata.texSRV.GetAddressOf());
 		// 设置PS常量缓冲区
-		//context->UpdateSubresource1(m_LightConstantBuffer.Get(), 0, NULL, &objdata.material, 0, 0, 0);
-		//context->PSSetConstantBuffers1(0, 1, m_LightConstantBuffer.GetAddressOf(), nullptr, nullptr);
+		m_lightConstantBufferData.material = objdata.material;
+		context->UpdateSubresource1(m_LightConstantBuffer.Get(), 0, NULL, &m_lightConstantBufferData, 0, 0, 0);
+		context->PSSetConstantBuffers1(0, 1, m_LightConstantBuffer.GetAddressOf(), nullptr, nullptr);
 		// 绘图
 		context->DrawIndexed(objdata.indexCount, 0, 0);
 	}
@@ -150,6 +217,8 @@ void GameRenderer::CreateDeviceDependentResources()
 		)
 	);
 
+	
+
 	// 创建常量缓冲区0
 	CD3D11_BUFFER_DESC constantBufferDesc0(sizeof(ModelViewProjectionConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
 	ThrowIfFailed(
@@ -157,74 +226,143 @@ void GameRenderer::CreateDeviceDependentResources()
 	);
 
 	// 创建常量缓冲区1
-	/*CD3D11_BUFFER_DESC constantBufferDesc1(sizeof(LightConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
+	CD3D11_BUFFER_DESC constantBufferDesc1(sizeof(LightConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
 	ThrowIfFailed(
 		m_deviceResources->GetD3DDevice()->CreateBuffer(&constantBufferDesc1, nullptr, &m_LightConstantBuffer)
-	);*/
+	);
 
+	// 创建车网格
+	VertexPosNorTex carBody[] =
+	{	// up
+		{XMFLOAT3(0.5f, 0.5f, 0.5f), XMFLOAT3(0.f, 1.f, 0.f),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(-0.5f, 0.5f, 0.5f), XMFLOAT3(0.f, 1.f, 0.f),XMFLOAT2(1.f, 0.f)},
+		{XMFLOAT3(0.5f, 0.5f, -0.5f), XMFLOAT3(0.f, 1.f, 0.f),XMFLOAT2(0.f, 1.f)},
+		{XMFLOAT3(-0.5f, 0.5f, -0.5f), XMFLOAT3(0.f, 1.f, 0.f),XMFLOAT2(1.f, 1.f)},
+		// bottom
+		{XMFLOAT3(0.5f, -0.5f, -0.5f), XMFLOAT3(0.f, -1.f, 0.f),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT3(0.f, -1.f, 0.f),XMFLOAT2(1.f, 0.f)},
+		{XMFLOAT3(0.5f, -0.5f, 0.5f), XMFLOAT3(0.f, -1.f, 0.f),XMFLOAT2(0.f, 1.f)},
+		{XMFLOAT3(-0.5f, -0.5f, 0.5f), XMFLOAT3(0.f, -1.f, 0.f),XMFLOAT2(1.f, 1.f)},
+		// forward
+		{XMFLOAT3(-0.5f, 0.5f, 0.5f), XMFLOAT3(0.f, 0.f, 1.f),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(0.5f, 0.5f, 0.5f), XMFLOAT3(0.f, 0.f, 1.f),XMFLOAT2(1.f, 0.f)},
+		{XMFLOAT3(-0.5f, -0.5f, 0.5f), XMFLOAT3(0.f, 0.f, 1.f),XMFLOAT2(0.f, 1.f)},
+		{XMFLOAT3(0.5f, -0.5f, 0.5f), XMFLOAT3(0.f, 0.f, 1.f),XMFLOAT2(1.f, 1.f)},
+		// back
+		{XMFLOAT3(0.5f, 0.5f, -0.5f), XMFLOAT3(0.f, 0.f, -1.f),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(-0.5f, 0.5f, -0.5f), XMFLOAT3(0.f, 0.f, -1.f),XMFLOAT2(1.f, 0.f)},
+		{XMFLOAT3(0.5f, -0.5f, -0.5f), XMFLOAT3(0.f, 0.f, -1.f),XMFLOAT2(0.f, 1.f)},
+		{XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT3(0.f, 0.f, -1.f),XMFLOAT2(1.f, 1.f)},
+		// left
+		{XMFLOAT3(0.5f, 0.5f, 0.5f), XMFLOAT3(1.f, 0.f, 0.f),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(0.5f, 0.5f, -0.5f), XMFLOAT3(1.f, 0.f, 0.f),XMFLOAT2(1.f, 0.f)},
+		{XMFLOAT3(0.5f, -0.5f, 0.5f), XMFLOAT3(1.f, 0.f, 0.f),XMFLOAT2(0.f, 1.f)},
+		{XMFLOAT3(0.5f, -0.5f, -0.5f), XMFLOAT3(1.f, 0.f, 0.f),XMFLOAT2(1.f, 1.f)},
+		// right
+		{XMFLOAT3(-0.5f, 0.5f, -0.5f), XMFLOAT3(-1.f, 0.f, 0.f),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(-0.5f, 0.5f, 0.5f), XMFLOAT3(-1.f, 0.f, 0.f),XMFLOAT2(1.f, 0.f)},
+		{XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT3(-1.f, 0.f, 0.f),XMFLOAT2(0.f, 1.f)},
+		{XMFLOAT3(-0.5f, -0.5f, 0.5f), XMFLOAT3(-1.f, 0.f, 0.f),XMFLOAT2(1.f, 1.f)},
+		{XMFLOAT3(-0.5f, -0.5f, 0.5f), XMFLOAT3(-1.f, 0.f, 0.f),XMFLOAT2(1.f, 1.f)}
+	};
 
-	// 创建网格
-	if (!m_objReader.ReadObj(L"Assets/model2.obj"))
-		return;
-	m_mapModel = Model(m_deviceResources->GetD3DDevice(), &m_objReader);
+	unsigned short carBodyIndex[] =
+	{
+		0,1,3, 0,3,2, 4,5,7, 4,7,6, 8,9,11, 8,11,10,
+		12,13,15, 12,15,14, 16,17,19, 16,19,18, 20,21,23, 20,23,22 
+	};
+	
+	float cos30 = 0.866025f;
+	float _cos30 = 0.133975f;
+	VertexPosNorTex carWheel[] =
+	{
+		{XMFLOAT3(0.5f, 0.f, 0.f), XMFLOAT3(1.f, 0.f, 0.f),XMFLOAT2(0.5f, 0.5f)},
 
+		{XMFLOAT3(0.5f, 1.f, 0.f), XMFLOAT3(1.f, 0.f, 0.f),XMFLOAT2(0.5f, 0.0f)},
+		{XMFLOAT3(0.5f, cos30, -0.5f), XMFLOAT3(1.f, 0.f, 0.f),XMFLOAT2(0.75f, _cos30)},
+		{XMFLOAT3(0.5f, 0.5f, -cos30), XMFLOAT3(1.f, 0.f, 0.f),XMFLOAT2(cos30, 0.5f)},
+		{XMFLOAT3(0.5f, 0.f, -1.f), XMFLOAT3(1.f, 0.f, 0.f),XMFLOAT2(1.f, 0.5f)},
+		{XMFLOAT3(0.5f, -0.5f, -cos30), XMFLOAT3(1.f, 0.f, 0.f),XMFLOAT2(cos30, 0.75f)},
+		{XMFLOAT3(0.5f, -cos30, -0.5f), XMFLOAT3(1.f, 0.f, 0.f),XMFLOAT2(0.75f, cos30)},
+		{XMFLOAT3(0.5f, -1.f, 0.f), XMFLOAT3(1.f, 0.f, 0.f),XMFLOAT2(0.5f, 1.f)},
+		{XMFLOAT3(0.5f, -cos30, 0.5f), XMFLOAT3(1.f, 0.f, 0.f),XMFLOAT2(0.25f, cos30)},
+		{XMFLOAT3(0.5f, -0.5f, cos30), XMFLOAT3(1.f, 0.f, 0.f),XMFLOAT2(_cos30, 0.75f)},
+		{XMFLOAT3(0.5f, 0.f, 1.f), XMFLOAT3(1.f, 0.f, 0.f),XMFLOAT2(0.f, 0.5f)},
+		{XMFLOAT3(0.5f, 0.5f, cos30), XMFLOAT3(1.f, 0.f, 0.f),XMFLOAT2(_cos30, 0.5f)},
+		{XMFLOAT3(0.5f, cos30, 0.5f), XMFLOAT3(1.f, 0.f, 0.f),XMFLOAT2(0.25f, _cos30)},
 
+		{XMFLOAT3(-0.5f, 0.f, 0.f), XMFLOAT3(1.f, 0.f, 0.f),XMFLOAT2(0.5f, 0.5f)},
 
-	// 创建顶点缓冲数据
-	//D3D11_SUBRESOURCE_DATA VBData = { 0 };
-	//VBData.pSysMem = vertices;
-	//VBData.SysMemPitch = 0;
-	//VBData.SysMemSlicePitch = 0;
-	//CD3D11_BUFFER_DESC VBDesc(sizeof(vertices), D3D11_BIND_VERTEX_BUFFER);
-	/*ThrowIfFailed(
-		m_deviceResources->GetD3DDevice()->CreateBuffer(
-			&VBDesc,
-			&VBData,
-			&m_vertexBuffer
-		)
-	);*/
+		{XMFLOAT3(-0.5f, 1.f, 0.f), XMFLOAT3(-1.f, 0.f, 0.f),XMFLOAT2(0.5f, 0.0f)},
+		{XMFLOAT3(-0.5f, cos30, 0.5f), XMFLOAT3(-1.f, 0.f, 0.f),XMFLOAT2(0.75f, _cos30)},
+		{XMFLOAT3(-0.5f, 0.5f, cos30), XMFLOAT3(-1.f, 0.f, 0.f),XMFLOAT2(cos30, 0.5f)},
+		{XMFLOAT3(-0.5f, 0.f, 1.f), XMFLOAT3(-1.f, 0.f, 0.f),XMFLOAT2(1.f, 0.5f)},
+		{XMFLOAT3(-0.5f, -0.5f, cos30), XMFLOAT3(-1.f, 0.f, 0.f),XMFLOAT2(cos30, 0.75f)},
+		{XMFLOAT3(-0.5f, -cos30, 0.5f), XMFLOAT3(-1.f, 0.f, 0.f),XMFLOAT2(0.75f, cos30)},
+		{XMFLOAT3(-0.5f, -1.f, 0.f), XMFLOAT3(-1.f, 0.f, 0.f),XMFLOAT2(0.5f, 1.f)},
+		{XMFLOAT3(-0.5f, -cos30, -0.5f), XMFLOAT3(-1.f, 0.f, 0.f),XMFLOAT2(0.25f, cos30)},
+		{XMFLOAT3(-0.5f, -0.5f, -cos30), XMFLOAT3(-1.f, 0.f, 0.f),XMFLOAT2(_cos30, 0.75f)},
+		{XMFLOAT3(-0.5f, 0.f, -1.f), XMFLOAT3(-1.f, 0.f, 0.f),XMFLOAT2(0.f, 0.5f)},
+		{XMFLOAT3(-0.5f, 0.5f, -cos30), XMFLOAT3(-1.f, 0.f, 0.f),XMFLOAT2(_cos30, 0.5f)},
+		{XMFLOAT3(-0.5f, cos30, -0.5f), XMFLOAT3(-1.f, 0.f, 0.f),XMFLOAT2(0.25f, _cos30)},
 
-	// 创建索引缓冲数据
-	//static const unsigned short indices[] =
-	//{
-	//	1,0,2,//front
-	//	3,1,2,
+		{XMFLOAT3(0.5f, 1.f, 0.f), XMFLOAT3(0.f, 1.f, 0.f),XMFLOAT2(0.0f, 0.0f)},
+		{XMFLOAT3(0.5f, cos30, -0.5f), XMFLOAT3(0.f, cos30, -0.5f),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(0.5f, 0.5f, -cos30), XMFLOAT3(0.f, 0.5f, -cos30),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(0.5f, 0.f, -1.f), XMFLOAT3(0.f, 1.f, -1.f),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(0.5f, -0.5f, -cos30), XMFLOAT3(0.f, -0.5f, -cos30),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(0.5f, -cos30, -0.5f), XMFLOAT3(0.f, -cos30, -0.5f),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(0.5f, -1.f, 0.f), XMFLOAT3(0.f, -1.f, 0.f),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(0.5f, -cos30, 0.5f), XMFLOAT3(0.f, cos30, 0.5f),XMFLOAT2(0.f, 0.)},
+		{XMFLOAT3(0.5f, -0.5f, cos30), XMFLOAT3(0.f, -0.5f, cos30),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(0.5f, 0.f, 1.f), XMFLOAT3(0.f, 1.f, 1.f),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(0.5f, 0.5f, cos30), XMFLOAT3(0.f, 0.5f, cos30),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(0.5f, cos30, 0.5f), XMFLOAT3(0.f, cos30, 0.5f),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(-0.5f, 1.f, 0.f), XMFLOAT3(0.f, 1.f, 0.f),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(-0.5f, cos30, 0.5f), XMFLOAT3(0.f, cos30, 0.5f),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(-0.5f, 0.5f, cos30), XMFLOAT3(0.f, 0.5f, cos30),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(-0.5f, 0.f, 1.f), XMFLOAT3(0.f, 1.f, 1.f),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(-0.5f, -0.5f, cos30), XMFLOAT3(0.f, -0.5f, cos30),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(-0.5f, -cos30, 0.5f), XMFLOAT3(0.f, -cos30, 0.5f),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(-0.5f, -1.f, 0.f), XMFLOAT3(0.f, -1.f, 0.f),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(-0.5f, -cos30, -0.5f), XMFLOAT3(0.f, cos30, -0.5f),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(-0.5f, -0.5f, -cos30), XMFLOAT3(0.f, -0.5f, -cos30),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(-0.5f, 0.f, -1.f), XMFLOAT3(0.f, 1.f, -1.f),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(-0.5f, 0.5f, -cos30), XMFLOAT3(0.f, 0.5f, -cos30),XMFLOAT2(0.f, 0.f)},
+		{XMFLOAT3(-0.5f, cos30, -0.5f), XMFLOAT3(0.f, cos30, -0.5f),XMFLOAT2(0.f, 0.f)}
+	};
 
-	//	6,4,5,//left
-	//	6,5,7,
+	unsigned short carWheelIndex[] =
+	{
+		0,1,2, 0,2,3, 0,3,4, 0,4,5, 0,5,6, 0,6,7, 0,7,8, 0,8,9, 0,9,10, 0,10,11, 0,11,12, 0,12,1,
+		13,14,15, 13,15,16, 13,16,17, 13,17,18, 13,18,19, 13,19,20, 13,20,21, 13,21,22, 13,22,23, 13,23,24, 13,24,25, 13,25,14,
 
-	//	8,10,11,//right
-	//	8,11,9,
+		26,38,49, 26,49,27, 27,49,48, 27,48,28, 28,48,47, 28,47,29, 29,47,46, 29,46,30, 30,46,45, 30,45,31,
+		31,45,44, 31,44,32, 32,44,43, 32,43,33, 33,43,42, 33,42,34, 34,42,41, 34,41,35, 35,41,40, 35,40,36,
+		36,40,39, 36,39,37, 37,39,38, 37,38,26
+	};
 
-	//	12,14,15,//back
-	//	12,15,13,
+	// 创建地图网格
+	//if (!m_objReader.ReadObj(L"Assets/model2.obj"))
+	//	return;
+	//m_mapModel = Model(m_deviceResources->GetD3DDevice(), &m_objReader);
 
-	//	16,18,19,//bottom
-	//	16,19,17,
+	Materials mat;
+	mat.ambient = XMFLOAT4(0.694118f, 0.109804f, 0.584314f, 1.f);
+	mat.diffuse = XMFLOAT4(0.694118f, 0.109804f, 0.584314f, 1.f);
+	mat.specular = XMFLOAT4(0.350000f, 0.350000f, 0.350000f, 1.f);
+	mat.reflect = XMFLOAT4(0.f, 0.f, 0.f, 0.f);
+	m_carModel.AddObjPart(ARRAYSIZE(carBody), carBody, ARRAYSIZE(carBodyIndex), DXGI_FORMAT_R16_UINT,
+		carBodyIndex, mat, L"Assets/mapTex/3Dxy_img_19.jpg");
+	m_carModel.SetModelMatrix(0, XMMatrixMultiply(XMMatrixScaling(20.f, 10.f, 50.f), XMMatrixTranslation(0.f, 20.f, 0.f)));
 
-	//	20,22,23,//top
-	//	20,23,21
-	//};
-
-	//m_indexCount = ARRAYSIZE(indices);
-
-	//D3D11_SUBRESOURCE_DATA IBData = { 0 };
-	//IBData.pSysMem = indices;
-	//IBData.SysMemPitch = 0;
-	//IBData.SysMemSlicePitch = 0;
-	//CD3D11_BUFFER_DESC IBDesc(sizeof(indices), D3D11_BIND_INDEX_BUFFER);
-	//ThrowIfFailed(
-	//	m_deviceResources->GetD3DDevice()->CreateBuffer(
-	//		&IBDesc,
-	//		&IBData,
-	//		&m_indexBuffer
-	//	)
-	//);
-	//});
-
-
-	//CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/front.dds", nullptr, m_TexFrontSRV.GetAddressOf());
-
+	for (int i = 0; i < 4; i++)
+		m_carModel.AddObjPart(ARRAYSIZE(carWheel), carWheel, ARRAYSIZE(carWheelIndex), DXGI_FORMAT_R16_UINT,
+			carWheelIndex, mat, L"Assets/mapTex/3Dxy_img_15.jpg");
+	m_carModel.SetModelMatrix(1, XMMatrixMultiply(XMMatrixScaling(5.f, 5.f, 5.f), XMMatrixTranslation(10.f, 15.f, 15.f)));
+	m_carModel.SetModelMatrix(2, XMMatrixMultiply(XMMatrixScaling(5.f, 5.f, 5.f), XMMatrixTranslation(-10.f, 15.f, 15.f)));
+	m_carModel.SetModelMatrix(3, XMMatrixMultiply(XMMatrixScaling(5.f, 5.f, 5.f), XMMatrixTranslation(10.f, 15.f, -15.f)));
+	m_carModel.SetModelMatrix(4, XMMatrixMultiply(XMMatrixScaling(5.f, 5.f, 5.f), XMMatrixTranslation(-10.f, 15.f, -15.f)));
 
 	// 修改加载成功变量
 	//createCubeTask.then([this]() {

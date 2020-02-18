@@ -11,7 +11,7 @@ GameController::GameController(HINSTANCE hInstance) :
 
 	// initialize function
 	m_skyRenderer = std::unique_ptr<Job::SkyboxRender>(new Job::SkyboxRender(std::shared_ptr<D3DApp>(this), m_camera));
-	m_gameRender = std::unique_ptr<Job::GameRenderer>(new Job::GameRenderer(std::shared_ptr<D3DApp>(this), m_camera));
+	m_gameRender = std::unique_ptr<Job::GameRenderer>(new Job::GameRenderer(std::shared_ptr<D3DApp>(this), m_camera,m_inputController));
 }
 
 GameController::~GameController()
@@ -37,9 +37,9 @@ void GameController::Update()
 	float y = m_inputController->GetMouseMoveDeltaY();
 
 	if (m_inputController->GetKeyState(InputController::W)) m_camera->Forward(10);
-	if (m_inputController->GetKeyState(InputController::D)) m_camera->Left(10);
+	//if (m_inputController->GetKeyState(InputController::D)) m_camera->Left(10);
 	if (m_inputController->GetKeyState(InputController::S)) m_camera->Back(10);
-	if (m_inputController->GetKeyState(InputController::A)) m_camera->Right(10);
+	//if (m_inputController->GetKeyState(InputController::A)) m_camera->Right(10);
 	m_camera->PitchDegree(y);
 	m_camera->YawDegree(-x);
 

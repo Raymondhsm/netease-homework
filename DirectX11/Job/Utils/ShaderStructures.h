@@ -23,6 +23,7 @@ namespace Job {
 		XMFLOAT4 specular;
 		XMFLOAT4 reflect;
 
+		Materials& operator=(const Materials& m) = default;
 		Materials& operator=(const Material& m)
 		{
 			this->ambient = m.ambient;
@@ -36,7 +37,7 @@ namespace Job {
 	struct LightConstantBuffer
 	{
 		Materials material;
-		XMFLOAT3 eyePos;
+		XMFLOAT4 eyePos;
 	};
 
 	// 用于向顶点着色器发送每个顶点的数据。

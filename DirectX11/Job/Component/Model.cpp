@@ -2,7 +2,28 @@
 #include "Utils/ObjReader.h"
 #include "Model.h"
 
-Job::Model::Model(ID3D11Device * device, ObjReader * objReader)
+const XMMATRIX Job::Model::initMatrix = 
+{
+			1.f,0.f,0.f,0.f,
+			0.f,1.f,0.f,0.f,
+			0.f,0.f,1.f,0.f,
+			0.f,0.f,0.f,1.f
+};
+
+Job::Model::Model() :
+	m_modelMode(false)
+{
+}
+
+Job::Model::Model(ID3D11Device * device):
+	m_device(device),
+	m_modelMode(false)
+{
+}
+
+Job::Model::Model(ID3D11Device * device, ObjReader * objReader):
+	m_device(device),
+	m_modelMode(false)
 {
 	objModels.resize(objReader->objParts.size());
 
@@ -24,7 +45,7 @@ Job::Model::Model(ID3D11Device * device, ObjReader * objReader)
 		ZeroMemory(&InitData, sizeof(InitData));
 		InitData.pSysMem = obj.vertices.data();
 		ThrowIfFailed(
-			device->CreateBuffer(&vbd, &InitData, objModels[i].vertexBuffer.ReleaseAndGetAddressOf())
+			m_device->CreateBuffer(&vbd, &InitData, objModels[i].vertexBuffer.ReleaseAndGetAddressOf())
 		);
 
 		// 设置索引缓冲区描述
@@ -50,7 +71,7 @@ Job::Model::Model(ID3D11Device * device, ObjReader * objReader)
 		}
 		// 新建索引缓冲区
 		ThrowIfFailed(
-			device->CreateBuffer(&ibd, &InitData, objModels[i].indexBuffer.ReleaseAndGetAddressOf())
+			m_device->CreateBuffer(&ibd, &InitData, objModels[i].indexBuffer.ReleaseAndGetAddressOf())
 		);
 
 
@@ -69,13 +90,13 @@ Job::Model::Model(ID3D11Device * device, ObjReader * objReader)
 				if (strD.substr(strD.size() - 3, 3) == L"dds")
 				{
 					ThrowIfFailed(
-						CreateDDSTextureFromFile(device, strD.c_str(), nullptr, texSRV.GetAddressOf())
+						CreateDDSTextureFromFile(m_device.Get(), strD.c_str(), nullptr, texSRV.GetAddressOf())
 					);
 				}
 				else
 				{
 					ThrowIfFailed(
-						CreateWICTextureFromFile(device, strD.c_str(), nullptr, texSRV.GetAddressOf())
+						CreateWICTextureFromFile(m_device.Get(), strD.c_str(), nullptr, texSRV.GetAddressOf())
 					);
 				}
 				objModels[i].texSRV = texSRV;
@@ -88,3 +109,91 @@ Job::Model::Model(ID3D11Device * device, ObjReader * objReader)
 
 	
 }
+
+int Job::Model::AddObjPart(UINT numOfVertex, VertexPosNorTex* vertices,
+	UINT numOfIndex, DXGI_FORMAT format, USHORT * indices, Materials material, std::wstring texName)
+{
+	ObjModel objModel;
+
+	// 设置顶点缓冲区描述
+	D3D11_BUFFER_DESC vbd;
+	ZeroMemory(&vbd, sizeof(vbd));
+	vbd.Usage = D3D11_USAGE_IMMUTABLE;
+	vbd.ByteWidth = numOfVertex * (UINT)sizeof(VertexPosNorTex);
+	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vbd.CPUAccessFlags = 0;
+
+	// 新建顶点缓冲区
+	D3D11_SUBRESOURCE_DATA InitData;
+	ZeroMemory(&InitData, sizeof(InitData));
+	InitData.pSysMem = vertices;
+	ThrowIfFailed(
+		m_device->CreateBuffer(&vbd, &InitData, objModel.vertexBuffer.ReleaseAndGetAddressOf())
+	);
+
+	// 设置索引缓冲区描述
+	D3D11_BUFFER_DESC ibd;
+	ZeroMemory(&ibd, sizeof(ibd));
+	ibd.Usage = D3D11_USAGE_IMMUTABLE;
+	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	ibd.CPUAccessFlags = 0;
+	ibd.ByteWidth = numOfIndex * (UINT)sizeof(USHORT);
+	InitData.pSysMem = indices;
+
+	// 新建索引缓冲区
+	ThrowIfFailed(
+		m_device->CreateBuffer(&ibd, &InitData, objModel.indexBuffer.ReleaseAndGetAddressOf())
+	);
+
+	objModel.indexCount = numOfIndex;
+	objModel.indexFormat = format;
+
+	// 创建漫射光对应纹理
+	auto& strD = texName;
+	if (strD.size() > 4)
+	{
+		auto it = texSRVs.find(strD);
+		if (it != texSRVs.end())
+		{
+			objModel.texSRV = it->second;
+		}
+		else
+		{
+			Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texSRV;
+			if (strD.substr(strD.size() - 3, 3) == L"dds")
+			{
+				ThrowIfFailed(
+					CreateDDSTextureFromFile(m_device.Get(), strD.c_str(), nullptr, texSRV.GetAddressOf())
+				);
+			}
+			else
+			{
+				ThrowIfFailed(
+					CreateWICTextureFromFile(m_device.Get(), strD.c_str(), nullptr, texSRV.GetAddressOf())
+				);
+			}
+			objModel.texSRV = texSRV;
+			texSRVs.insert(pair<wstring, Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>>(strD, texSRV));
+		}
+	}
+
+	objModel.material = material;
+
+	objModels.push_back(objModel);
+	m_modelMatrix.push_back(initMatrix);
+	return objModels.size() - 1;
+}
+
+void Job::Model::SetModelMatrix(int index, DirectX::XMMATRIX matrix)
+{
+	if (index < 0 || index >= objModels.size())
+	{
+		return;
+	}
+	else
+	{
+		FXMMATRIX m = matrix;
+		m_modelMatrix[index] = XMMatrixMultiply(m,m_modelMatrix[index]);
+	}
+}
+

@@ -2,6 +2,7 @@
 #include "Apps/StepTimer.h"
 #include "Utils/ShaderStructures.h"
 #include "Component/Camera.h"
+#include "Component/InputController.h"
 #include "Utils/ObjReader.h"
 #include "Apps/D3DApp.h"
 #include "Component/Model.h"
@@ -17,7 +18,7 @@ namespace Job
 	class GameRenderer
 	{
 	public:
-		GameRenderer(const std::shared_ptr<D3DApp>& deviceResources, const std::shared_ptr<Camera> &camera);
+		GameRenderer(const std::shared_ptr<D3DApp>& deviceResources, const std::shared_ptr<Camera> &camera, const std::shared_ptr<InputController>& input);
 		void CreateDeviceDependentResources();
 		void CreateWindowSizeDependentResources();
 		void ReleaseDeviceDependentResources();
@@ -28,6 +29,7 @@ namespace Job
 		// 缓存的设备资源指针。
 		std::shared_ptr<D3DApp> m_deviceResources;
 		std::shared_ptr<Camera> m_camera;
+		std::shared_ptr<InputController> m_input;
 
 		ObjReader m_objReader;
 
@@ -40,13 +42,13 @@ namespace Job
 		ComPtr<ID3D11Buffer>		m_MVPConstantBuffer;
 		ComPtr<ID3D11Buffer>		m_LightConstantBuffer;
 
+		Model			m_carModel;
 		Model			m_mapModel;
-
-		// 纹理
-		ComPtr<ID3D11ShaderResourceView> m_TexFrontSRV;
 
 		// 立体几何的系统资源。
 		ModelViewProjectionConstantBuffer	m_constantBufferData;
+		LightConstantBuffer					m_lightConstantBufferData;
+
 		__int32	m_indexCount;
 		bool m_loadingComplete;
 
