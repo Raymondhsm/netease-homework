@@ -27,6 +27,7 @@ namespace Job
 
 	private:
 		void UpdateCarMove(float deltaTime);
+		void UpdateCameraPos();
 
 		// 缓存的设备资源指针。
 		std::shared_ptr<D3DApp> m_deviceResources;
@@ -62,7 +63,9 @@ namespace Job
 		float m_minSpeed;
 		bool m_carStop;
 
-
+		// 是否第一人称
+		bool m_FP;
+		float m_TPDistance;
 	};
 }
 

@@ -31,18 +31,6 @@ void GameController::Update()
 	outs << L"    " << m_inputController->GetKeyState(InputController::W);
 	SetWindowText(m_hMainWnd, outs.str().c_str());
 
-
-	
-	float x = m_inputController->GetMouseMoveDeltaX();
-	float y = m_inputController->GetMouseMoveDeltaY();
-
-	if (m_inputController->GetKeyState(InputController::W)) m_camera->Forward(10);
-	//if (m_inputController->GetKeyState(InputController::D)) m_camera->Left(10);
-	if (m_inputController->GetKeyState(InputController::S)) m_camera->Back(10);
-	//if (m_inputController->GetKeyState(InputController::A)) m_camera->Right(10);
-	m_camera->PitchDegree(y);
-	m_camera->YawDegree(-x);
-
 	//update function
 	m_skyRenderer->Update(m_Timer);
 	m_gameRender->Update(m_Timer);

@@ -5,7 +5,7 @@ using namespace DirectX;
 using namespace Job;
 
 Camera::Camera():
-	m_pos(0.f, 0.f, 150.f),
+	m_pos(0.f, 0.5f, 0.f),
 	m_look(0.f, 0.f, -1.f),
 	m_up(0.f, 1.f, 0.f),
 	m_right(1.f, 0.f, 0.f)
@@ -199,14 +199,53 @@ void Camera::YawDegree(float degree)
 	this->Yaw(angle);
 }
 
-void Camera::RotateAtPoint(float angle)
+void Job::Camera::PitchAtPoint(float angle, XMVECTOR point)
 {
+	XMVECTOR right = XMLoadFloat3(&m_right);
+	XMMATRIX matrix;
+	matrix = XMMatrixTranslationFromVector(-point);
+	matrix = matrix * XMMatrixRotationAxis(right, angle);
+	matrix = matrix * XMMatrixTranslationFromVector(point);
 
+	XMVECTOR oldLook = XMLoadFloat3(&m_look);
+	XMVECTOR newLook = XMVector3Transform(oldLook, matrix);
+
+	XMVECTOR oldPos = XMLoadFloat3(&m_pos);
+	XMVECTOR newPos = XMVector3Transform(oldPos, matrix);
+
+	this->setlookDirection(newLook);
+	this->setPosition(newPos);
 }
 
-void Camera::RotateAtPointDegree(float degree)
+void Job::Camera::PitchAtPointDegree(float degree, XMVECTOR point)
 {
+	float angle = degree * XM_PI / 180.0f;
+	this->PitchAtPoint(angle, point);
 }
+
+void Job::Camera::YawAtPoint(float angle, XMVECTOR point)
+{
+	XMMATRIX matrix;
+	matrix = XMMatrixTranslationFromVector(-point);
+	matrix = matrix * XMMatrixRotationY(angle);
+	matrix = matrix * XMMatrixTranslationFromVector(point);
+
+	XMVECTOR oldLook = XMLoadFloat3(&m_look);
+	XMVECTOR newLook = XMVector3Transform(oldLook, matrix);
+
+	XMVECTOR oldPos = XMLoadFloat3(&m_pos);
+	XMVECTOR newPos = XMVector3Transform(oldPos, matrix);
+
+	this->setlookDirection(newLook);
+	this->setPosition(newPos);
+}
+
+void Job::Camera::YawAtPointDegree(float degree, XMVECTOR point)
+{
+	float angle = degree * XM_PI / 180.0f;
+	this->YawAtPoint(angle, point);
+}
+
 
 
 

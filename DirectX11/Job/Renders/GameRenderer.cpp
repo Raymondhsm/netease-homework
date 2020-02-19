@@ -22,6 +22,8 @@ GameRenderer::GameRenderer(const std::shared_ptr<D3DApp>& deviceResources,
 	m_maxSpeed = 10.f;
 	m_minSpeed = -10.f;
 	m_carStop = true;
+	m_FP = true;
+	m_TPDistance = 15.f;
 
 	CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources();
@@ -53,8 +55,10 @@ void GameRenderer::Update(StepTimer const & timer)
 	XMFLOAT3 eyePos = m_camera->getPosition();
 	m_lightConstantBufferData.eyePos = XMFLOAT4(eyePos.x, eyePos.y, eyePos.z, 1.0f);
 
-	UpdateCarMove(timer.GetElapsedSeconds());
+	if (m_input->IsKeyReleased(InputController::V)) m_FP = !m_FP;
 
+	UpdateCarMove(timer.GetElapsedSeconds());
+	UpdateCameraPos();
 }
 
 void GameRenderer::Render()
@@ -160,12 +164,12 @@ void Job::GameRenderer::UpdateCarMove(float deltaTime)
 	}
 
 	// 前进
-	if (m_input->GetKeyState(InputController::R))
+	if (m_input->GetKeyState(InputController::W))
 	{
 		m_speed = m_speed + deltaSpeed >= m_maxSpeed ? m_maxSpeed : m_speed + deltaSpeed;
 	}
 	// 后退
-	if (m_input->GetKeyState(InputController::F))
+	if (m_input->GetKeyState(InputController::S))
 	{
 		m_speed = m_speed - deltaSpeed <= m_minSpeed ? m_minSpeed : m_speed - deltaSpeed;
 	}
@@ -238,6 +242,38 @@ void Job::GameRenderer::UpdateCarMove(float deltaTime)
 		m_speed = m_speed - deltaNatureStopSpeed <= 0.f ? 0.f : m_speed - deltaNatureStopSpeed;
 	else if (m_speed < 0.f)
 		m_speed = m_speed + deltaNatureStopSpeed >= 0.f ? 0.f : m_speed + deltaNatureStopSpeed;
+}
+
+void Job::GameRenderer::UpdateCameraPos()
+{
+	XMVECTOR camPos = XMVectorSet(0.f, 1.5f, 0.f, 0.f);
+	XMVECTOR carWorldPos = XMVector3Transform(camPos, m_carModel.GetMatrix(0));
+
+	// 设置摄像机方向
+	float x = m_input->GetMouseMoveDeltaX();
+	float y = m_input->GetMouseMoveDeltaY();
+	m_camera->PitchDegree(y);
+	m_camera->YawDegree(-x);
+
+	// 设置摄像机位置
+	if (m_FP)
+	{
+		m_camera->setPosition(carWorldPos);
+	}
+	else
+	{
+		if (m_input->GetKeyState(InputController::Up)) m_TPDistance += 1.f;
+		if (m_input->GetKeyState(InputController::Down)) m_TPDistance -= 1.f;
+		m_TPDistance += m_input->GetDeltaWheelValue() * 0.1f;
+
+		m_TPDistance = m_TPDistance < 15.f ? 15.f : m_TPDistance;
+
+		XMVECTOR lookV = XMVector3Normalize(m_camera->getLookV());
+		XMVECTOR translation = -m_TPDistance * lookV;
+		XMMATRIX matrix = XMMatrixTranslationFromVector(translation);
+		XMVECTOR TPPos = XMVector3Transform(carWorldPos, matrix);
+		m_camera->setPosition(TPPos);
+	}
 }
 
 

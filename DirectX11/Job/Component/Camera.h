@@ -49,8 +49,10 @@ namespace Job {
 		void YawDegree(float degree);
 
 		// 绕定点（xz平面）旋转
-		void RotateAtPoint(float angle);
-		void RotateAtPointDegree(float degree);
+		void PitchAtPoint(float angle, XMVECTOR point);
+		void PitchAtPointDegree(float degree, XMVECTOR point);
+		void YawAtPoint(float angle, XMVECTOR point);
+		void YawAtPointDegree(float degree, XMVECTOR point);
 
 		// 获取几个向量
 		XMFLOAT3 getPosition()		{ return m_pos; }
