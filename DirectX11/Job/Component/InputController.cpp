@@ -138,8 +138,7 @@ void InputController::OnMouseMove(float x, float y)
 
 void InputController::OnWheelMove(float value)
 {
-	deltaWheelValue += value - currWheelValue;
-	currWheelValue = value;
+	deltaWheelValue += value;
 }
 
 void InputController::KeyDown(int key, KeyState& state)
