@@ -11,13 +11,17 @@ const XMMATRIX Job::Model::initMatrix =
 };
 
 Job::Model::Model() :
-	m_modelMode(false)
+	m_modelMode(false),
+	m_rotateVector(XMVectorSet(0.f,0.f,0.f,0.f)),
+	m_globalMatrix(initMatrix)
 {
 }
 
 Job::Model::Model(ID3D11Device * device):
 	m_device(device),
-	m_modelMode(false)
+	m_modelMode(false),
+	m_rotateVector(XMVectorSet(0.f, 0.f, 0.f, 0.f)),
+	m_globalMatrix(initMatrix)
 {
 }
 
@@ -181,6 +185,7 @@ int Job::Model::AddObjPart(UINT numOfVertex, VertexPosNorTex* vertices,
 
 	objModels.push_back(objModel);
 	m_modelMatrix.push_back(initMatrix);
+	m_worldMatrix.push_back(initMatrix);
 	return objModels.size() - 1;
 }
 
@@ -192,8 +197,36 @@ void Job::Model::SetModelMatrix(int index, DirectX::XMMATRIX matrix)
 	}
 	else
 	{
-		FXMMATRIX m = matrix;
-		m_modelMatrix[index] = XMMatrixMultiply(m,m_modelMatrix[index]);
+		//m_modelMatrix[index] = XMMatrixMultiply(m_modelMatrix[index], matrix);
+		m_modelMatrix[index] = m_modelMatrix[index] * matrix;
 	}
+}
+
+void Job::Model::SetWorldMatrix(int index, DirectX::XMMATRIX matrix)
+{
+	if (index < 0 || index >= objModels.size())
+	{
+		return;
+	}
+	else
+	{
+		//m_worldMatrix[index] = XMMatrixMultiply(m_worldMatrix[index], matrix);
+		m_worldMatrix[index] = m_worldMatrix[index] * matrix;
+	}
+}
+
+void Job::Model::SetRotateVector(float x, float y, float z)
+{
+	m_rotateVector = XMVectorSet(x, y, z, 0.f);
+}
+
+void Job::Model::TransformRotateVector(DirectX::XMMATRIX matrix)
+{
+	m_rotateVector = XMVector3Transform(m_rotateVector, matrix);
+}
+
+void Job::Model::SetGlobalMatrix(DirectX::XMMATRIX matrix)
+{
+	m_globalMatrix = m_globalMatrix * matrix;
 }
 

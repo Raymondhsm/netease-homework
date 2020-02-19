@@ -26,6 +26,8 @@ namespace Job
 		void Render();
 
 	private:
+		void UpdateCarMove(float deltaTime);
+
 		// 缓存的设备资源指针。
 		std::shared_ptr<D3DApp> m_deviceResources;
 		std::shared_ptr<Camera> m_camera;
@@ -51,6 +53,14 @@ namespace Job
 
 		__int32	m_indexCount;
 		bool m_loadingComplete;
+
+		// car model 的控制变量
+		XMVECTOR m_carWheelRight;
+		XMVECTOR m_moveDirection;
+		float m_speed;
+		float m_maxSpeed;
+		float m_minSpeed;
+		bool m_carStop;
 
 
 	};

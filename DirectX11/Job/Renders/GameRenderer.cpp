@@ -16,6 +16,12 @@ GameRenderer::GameRenderer(const std::shared_ptr<D3DApp>& deviceResources,
 {
 	m_mapModel = Model(m_deviceResources->GetD3DDevice());
 	m_carModel = Model(m_deviceResources->GetD3DDevice());
+	m_carWheelRight = XMVectorSet(-1.f, 0.f, 0.f, 0.f);
+	m_moveDirection = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+	m_speed = 0.f;
+	m_maxSpeed = 10.f;
+	m_minSpeed = -10.f;
+	m_carStop = true;
 
 	CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources();
@@ -47,36 +53,7 @@ void GameRenderer::Update(StepTimer const & timer)
 	XMFLOAT3 eyePos = m_camera->getPosition();
 	m_lightConstantBufferData.eyePos = XMFLOAT4(eyePos.x, eyePos.y, eyePos.z, 1.0f);
 
-	if (m_input->GetKeyState(InputController::W))
-	{
-		for (int i = 1; i < 5; i++)
-			m_carModel.SetModelMatrix(i, XMMatrixRotationX(XM_PI / 17));
-	}
-	if (m_input->GetKeyState(InputController::S))
-	{
-		for (int i = 1; i < 5; i++)
-			m_carModel.SetModelMatrix(i, XMMatrixRotationX(XM_PI / 17));
-	}
-	if (m_input->IsKeyPressed(InputController::A)) 
-	{
-		m_carModel.SetModelMatrix(1, XMMatrixRotationY(XM_PI / 4));
-		m_carModel.SetModelMatrix(2, XMMatrixRotationY(XM_PI / 4));
-	}
-	if (m_input->IsKeyPressed(InputController::D))
-	{
-		m_carModel.SetModelMatrix(1, XMMatrixRotationY(-XM_PI / 4));
-		m_carModel.SetModelMatrix(2, XMMatrixRotationY(-XM_PI / 4));
-	}
-	if (m_input->IsKeyReleased(InputController::A))
-	{
-		m_carModel.SetModelMatrix(1, XMMatrixRotationY(-XM_PI / 4));
-		m_carModel.SetModelMatrix(2, XMMatrixRotationY(-XM_PI / 4));
-	}
-	if (m_input->IsKeyReleased(InputController::D))
-	{
-		m_carModel.SetModelMatrix(1, XMMatrixRotationY(XM_PI / 4));
-		m_carModel.SetModelMatrix(2, XMMatrixRotationY(XM_PI / 4));
-	}
+	UpdateCarMove(timer.GetElapsedSeconds());
 
 }
 
@@ -125,7 +102,7 @@ void GameRenderer::Render()
 		// 设置纹理
 		context->PSSetShaderResources(0, 1, objdata.texSRV.GetAddressOf());
 		// 设置VS常量缓冲区
-		XMStoreFloat4x4(&m_constantBufferData.model, XMMatrixTranspose(m_carModel.GetModelMatrix(i)));
+		XMStoreFloat4x4(&m_constantBufferData.model, XMMatrixTranspose(m_carModel.GetMatrix(i)));
 		context->UpdateSubresource1(m_MVPConstantBuffer.Get(), 0, NULL, &m_constantBufferData, 0, 0, 0);
 		context->VSSetConstantBuffers1(0, 1, m_MVPConstantBuffer.GetAddressOf(), nullptr, nullptr);
 		// 设置PS常量缓冲区
@@ -156,6 +133,111 @@ void GameRenderer::Render()
 		// 绘图
 		context->DrawIndexed(objdata.indexCount, 0, 0);
 	}
+}
+
+void Job::GameRenderer::UpdateCarMove(float deltaTime)
+{
+	float deltaSpeed = 6.f * deltaTime;
+	float deltaStopSpeed = 12.f * deltaTime;
+	float deltaNatureStopSpeed = 3.f * deltaTime;
+	float deltaAngle = XM_PI / 10.f * deltaTime;
+
+	// 车轮控制
+	if(m_speed > 0.f)
+	{
+		// 车轮滚
+		for (int i = 1; i <= 2; i++)
+			m_carModel.SetModelMatrix(i, XMMatrixRotationAxis(m_carWheelRight, -XM_PI / 17));
+		for (int i = 3; i <= 4; i++)
+			m_carModel.SetModelMatrix(i, XMMatrixRotationX(XM_PI / 17));
+	}
+	else if (m_speed < 0.f)
+	{
+		for (int i = 1; i <= 2; i++)
+			m_carModel.SetModelMatrix(i, XMMatrixRotationAxis(m_carWheelRight, XM_PI / 17));
+		for (int i = 3; i <= 4; i++)
+			m_carModel.SetModelMatrix(i, XMMatrixRotationX(-XM_PI / 17));
+	}
+
+	// 前进
+	if (m_input->GetKeyState(InputController::R))
+	{
+		m_speed = m_speed + deltaSpeed >= m_maxSpeed ? m_maxSpeed : m_speed + deltaSpeed;
+	}
+	// 后退
+	if (m_input->GetKeyState(InputController::F))
+	{
+		m_speed = m_speed - deltaSpeed <= m_minSpeed ? m_minSpeed : m_speed - deltaSpeed;
+	}
+	// 刹车
+	if (m_input->GetKeyState(InputController::Space))
+	{
+		if (m_speed > 0.f) {
+			m_speed = m_speed - deltaStopSpeed <= 0 ? 0.f : m_speed - deltaStopSpeed;
+		}
+		else if (m_speed < 0.f) {
+			m_speed = m_speed + deltaStopSpeed >= 0.f ? 0.f : m_speed + deltaStopSpeed;
+		}
+	}
+	
+	//车轮转向
+	if (m_input->IsKeyPressed(InputController::A) || m_input->IsKeyPressed(InputController::D))
+	{
+		if (m_input->IsKeyPressed(InputController::A) && m_input->IsKeyPressed(InputController::D))
+			return;
+		float angle = m_input->IsKeyPressed(InputController::A) ? XM_PI / 4 : -XM_PI / 4;
+		// 车轮转向
+		m_carWheelRight = XMVector3Transform(m_carWheelRight, XMMatrixRotationY(angle));
+		m_carModel.SetModelMatrix(1, XMMatrixRotationY(angle));
+		m_carModel.SetModelMatrix(2, XMMatrixRotationY(angle));
+	}
+	if (m_input->IsKeyReleased(InputController::A)|| m_input->IsKeyReleased(InputController::D))
+	{
+		if (m_input->IsKeyReleased(InputController::A) && m_input->IsKeyReleased(InputController::D))
+			return;
+		float angle = m_input->IsKeyReleased(InputController::A) ? -XM_PI / 4 : XM_PI / 4;
+		// 车轮恢复正常
+		m_carWheelRight = XMVector3Transform(m_carWheelRight, XMMatrixRotationY(angle));
+		m_carModel.SetModelMatrix(1, XMMatrixRotationY(angle));
+		m_carModel.SetModelMatrix(2, XMMatrixRotationY(angle));
+	}
+
+	// 获取后轮旋转中心
+	XMVECTOR rotatePos = XMVector3Transform(m_carModel.GetRotateVector(), m_carModel.GetMatrix(0));
+	if (m_input->GetKeyState(InputController::A) || m_input->GetKeyState(InputController::D))
+	{
+		// 车身转弯
+		if (m_speed != 0.f)
+		{
+			if (m_speed > 0.f)
+				deltaAngle = m_input->GetKeyState(InputController::A) ? deltaAngle : -deltaAngle;
+			else if (m_speed < 0.f)
+				deltaAngle = m_input->GetKeyState(InputController::A) ? -deltaAngle : deltaAngle;
+
+			XMMATRIX matrix;
+			// 移动中心到原点 旋转 恢复
+			matrix = XMMatrixTranslationFromVector(-rotatePos);
+			matrix = matrix * XMMatrixRotationY(deltaAngle);
+			matrix = matrix * XMMatrixTranslationFromVector(rotatePos);
+
+			// 旋转m_speedVector
+			m_moveDirection = XMVector3Transform(m_moveDirection, XMMatrixRotationY(deltaAngle));
+			// 旋转
+			m_carModel.SetGlobalMatrix(matrix);
+		}
+	}
+
+
+
+	// 车走
+	XMVECTOR move = m_speed * XMVector3Normalize(m_moveDirection);
+	m_carModel.SetGlobalMatrix(XMMatrixTranslationFromVector(move));
+
+	// 摩擦
+	if (m_speed > 0.f)
+		m_speed = m_speed - deltaNatureStopSpeed <= 0.f ? 0.f : m_speed - deltaNatureStopSpeed;
+	else if (m_speed < 0.f)
+		m_speed = m_speed + deltaNatureStopSpeed >= 0.f ? 0.f : m_speed + deltaNatureStopSpeed;
 }
 
 
@@ -354,15 +436,16 @@ void GameRenderer::CreateDeviceDependentResources()
 	mat.reflect = XMFLOAT4(0.f, 0.f, 0.f, 0.f);
 	m_carModel.AddObjPart(ARRAYSIZE(carBody), carBody, ARRAYSIZE(carBodyIndex), DXGI_FORMAT_R16_UINT,
 		carBodyIndex, mat, L"Assets/mapTex/3Dxy_img_19.jpg");
-	m_carModel.SetModelMatrix(0, XMMatrixMultiply(XMMatrixScaling(20.f, 10.f, 50.f), XMMatrixTranslation(0.f, 20.f, 0.f)));
+	m_carModel.SetWorldMatrix(0, XMMatrixMultiply(XMMatrixScaling(20.f, 10.f, 50.f), XMMatrixTranslation(0.f, 20.f, 0.f)));
 
 	for (int i = 0; i < 4; i++)
 		m_carModel.AddObjPart(ARRAYSIZE(carWheel), carWheel, ARRAYSIZE(carWheelIndex), DXGI_FORMAT_R16_UINT,
 			carWheelIndex, mat, L"Assets/mapTex/3Dxy_img_15.jpg");
-	m_carModel.SetModelMatrix(1, XMMatrixMultiply(XMMatrixScaling(5.f, 5.f, 5.f), XMMatrixTranslation(10.f, 15.f, 15.f)));
-	m_carModel.SetModelMatrix(2, XMMatrixMultiply(XMMatrixScaling(5.f, 5.f, 5.f), XMMatrixTranslation(-10.f, 15.f, 15.f)));
-	m_carModel.SetModelMatrix(3, XMMatrixMultiply(XMMatrixScaling(5.f, 5.f, 5.f), XMMatrixTranslation(10.f, 15.f, -15.f)));
-	m_carModel.SetModelMatrix(4, XMMatrixMultiply(XMMatrixScaling(5.f, 5.f, 5.f), XMMatrixTranslation(-10.f, 15.f, -15.f)));
+	m_carModel.SetWorldMatrix(1, XMMatrixMultiply(XMMatrixScaling(5.f, 5.f, 5.f), XMMatrixTranslation(10.f, 15.f, 15.f)));
+	m_carModel.SetWorldMatrix(2, XMMatrixMultiply(XMMatrixScaling(5.f, 5.f, 5.f), XMMatrixTranslation(-10.f, 15.f, 15.f)));
+	m_carModel.SetWorldMatrix(3, XMMatrixMultiply(XMMatrixScaling(5.f, 5.f, 5.f), XMMatrixTranslation(10.f, 15.f, -15.f)));
+	m_carModel.SetWorldMatrix(4, XMMatrixMultiply(XMMatrixScaling(5.f, 5.f, 5.f), XMMatrixTranslation(-10.f, 15.f, -15.f)));
+	m_carModel.SetRotateVector(0, 0, -0.3f);
 
 	// 修改加载成功变量
 	//createCubeTask.then([this]() {
