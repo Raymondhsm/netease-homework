@@ -11,6 +11,9 @@ InputController::InputController()
 	deltaMousePos.y = 0.0f;
 	currMousePos.x = 0.0f;
 	currMousePos.y = 0.0f;
+
+	currState = { 0 };
+	pressState = { 0 };
 }
 
 void InputController::ProcessMouseMessage(UINT message, WPARAM wParam, LPARAM lParam)
@@ -46,7 +49,7 @@ void InputController::ProcessMouseMessage(UINT message, WPARAM wParam, LPARAM lP
 
 void InputController::ProcessKeyboardMessage(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	bool down = false;
+ 	bool down = false;
 
 	switch (message)
 	{
