@@ -16,6 +16,14 @@ namespace Job {
 		XMFLOAT4X4 projection;
 	};
 
+	struct ModelViewProjNorConstantBuffer
+	{
+		XMFLOAT4X4 model;
+		XMFLOAT4X4 view;
+		XMFLOAT4X4 projection;
+		XMFLOAT4X4 worldInvTranspose;
+	};
+
 	struct Materials
 	{
 		XMFLOAT4 ambient;
@@ -34,10 +42,21 @@ namespace Job {
 		}
 	};
 
+	struct DirectionLight
+	{
+		XMFLOAT4 ambient;
+		XMFLOAT4 diffuse;
+		XMFLOAT4 specular;
+		XMFLOAT3 direction;
+		float waste;         // 填充位
+	};
+
 	struct LightConstantBuffer
 	{
 		Materials material;
-		XMFLOAT4 eyePos;
+		DirectionLight light;
+		XMFLOAT3 eyePos;
+		float waste;  // 填充位
 	};
 
 	// 用于向顶点着色器发送每个顶点的数据。

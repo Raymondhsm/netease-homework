@@ -49,8 +49,10 @@ namespace Job
 		Model			m_mapModel;
 
 		// 立体几何的系统资源。
-		ModelViewProjectionConstantBuffer	m_constantBufferData;
+		ModelViewProjNorConstantBuffer		m_constantBufferData;
 		LightConstantBuffer					m_lightConstantBufferData;
+
+		DirectionLight	m_light;
 
 		__int32	m_indexCount;
 		bool m_loadingComplete;

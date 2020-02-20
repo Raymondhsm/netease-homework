@@ -97,6 +97,8 @@ bool ObjReader::ReadObj(const wchar_t * objFileName)
 			float u, v;
 			wfin >> u >> v;
 			v = 1.0f - v;
+			u = abs(u - (int)u);
+			v = abs(v - (int)v);
 			texCoords.emplace_back(XMFLOAT2(u , v ));
 		}
 		else if (wstr == L"vn")

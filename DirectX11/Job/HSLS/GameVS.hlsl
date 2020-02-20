@@ -1,9 +1,10 @@
 // 存储用于构成几何图形的三个基本列优先矩阵的常量缓冲区。
-cbuffer ModelViewProjectionConstantBuffer : register(b0)
+cbuffer ModelViewProjNorConstantBuffer : register(b0)
 {
 	matrix model;
 	matrix view;
 	matrix projection;
+	matrix worldInvTranspose;
 };
 
 // 用作顶点着色器输入的每个顶点的数据。
@@ -18,6 +19,7 @@ struct VertexShaderInput
 struct PixelShaderInput
 {
 	float4 pos :	SV_POSITION;
+	float3 posW:	POSITION;
 	float3 normal:	NORMAL;
 	float2 tex :	TEXCOORD;
 };
@@ -26,8 +28,10 @@ struct PixelShaderInput
 PixelShaderInput main(VertexShaderInput input)
 {
 	PixelShaderInput output;
-	float4 pos = float4(input.pos, 1.0f);
 
+	output.posW = input.pos;
+
+	float4 pos = float4(input.pos, 1.0f);
 	// 将顶点位置转换为投影空间。
 	pos = mul(pos, model);
 	pos = mul(pos, view);
@@ -36,7 +40,9 @@ PixelShaderInput main(VertexShaderInput input)
 
 	// 不加修改地传递纹理坐标。
 	output.tex = input.tex;
-	output.normal = input.normal;
+
+	// 将法向量转换到世界坐标
+	output.normal = mul(input.normal, (float3x3) worldInvTranspose);
 
 	return output;
 }
