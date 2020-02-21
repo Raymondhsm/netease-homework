@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "Utils/DirectXHelper.h"
 #include <d3dcompiler.h>
 
@@ -25,8 +25,8 @@ HRESULT WINAPI DXHelper::DXTraceW(_In_z_ const WCHAR* strFile, _In_ DWORD dwLine
 		OutputDebugStringW(strMsg);
 		OutputDebugStringW(L" ");
 	}
-	// Windows SDK 8.0ÆğDirectXµÄ´íÎóĞÅÏ¢ÒÑ¾­¼¯³É½ø´íÎóÂëÖĞ£¬¿ÉÒÔÍ¨¹ıFormatMessageW»ñÈ¡´íÎóĞÅÏ¢×Ö·û´®
-	// ²»ĞèÒª·ÖÅä×Ö·û´®ÄÚ´æ
+	// Windows SDK 8.0èµ·DirectXçš„é”™è¯¯ä¿¡æ¯å·²ç»é›†æˆè¿›é”™è¯¯ç ä¸­ï¼Œå¯ä»¥é€šè¿‡FormatMessageWè·å–é”™è¯¯ä¿¡æ¯å­—ç¬¦ä¸²
+	// ä¸éœ€è¦åˆ†é…å­—ç¬¦ä¸²å†…å­˜
 	FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
 		nullptr, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 		strBufferError, 256, nullptr);
@@ -34,12 +34,12 @@ HRESULT WINAPI DXHelper::DXTraceW(_In_z_ const WCHAR* strFile, _In_ DWORD dwLine
 	WCHAR* errorStr = wcsrchr(strBufferError, L'\r');
 	if (errorStr)
 	{
-		errorStr[0] = L'\0';	// ²Á³ıFormatMessageW´øÀ´µÄ»»ĞĞ·û(°Ñ\r\nµÄ\rÖÃ»»Îª\0¼´¿É)
+		errorStr[0] = L'\0';	// æ“¦é™¤FormatMessageWå¸¦æ¥çš„æ¢è¡Œç¬¦(æŠŠ\r\nçš„\rç½®æ¢ä¸º\0å³å¯)
 	}
 
 	swprintf_s(strBufferHR, 40, L" (0x%0.8x)", hr);
 	wcscat_s(strBufferError, strBufferHR);
-	swprintf_s(strBuffer, 3000, L"´íÎóÂëº¬Òå£º%ls", strBufferError);
+	swprintf_s(strBuffer, 3000, L"é”™è¯¯ç å«ä¹‰ï¼š%ls", strBufferError);
 	OutputDebugStringW(strBuffer);
 
 	OutputDebugStringW(L"\n");
@@ -52,12 +52,12 @@ HRESULT WINAPI DXHelper::DXTraceW(_In_z_ const WCHAR* strFile, _In_ DWORD dwLine
 
 		wcscpy_s(strBufferMsg, 1024, L"");
 		if (nMsgLen > 0)
-			swprintf_s(strBufferMsg, 1024, L"µ±Ç°µ÷ÓÃ£º%ls\n", strMsg);
+			swprintf_s(strBufferMsg, 1024, L"å½“å‰è°ƒç”¨ï¼š%ls\n", strMsg);
 
-		swprintf_s(strBuffer, 3000, L"ÎÄ¼şÃû£º%ls\nĞĞºÅ£º%ls\n´íÎóÂëº¬Òå£º%ls\n%lsÄúĞèÒªµ÷ÊÔµ±Ç°Ó¦ÓÃ³ÌĞòÂğ£¿",
+		swprintf_s(strBuffer, 3000, L"æ–‡ä»¶åï¼š%ls\nè¡Œå·ï¼š%ls\né”™è¯¯ç å«ä¹‰ï¼š%ls\n%lsæ‚¨éœ€è¦è°ƒè¯•å½“å‰åº”ç”¨ç¨‹åºå—ï¼Ÿ",
 			strBufferFile, strBufferLine, strBufferError, strBufferMsg);
 
-		int nResult = MessageBoxW(GetForegroundWindow(), strBuffer, L"´íÎó", MB_YESNO | MB_ICONERROR);
+		int nResult = MessageBoxW(GetForegroundWindow(), strBuffer, L"é”™è¯¯", MB_YESNO | MB_ICONERROR);
 		if (nResult == IDYES)
 			DebugBreak();
 	}
@@ -74,7 +74,7 @@ HRESULT DXHelper::CreateShaderFromFile(
 {
 	HRESULT hr = S_OK;
 
-	// Ñ°ÕÒÊÇ·ñÓĞÒÑ¾­±àÒëºÃµÄ¶¥µã×ÅÉ«Æ÷
+	// å¯»æ‰¾æ˜¯å¦æœ‰å·²ç»ç¼–è¯‘å¥½çš„é¡¶ç‚¹ç€è‰²å™¨
 	if (csoFileNameInOut && D3DReadFileToBlob(csoFileNameInOut, ppBlobOut) == S_OK)
 	{
 		return hr;
@@ -83,11 +83,11 @@ HRESULT DXHelper::CreateShaderFromFile(
 	{
 		DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 #ifdef _DEBUG
-		// ÉèÖÃ D3DCOMPILE_DEBUG ±êÖ¾ÓÃÓÚ»ñÈ¡×ÅÉ«Æ÷µ÷ÊÔĞÅÏ¢¡£¸Ã±êÖ¾¿ÉÒÔÌáÉıµ÷ÊÔÌåÑé£¬
-		// µ«ÈÔÈ»ÔÊĞí×ÅÉ«Æ÷½øĞĞÓÅ»¯²Ù×÷
+		// è®¾ç½® D3DCOMPILE_DEBUG æ ‡å¿—ç”¨äºè·å–ç€è‰²å™¨è°ƒè¯•ä¿¡æ¯ã€‚è¯¥æ ‡å¿—å¯ä»¥æå‡è°ƒè¯•ä½“éªŒï¼Œ
+		// ä½†ä»ç„¶å…è®¸ç€è‰²å™¨è¿›è¡Œä¼˜åŒ–æ“ä½œ
 		dwShaderFlags |= D3DCOMPILE_DEBUG;
 
-		// ÔÚDebug»·¾³ÏÂ½ûÓÃÓÅ»¯ÒÔ±ÜÃâ³öÏÖÒ»Ğ©²»ºÏÀíµÄÇé¿ö
+		// åœ¨Debugç¯å¢ƒä¸‹ç¦ç”¨ä¼˜åŒ–ä»¥é¿å…å‡ºç°ä¸€äº›ä¸åˆç†çš„æƒ…å†µ
 		dwShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
 		ID3DBlob* errorBlob = nullptr;
@@ -103,7 +103,7 @@ HRESULT DXHelper::CreateShaderFromFile(
 			return hr;
 		}
 
-		// ÈôÖ¸¶¨ÁËÊä³öÎÄ¼şÃû£¬Ôò½«×ÅÉ«Æ÷¶ş½øÖÆĞÅÏ¢Êä³ö
+		// è‹¥æŒ‡å®šäº†è¾“å‡ºæ–‡ä»¶åï¼Œåˆ™å°†ç€è‰²å™¨äºŒè¿›åˆ¶ä¿¡æ¯è¾“å‡º
 		if (csoFileNameInOut)
 		{
 			return D3DWriteBlobToFile(*ppBlobOut, csoFileNameInOut, FALSE);

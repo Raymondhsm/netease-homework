@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "StepTimer.h"
 
 StepTimer::StepTimer():
@@ -13,7 +13,7 @@ StepTimer::StepTimer():
 	QueryPerformanceFrequency(&m_qpcFrequency);
 	QueryPerformanceCounter(&m_qpcLastTime);
 
-	// ½«×î´óÔöÁ¿³õÊ¼»¯Îª 1/10 Ãë¡£
+	// å°†æœ€å¤§å¢é‡åˆå§‹åŒ–ä¸º 1/10 ç§’ã€‚
 	m_qpcMaxDelta = m_qpcFrequency.QuadPart / 10;
 }
 

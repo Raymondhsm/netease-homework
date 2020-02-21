@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Apps/StepTimer.h"
 #include "Utils/ShaderStructures.h"
 #include "Component/Camera.h"
@@ -29,14 +29,14 @@ namespace Job
 		void UpdateCarMove(float deltaTime);
 		void UpdateCameraPos();
 
-		// »º´æµÄÉè±¸×ÊÔ´Ö¸Õë¡£
+		// ç¼“å­˜çš„è®¾å¤‡èµ„æºæŒ‡é’ˆã€‚
 		std::shared_ptr<D3DApp> m_deviceResources;
 		std::shared_ptr<Camera> m_camera;
 		std::shared_ptr<InputController> m_input;
 
 		ObjReader m_objReader;
 
-		// Á¢Ìå¼¸ºÎµÄ Direct3D ×ÊÔ´¡£
+		// ç«‹ä½“å‡ ä½•çš„ Direct3D èµ„æºã€‚
 		ComPtr<ID3D11InputLayout>	m_inputLayout;
 		ComPtr<ID3D11Buffer>		m_vertexBuffer;
 		ComPtr<ID3D11Buffer>		m_indexBuffer;
@@ -48,7 +48,7 @@ namespace Job
 		Model			m_carModel;
 		Model			m_mapModel;
 
-		// Á¢Ìå¼¸ºÎµÄÏµÍ³×ÊÔ´¡£
+		// ç«‹ä½“å‡ ä½•çš„ç³»ç»Ÿèµ„æºã€‚
 		ModelViewProjNorConstantBuffer		m_constantBufferData;
 		LightConstantBuffer					m_lightConstantBufferData;
 
@@ -57,7 +57,7 @@ namespace Job
 		__int32	m_indexCount;
 		bool m_loadingComplete;
 
-		// car model µÄ¿ØÖÆ±äÁ¿
+		// car model çš„æ§åˆ¶å˜é‡
 		XMVECTOR m_carWheelRight;
 		XMVECTOR m_moveDirection;
 		float m_speed;
@@ -65,7 +65,7 @@ namespace Job
 		float m_minSpeed;
 		bool m_carStop;
 
-		// ÊÇ·ñµÚÒ»ÈË³Æ
+		// æ˜¯å¦ç¬¬ä¸€äººç§°
 		bool m_FP;
 		float m_TPDistance;
 	};

@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "Utils/DirectXHelper.h"
 #include "Utils/DDSTextureLoader.h"
 #include "SkyboxRender.h"
@@ -21,7 +21,7 @@ void SkyboxRender::CreateDeviceDependentResources()
 	Microsoft::WRL::ComPtr<ID3DBlob> VSBlob;
 	Microsoft::WRL::ComPtr<ID3DBlob> PSBlob;
 
-	// ¼ÓÔØ¶¥µãºÍÏñËØ×ÅÉ«Æ÷
+	// åŠ è½½é¡¶ç‚¹å’Œåƒç´ ç€è‰²å™¨
 	ThrowIfFailed(
 		CreateShaderFromFile(
 			L"HSLS/SkyboxVS.cso",
@@ -35,7 +35,7 @@ void SkyboxRender::CreateDeviceDependentResources()
 			"PS", "ps_5_0", PSBlob.ReleaseAndGetAddressOf())
 	);
 
-	// ¼ÓÔØ×ÅÉ«Æ÷ºó ´´½¨×ÅÉ«Æ÷
+	// åŠ è½½ç€è‰²å™¨å åˆ›å»ºç€è‰²å™¨
 	//auto createVSTask = loadVSTask.then([this](const std::vector<byte>& fileData) {
 		ThrowIfFailed(
 			m_deviceResources->GetD3DDevice()->CreateVertexShader(
@@ -46,7 +46,7 @@ void SkyboxRender::CreateDeviceDependentResources()
 			)
 		);
 
-		// ´´½¨¶¥µãÃèÊö
+		// åˆ›å»ºé¡¶ç‚¹æè¿°
 		static const D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
 		{
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -65,7 +65,7 @@ void SkyboxRender::CreateDeviceDependentResources()
 	//});
 
 
-	// ´´½¨ÏñËØ×ÅÉ«Æ÷
+	// åˆ›å»ºåƒç´ ç€è‰²å™¨
 	//auto createPSTask = loadPSTask.then([this](const std::vector<byte>& fileData) {
 		ThrowIfFailed(
 			m_deviceResources->GetD3DDevice()->CreatePixelShader(
@@ -76,7 +76,7 @@ void SkyboxRender::CreateDeviceDependentResources()
 			)
 		);
 
-		// ´´½¨³£Á¿»º³åÇø
+		// åˆ›å»ºå¸¸é‡ç¼“å†²åŒº
 		CD3D11_BUFFER_DESC constantBufferDesc(sizeof(ModelViewProjectionConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
 		ThrowIfFailed(
 			m_deviceResources->GetD3DDevice()->CreateBuffer(
@@ -87,9 +87,9 @@ void SkyboxRender::CreateDeviceDependentResources()
 		);
 	//});
 
-	// ´´½¨Íø¸ñ
+	// åˆ›å»ºç½‘æ ¼
 	//auto createCubeTask = (createVSTask && createPSTask).then([this]() {
-		// ´´½¨Íø¸ñÎ»ÖÃºÍÑÕÉ«
+		// åˆ›å»ºç½‘æ ¼ä½ç½®å’Œé¢œè‰²
 		static const VertexPosTex vertices[] = {
 			{XMFLOAT3(3000.0f, 3000.0f, 3000.0f), XMFLOAT2(0.0f, 0.0f)},
 			{XMFLOAT3(3000.0f, -3000.0f, 3000.0f), XMFLOAT2(0.0f, 1.0f)},
@@ -123,7 +123,7 @@ void SkyboxRender::CreateDeviceDependentResources()
 			{XMFLOAT3(-3000.0f, 3000.0f, -3000.0f), XMFLOAT2(1.0f, 0.0f)}
 		};
 
-		// ´´½¨¶¥µã»º³åÊı¾İ
+		// åˆ›å»ºé¡¶ç‚¹ç¼“å†²æ•°æ®
 		D3D11_SUBRESOURCE_DATA VBData = { 0 };
 		VBData.pSysMem = vertices;
 		VBData.SysMemPitch = 0;
@@ -137,7 +137,7 @@ void SkyboxRender::CreateDeviceDependentResources()
 			)
 		);
 
-		// ´´½¨Ë÷Òı»º³åÊı¾İ
+		// åˆ›å»ºç´¢å¼•ç¼“å†²æ•°æ®
 		static const unsigned short indices[] =
 		{
 			1,0,2,//front
@@ -184,7 +184,7 @@ void SkyboxRender::CreateDeviceDependentResources()
 	CreateDDSTextureFromFile(m_deviceResources->GetD3DDevice(), L"Assets/right.dds", nullptr, m_TexRightSRV.GetAddressOf());
 	
 
-	// ĞŞ¸Ä¼ÓÔØ³É¹¦±äÁ¿
+	// ä¿®æ”¹åŠ è½½æˆåŠŸå˜é‡
 	//createCubeTask.then([this]() {
 		m_loadingComplete = true;
 	//});
@@ -215,32 +215,32 @@ void SkyboxRender::Update(StepTimer const & timer)
 
 void SkyboxRender::Render()
 {
-	// È·±£¼ÓÔØÍê³Éºó½øĞĞäÖÈ¾²Ù×÷
+	// ç¡®ä¿åŠ è½½å®Œæˆåè¿›è¡Œæ¸²æŸ“æ“ä½œ
 	if (!m_loadingComplete) return;
 
 	auto context = m_deviceResources->GetD3DDeviceContext();
 
-	// ÉèÖÃ×ÅÉ«Æ÷
+	// è®¾ç½®ç€è‰²å™¨
 	context->VSSetShader(m_vertexShader.Get(), nullptr, 0);
 	context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
 
-	// ½«»º³åÊı¾İ·¢ËÍµ½³£Á¿»º³åÇø
+	// å°†ç¼“å†²æ•°æ®å‘é€åˆ°å¸¸é‡ç¼“å†²åŒº
 	context->UpdateSubresource1(m_constantBuffer.Get(), 0, NULL, &m_constantBufferData, 0, 0, 0);
 
-	// ÉèÖÃ¶¥µãÊı¾İ
+	// è®¾ç½®é¡¶ç‚¹æ•°æ®
 	UINT stride = sizeof(VertexPosTex);
 	UINT offset = 0;
 	context->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &stride, &offset);
 
-	// ÉèÖÃindex»º³å
+	// è®¾ç½®indexç¼“å†²
 	context->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	context->IASetInputLayout(m_inputLayout.Get());
 
-	// ½«³£Á¿»º³åÇø·¢ËÍµ½Í¼ĞÎÉè±¸¡£
+	// å°†å¸¸é‡ç¼“å†²åŒºå‘é€åˆ°å›¾å½¢è®¾å¤‡ã€‚
 	context->VSSetConstantBuffers1(0, 1, m_constantBuffer.GetAddressOf(), nullptr, nullptr);
 
-	// »æÖÆ¶ÔÏó¡£
+	// ç»˜åˆ¶å¯¹è±¡ã€‚
 	context->PSSetShaderResources(0, 1, m_TexFrontSRV.GetAddressOf());
 	context->DrawIndexed(6, 0, 0);
 

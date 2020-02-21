@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 using namespace DirectX;
 
@@ -9,52 +9,52 @@ namespace Job {
 		Camera();
 		Camera(XMFLOAT3 pos, XMFLOAT3 lookDirection, XMFLOAT3 up);
 		
-		// ÉèÖÃÊÓ×¶Ìå(Í¶Ó°¾ØÕó)
+		// è®¾ç½®è§†é”¥ä½“(æŠ•å½±çŸ©é˜µ)
 		void UpdateFrustum(float fovAngleY);
 		void UpdateFrustum(float fovAngleY, float aspectRatio, float nearZ, float farZ);
 
-		// ¸üĞÂÊÓÍ¼¾ØÕó
+		// æ›´æ–°è§†å›¾çŸ©é˜µ
 		void UpdateViewMatrix();
 
-		// ÉèÖÃÏà»úÎ»ÖÃ
+		// è®¾ç½®ç›¸æœºä½ç½®
 		void setPosition(XMVECTOR pos);
 		void setPosition(XMFLOAT3 pos);
 		void setPosition(float x, float y, float z);
 
-		// ÉèÖÃÏà»ú³¯Ïò(·½Ïò£¬·Ç¶¨µã)
+		// è®¾ç½®ç›¸æœºæœå‘(æ–¹å‘ï¼Œéå®šç‚¹)
 		void setlookDirection(XMVECTOR lookDirection);
 		void setlookDirection(XMFLOAT3 lookDirection);
 		void setlookDirection(float x, float y, float z);
 
-		// ÉèÖÃÏà»ú
+		// è®¾ç½®ç›¸æœº
 		void setCamera(XMVECTOR pos, XMVECTOR lookDirection, XMVECTOR worldUp);
 		void setCamera(const XMFLOAT3& pos, const XMFLOAT3& lookDirection,const XMFLOAT3& worldUp);
 
-		// ÒÆ¶¯
+		// ç§»åŠ¨
 		void Move(float distance, XMFLOAT3 direction);
 		void Move(XMFLOAT3 dis);
 
-		// Ç°ºó×óÓÒ
+		// å‰åå·¦å³
 		void Forward(float distance);
 		void Back(float distance);
 		void Left(float distance);
 		void Right(float distance);
 
-		// Ğı×ª(XÖá)
+		// æ—‹è½¬(Xè½´)
 		void Pitch(float angle);
 		void PitchDegree(float degree);
 
-		// Ğı×ª(YÖá)
+		// æ—‹è½¬(Yè½´)
 		void Yaw(float angle);
 		void YawDegree(float degree);
 
-		// ÈÆ¶¨µã£¨xzÆ½Ãæ£©Ğı×ª
+		// ç»•å®šç‚¹ï¼ˆxzå¹³é¢ï¼‰æ—‹è½¬
 		void PitchAtPoint(float angle, XMVECTOR point);
 		void PitchAtPointDegree(float degree, XMVECTOR point);
 		void YawAtPoint(float angle, XMVECTOR point);
 		void YawAtPointDegree(float degree, XMVECTOR point);
 
-		// »ñÈ¡¼¸¸öÏòÁ¿
+		// è·å–å‡ ä¸ªå‘é‡
 		XMFLOAT3 getPosition()		{ return m_pos; }
 		XMFLOAT3 getRight()			{ return m_right; }
 		XMFLOAT3 getLook()			{ return m_look; }
@@ -65,31 +65,31 @@ namespace Job {
 		XMVECTOR getLookV()		const { return XMLoadFloat3(&m_look); }
 		XMVECTOR getUpV()			const { return XMLoadFloat3(&m_up); }
 
-		// »ñÈ¡ÊÓ×¶ÌåĞÅÏ¢
+		// è·å–è§†é”¥ä½“ä¿¡æ¯
 		float getNearZ()			const { return m_nearZ; }
 		float getFarZ()				const { return m_farZ; }
 		float getFovY()				const { return m_fovAngleY; }
 		float getFovX()				const { return atan(m_aspectRatio * tan(m_fovAngleY * 0.5f)) * 2.f; }
 		float getAspect()			const { return m_aspectRatio; }
 
-		// »ñÈ¡ÊÓÍ¼ºÍÍ¶Ó°¾ØÕó
+		// è·å–è§†å›¾å’ŒæŠ•å½±çŸ©é˜µ
 		XMMATRIX GetView()			const { return DirectX::XMLoadFloat4x4(&m_view); }
 		XMMATRIX GetProj()			const { return DirectX::XMLoadFloat4x4(&m_proj); }
 		XMMATRIX GetViewProj()		const { return XMLoadFloat4x4(&m_view) * XMLoadFloat4x4(&m_proj); }
 
 	private:
 
-		XMFLOAT3 m_pos;				// Î»ÖÃ
-		XMFLOAT3 m_look;			// ³¯Ïò
-		XMFLOAT3 m_right;			// ÓÒ·½Ïò
-		XMFLOAT3 m_up;				// ÉÏ·½Ïò
+		XMFLOAT3 m_pos;				// ä½ç½®
+		XMFLOAT3 m_look;			// æœå‘
+		XMFLOAT3 m_right;			// å³æ–¹å‘
+		XMFLOAT3 m_up;				// ä¸Šæ–¹å‘
 
-		float m_fovAngleY;			// ÊÓ×¶ÌåY·½ÏòÕÅ½Ç
-		float m_aspectRatio;		// ÊÓ×¶Ìå³¤¿í±ÈÀı
-		float m_nearZ;				// ÊÓ×¶Ìå½üÆ½Ãæ
-		float m_farZ;				// ÊÓ×¶ÌåÔ¶Æ½Ãæ
+		float m_fovAngleY;			// è§†é”¥ä½“Yæ–¹å‘å¼ è§’
+		float m_aspectRatio;		// è§†é”¥ä½“é•¿å®½æ¯”ä¾‹
+		float m_nearZ;				// è§†é”¥ä½“è¿‘å¹³é¢
+		float m_farZ;				// è§†é”¥ä½“è¿œå¹³é¢
 
-		XMFLOAT4X4 m_view;			// ÊÓÍ¼¾ØÕó
-		XMFLOAT4X4 m_proj;			// Í¶Ó°¾ØÕó
+		XMFLOAT4X4 m_view;			// è§†å›¾çŸ©é˜µ
+		XMFLOAT4X4 m_proj;			// æŠ•å½±çŸ©é˜µ
 	};
 }

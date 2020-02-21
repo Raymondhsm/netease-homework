@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "pch.h"
 
 class StepTimer
@@ -8,11 +8,11 @@ public:
 
 	void ResetElapsedTime();
 
-	// ¸üĞÂ¼ÆÊ±Æ÷×´Ì¬£¬µ÷ÓÃÊÊµ±´ÎÊıµÄÖ¸¶¨ Update º¯Êı¡£
+	// æ›´æ–°è®¡æ—¶å™¨çŠ¶æ€ï¼Œè°ƒç”¨é€‚å½“æ¬¡æ•°çš„æŒ‡å®š Update å‡½æ•°ã€‚
 	template<typename TUpdate>
 	inline void Tick(const TUpdate& update)
 	{
-		// ²éÑ¯µ±Ç°Ê±¼ä¡£
+		// æŸ¥è¯¢å½“å‰æ—¶é—´ã€‚
 		LARGE_INTEGER currentTime;
 
 		QueryPerformanceCounter(&currentTime);
@@ -22,13 +22,13 @@ public:
 		m_qpcLastTime = currentTime;
 		m_qpcSecondCounter += timeDelta;
 
-		// ¹Ì¶¨¹ı´óµÄÊ±¼äÔöÁ¿(ÀıÈç£¬ ÔÚµ÷ÊÔÆ÷ÖĞÔİÍ£Ö®ºó)¡£
+		// å›ºå®šè¿‡å¤§çš„æ—¶é—´å¢é‡(ä¾‹å¦‚ï¼Œ åœ¨è°ƒè¯•å™¨ä¸­æš‚åœä¹‹å)ã€‚
 		if (timeDelta > m_qpcMaxDelta)
 		{
 			timeDelta = m_qpcMaxDelta;
 		}
 
-		// ½« QPC µ¥Î»×ª»»Îª¹æ·¶µÄ¼ÆÊ±¸ñÊ½¡£Õâ»áÒòÎªÉÏÒ»´Î¹Ì¶¨¶øÎŞ·¨Òç³ö¡£
+		// å°† QPC å•ä½è½¬æ¢ä¸ºè§„èŒƒçš„è®¡æ—¶æ ¼å¼ã€‚è¿™ä¼šå› ä¸ºä¸Šä¸€æ¬¡å›ºå®šè€Œæ— æ³•æº¢å‡ºã€‚
 		timeDelta *= TicksPerSecond;
 		timeDelta /= m_qpcFrequency.QuadPart;
 
@@ -43,7 +43,7 @@ public:
 		update();
 
 
-		// ¸ú×Ùµ±Ç°Ö¡ËÙÂÊ¡£
+		// è·Ÿè¸ªå½“å‰å¸§é€Ÿç‡ã€‚
 		if (m_frameCount != lastFrameCount)
 		{
 			m_framesThisSecond++;
@@ -57,38 +57,38 @@ public:
 		}
 	}
 
-	// »ñÈ¡ÉÏÒ»´Î Update µ÷ÓÃºóµÄÔËĞĞÊ±¼ä¡£
+	// è·å–ä¸Šä¸€æ¬¡ Update è°ƒç”¨åçš„è¿è¡Œæ—¶é—´ã€‚
 	__int64 GetElapsedTicks() const { return m_elapsedTicks; }
 	double GetElapsedSeconds() const { return TicksToSeconds(m_elapsedTicks); }
 
-	// »ñÈ¡³ÌĞòÆô¶¯Ö®ºóµÄ×ÜÊ±¼ä¡£
+	// è·å–ç¨‹åºå¯åŠ¨ä¹‹åçš„æ€»æ—¶é—´ã€‚
 	__int64 GetTotalTicks() const { return m_totalTicks; }
 	double GetTotalSeconds() const { return TicksToSeconds(m_totalTicks); }
 
-	// »ñÈ¡×Ô³ÌĞòÆô¶¯Ö®ºóµÄ¸üĞÂ´ÎÊı¡£
+	// è·å–è‡ªç¨‹åºå¯åŠ¨ä¹‹åçš„æ›´æ–°æ¬¡æ•°ã€‚
 	__int32 GetFrameCount() const { return m_frameCount; }
 
-	// »ñÈ¡µ±Ç°Ö¡ËÙÂÊ¡£
+	// è·å–å½“å‰å¸§é€Ÿç‡ã€‚
 	__int32 GetFramesPerSecond() const { return m_framesPerSecond; }
 
-	// ÕûÊı¸ñÊ½Ê¹ÓÃÃ¿Ãë 10,000,000 ´ÎµÎ´ğÀ´±íÊ¾Ê±¼ä¡£
+	// æ•´æ•°æ ¼å¼ä½¿ç”¨æ¯ç§’ 10,000,000 æ¬¡æ»´ç­”æ¥è¡¨ç¤ºæ—¶é—´ã€‚
 	static const __int64 TicksPerSecond = 10000000;
 
 	static double TicksToSeconds(__int64 ticks) { return static_cast<double>(ticks) / TicksPerSecond; }
 	static __int64 SecondsToTicks(double seconds) { return static_cast<__int64>(seconds * TicksPerSecond); }
 
 private:
-	// Ô´¼ÆÊ±Êı¾İÊ¹ÓÃ QPC µ¥Î»¡£
+	// æºè®¡æ—¶æ•°æ®ä½¿ç”¨ QPC å•ä½ã€‚
 	LARGE_INTEGER m_qpcFrequency;
 	LARGE_INTEGER m_qpcLastTime;
 	__int64 m_qpcMaxDelta;
 
-	// ÅÉÉúµÄ¼ÆÊ±Êı¾İÊ¹ÓÃ¹æ·¶µÄ¼ÆÊ±¸ñÊ½¡£
+	// æ´¾ç”Ÿçš„è®¡æ—¶æ•°æ®ä½¿ç”¨è§„èŒƒçš„è®¡æ—¶æ ¼å¼ã€‚
 	__int64 m_elapsedTicks;
 	__int64 m_totalTicks;
 	__int64 m_leftOverTicks;
 
-	// ÓÃÓÚ¸ú×ÙÖ¡ËÙÂÊµÄ³ÉÔ±¡£
+	// ç”¨äºè·Ÿè¸ªå¸§é€Ÿç‡çš„æˆå‘˜ã€‚
 	__int32 m_frameCount;
 	__int32 m_framesPerSecond;
 	__int32 m_framesThisSecond;

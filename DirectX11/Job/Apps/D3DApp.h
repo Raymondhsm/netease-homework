@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Apps/StepTimer.h"
 #include <string>
 
@@ -14,7 +14,7 @@ public:
 	virtual bool Initialize();
 	virtual void CreateWindowSizeDependentResource();
 	virtual bool CreateDeviceDependentResource();
-	virtual bool CreateMainWindow();      // ´°¿Ú³õÊ¼»¯
+	virtual bool CreateMainWindow();      // çª—å£åˆå§‹åŒ–
 	virtual void Update() = 0;
 	virtual bool Render() = 0;
 	virtual void Present() = 0;
@@ -24,9 +24,9 @@ public:
 
 	virtual LRESULT MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-	HINSTANCE	GetAppInst()const;                 // »ñÈ¡Ó¦ÓÃÊµÀıµÄ¾ä±ú
-	HWND		GetMainWnd()const;                 // »ñÈ¡Ö÷´°¿Ú¾ä±ú
-	float		GetAspectRatio()const;             // »ñÈ¡ÆÁÄ»¿í¸ß±È
+	HINSTANCE	GetAppInst()const;                 // è·å–åº”ç”¨å®ä¾‹çš„å¥æŸ„
+	HWND		GetMainWnd()const;                 // è·å–ä¸»çª—å£å¥æŸ„
+	float		GetAspectRatio()const;             // è·å–å±å¹•å®½é«˜æ¯”
 
 	ID3D11Device3*			GetD3DDevice()const			{ return m_pd3dDevice.Get(); }
 	ID3D11DeviceContext3*	GetD3DDeviceContext()const	{ return m_pd3dContext.Get(); }
@@ -34,38 +34,38 @@ public:
 
 protected:
 
-	HINSTANCE	m_hAppInst;				// Ó¦ÓÃÊµÀı¾ä±ú
-	HWND		m_hMainWnd;				// Ö÷´°¿Ú¾ä±ú
-	bool		m_AppPaused;			// Ó¦ÓÃÊÇ·ñÔİÍ£
-	bool		m_Minimized;			// Ó¦ÓÃÊÇ·ñ×îĞ¡»¯
-	bool		m_Maximized;			// Ó¦ÓÃÊÇ·ñ×î´ó»¯
-	bool		m_Resizing;				// ´°¿Ú´óĞ¡ÊÇ·ñ±ä»¯
-	bool		m_Enable4xMsaa;			// ÊÇ·ñ¿ªÆô4±¶¶àÖØ²ÉÑù
-	UINT		m_4xMsaaQuality;		// MSAAÖ§³ÖµÄÖÊÁ¿µÈ¼¶
+	HINSTANCE	m_hAppInst;				// åº”ç”¨å®ä¾‹å¥æŸ„
+	HWND		m_hMainWnd;				// ä¸»çª—å£å¥æŸ„
+	bool		m_AppPaused;			// åº”ç”¨æ˜¯å¦æš‚åœ
+	bool		m_Minimized;			// åº”ç”¨æ˜¯å¦æœ€å°åŒ–
+	bool		m_Maximized;			// åº”ç”¨æ˜¯å¦æœ€å¤§åŒ–
+	bool		m_Resizing;				// çª—å£å¤§å°æ˜¯å¦å˜åŒ–
+	bool		m_Enable4xMsaa;			// æ˜¯å¦å¼€å¯4å€å¤šé‡é‡‡æ ·
+	UINT		m_4xMsaaQuality;		// MSAAæ”¯æŒçš„è´¨é‡ç­‰çº§
 
-	StepTimer m_Timer;           // ¼ÆÊ±Æ÷
+	StepTimer m_Timer;           // è®¡æ—¶å™¨
 
-	// Ê¹ÓÃÄ£°å±ğÃû(C++11)¼ò»¯ÀàĞÍÃû
+	// ä½¿ç”¨æ¨¡æ¿åˆ«å(C++11)ç®€åŒ–ç±»å‹å
 	template <class T>
 	using ComPtr = Microsoft::WRL::ComPtr<T>;
 
 	// Direct3D 11
-	ComPtr<ID3D11Device3> m_pd3dDevice;                    // D3D11Éè±¸
-	ComPtr<ID3D11DeviceContext3> m_pd3dContext;   // D3D11Éè±¸ÉÏÏÂÎÄ
-	ComPtr<IDXGISwapChain3> m_pSwapChain;                  // D3D11½»»»Á´
+	ComPtr<ID3D11Device3> m_pd3dDevice;                    // D3D11è®¾å¤‡
+	ComPtr<ID3D11DeviceContext3> m_pd3dContext;   // D3D11è®¾å¤‡ä¸Šä¸‹æ–‡
+	ComPtr<IDXGISwapChain3> m_pSwapChain;                  // D3D11äº¤æ¢é“¾
 
-	// »º´æµÄÉè±¸ÊôĞÔ¡£
+	// ç¼“å­˜çš„è®¾å¤‡å±æ€§ã€‚
 	D3D_FEATURE_LEVEL	m_d3dFeatureLevel;
 	
-	// ³£ÓÃ×ÊÔ´
-	ComPtr<ID3D11Texture2D1> m_pDepthStencilBuffer;        // Éî¶ÈÄ£°å»º³åÇø
-	ComPtr<ID3D11RenderTargetView1> m_pRenderTargetView;   // äÖÈ¾Ä¿±êÊÓÍ¼
-	ComPtr<ID3D11DepthStencilView> m_pDepthStencilView;   // Éî¶ÈÄ£°åÊÓÍ¼
-	D3D11_VIEWPORT m_ScreenViewport;                      // ÊÓ¿Ú
+	// å¸¸ç”¨èµ„æº
+	ComPtr<ID3D11Texture2D1> m_pDepthStencilBuffer;        // æ·±åº¦æ¨¡æ¿ç¼“å†²åŒº
+	ComPtr<ID3D11RenderTargetView1> m_pRenderTargetView;   // æ¸²æŸ“ç›®æ ‡è§†å›¾
+	ComPtr<ID3D11DepthStencilView> m_pDepthStencilView;   // æ·±åº¦æ¨¡æ¿è§†å›¾
+	D3D11_VIEWPORT m_ScreenViewport;                      // è§†å£
 
-	// ÅÉÉúÀàÓ¦¸ÃÔÚ¹¹Ôìº¯ÊıÉèÖÃºÃÕâĞ©×Ô¶¨ÒåµÄ³õÊ¼²ÎÊı
-	std::wstring m_MainWndCaption;                       // Ö÷´°¿Ú±êÌâ
-	int m_ClientWidth;                                   // ÊÓ¿Ú¿í¶È
-	int m_ClientHeight;                                  // ÊÓ¿Ú¸ß¶È
+	// æ´¾ç”Ÿç±»åº”è¯¥åœ¨æ„é€ å‡½æ•°è®¾ç½®å¥½è¿™äº›è‡ªå®šä¹‰çš„åˆå§‹å‚æ•°
+	std::wstring m_MainWndCaption;                       // ä¸»çª—å£æ ‡é¢˜
+	int m_ClientWidth;                                   // è§†å£å®½åº¦
+	int m_ClientHeight;                                  // è§†å£é«˜åº¦
 };	
 

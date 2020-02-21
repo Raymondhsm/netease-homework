@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Apps/D3DApp.h"
 #include "Renders/SkyboxRender.h"
 #include "Renders/GameRenderer.h"

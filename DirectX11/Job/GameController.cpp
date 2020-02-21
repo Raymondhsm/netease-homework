@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "GameController.h"
 #include "Utils/DirectXHelper.h"
 #include <sstream>
@@ -45,11 +45,11 @@ bool GameController::Render()
 
 	m_pd3dContext->RSSetViewports(1, &m_ScreenViewport);
 
-	// ½«³ÊÏÖÄ¿±êÖØÖÃÎªÆÁÄ»¡£
+	// å°†å‘ˆçŽ°ç›®æ ‡é‡ç½®ä¸ºå±å¹•ã€‚
 	ID3D11RenderTargetView *const targets[1] = { m_pRenderTargetView.Get() };
 	m_pd3dContext->OMSetRenderTargets(1, targets, m_pDepthStencilView.Get());
 
-	// Çå³ýºóÌ¨»º³åÇøºÍÉî¶ÈÄ£¾ßÊÓÍ¼¡£
+	// æ¸…é™¤åŽå°ç¼“å†²åŒºå’Œæ·±åº¦æ¨¡å…·è§†å›¾ã€‚
 	m_pd3dContext->ClearRenderTargetView(m_pRenderTargetView.Get(), DirectX::Colors::CornflowerBlue);
 	m_pd3dContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 

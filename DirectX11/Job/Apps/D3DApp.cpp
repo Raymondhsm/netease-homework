@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "D3DApp.h"
 #include "Utils/DirectXHelper.h"
 
@@ -40,7 +40,7 @@ D3DApp::D3DApp(HINSTANCE hInstance):
 		MessageBox(0, L"Initialize Failed!", 0, 0);
 }
 
-// ³õÊ¼»¯´´½¨´°¿Ú
+// åˆå§‹åŒ–åˆ›å»ºçª—å£
 bool D3DApp::CreateMainWindow()
 {
 	WNDCLASS wc;
@@ -90,7 +90,7 @@ bool D3DApp::CreateDeviceDependentResource()
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DUBUG;
 #endif
 
-	// ´´½¨Çı¶¯Êı×é
+	// åˆ›å»ºé©±åŠ¨æ•°ç»„
 	D3D_DRIVER_TYPE driverTypes[] =
 	{
 		D3D_DRIVER_TYPE_HARDWARE,
@@ -99,7 +99,7 @@ bool D3DApp::CreateDeviceDependentResource()
 	};
 	UINT numDriverTypes = ARRAYSIZE(driverTypes);
 
-	// ´´½¨ÌØĞÔµÈ¼¶Êı×é
+	// åˆ›å»ºç‰¹æ€§ç­‰çº§æ•°ç»„
 	D3D_FEATURE_LEVEL featureLevels[] =
 	{
 		D3D_FEATURE_LEVEL_11_1,
@@ -107,30 +107,30 @@ bool D3DApp::CreateDeviceDependentResource()
 	};
 	UINT numFeatureLevels = ARRAYSIZE(featureLevels);
 
-	// ´´½¨ Direct3D 11 API Éè±¸¶ÔÏóºÍ¶ÔÓ¦µÄÉÏÏÂÎÄ¡£
+	// åˆ›å»º Direct3D 11 API è®¾å¤‡å¯¹è±¡å’Œå¯¹åº”çš„ä¸Šä¸‹æ–‡ã€‚
 	ComPtr<ID3D11Device> device;
 	ComPtr<ID3D11DeviceContext> context;
 
 	hr = D3D11CreateDevice(
-		nullptr,					// Ö¸¶¨ nullptr ÒÔÊ¹ÓÃÄ¬ÈÏÊÊÅäÆ÷¡£
-		D3D_DRIVER_TYPE_HARDWARE,	// ´´½¨Ê¹ÓÃÓ²¼şÍ¼ĞÎÇı¶¯³ÌĞòµÄÉè±¸¡£
-		0,							// Ó¦Îª 0£¬³ı·ÇÇı¶¯³ÌĞòÊÇ D3D_DRIVER_TYPE_SOFTWARE¡£
-		createDeviceFlags,			// ÉèÖÃµ÷ÊÔºÍ Direct2D ¼æÈİĞÔ±êÖ¾¡£
-		featureLevels,				// ´ËÓ¦ÓÃ³ÌĞò¿ÉÒÔÖ§³ÖµÄ¹¦ÄÜ¼¶±ğµÄÁĞ±í¡£
-		ARRAYSIZE(featureLevels),	// ÉÏÃæµÄÁĞ±íµÄ´óĞ¡¡£
-		D3D11_SDK_VERSION,			// ¶ÔÓÚ Windows Ó¦ÓÃÉÌµêÓ¦ÓÃ£¬Ê¼ÖÕ½«´ËÖµÉèÖÃÎª D3D11_SDK_VERSION¡£
-		&device,					// ·µ»Ø´´½¨µÄ Direct3D Éè±¸¡£
-		&m_d3dFeatureLevel,			// ·µ»ØËù´´½¨Éè±¸µÄ¹¦ÄÜ¼¶±ğ¡£
-		&context					// ·µ»ØÉè±¸µÄ¼´Ê±ÉÏÏÂÎÄ¡£
+		nullptr,					// æŒ‡å®š nullptr ä»¥ä½¿ç”¨é»˜è®¤é€‚é…å™¨ã€‚
+		D3D_DRIVER_TYPE_HARDWARE,	// åˆ›å»ºä½¿ç”¨ç¡¬ä»¶å›¾å½¢é©±åŠ¨ç¨‹åºçš„è®¾å¤‡ã€‚
+		0,							// åº”ä¸º 0ï¼Œé™¤éé©±åŠ¨ç¨‹åºæ˜¯ D3D_DRIVER_TYPE_SOFTWAREã€‚
+		createDeviceFlags,			// è®¾ç½®è°ƒè¯•å’Œ Direct2D å…¼å®¹æ€§æ ‡å¿—ã€‚
+		featureLevels,				// æ­¤åº”ç”¨ç¨‹åºå¯ä»¥æ”¯æŒçš„åŠŸèƒ½çº§åˆ«çš„åˆ—è¡¨ã€‚
+		ARRAYSIZE(featureLevels),	// ä¸Šé¢çš„åˆ—è¡¨çš„å¤§å°ã€‚
+		D3D11_SDK_VERSION,			// å¯¹äº Windows åº”ç”¨å•†åº—åº”ç”¨ï¼Œå§‹ç»ˆå°†æ­¤å€¼è®¾ç½®ä¸º D3D11_SDK_VERSIONã€‚
+		&device,					// è¿”å›åˆ›å»ºçš„ Direct3D è®¾å¤‡ã€‚
+		&m_d3dFeatureLevel,			// è¿”å›æ‰€åˆ›å»ºè®¾å¤‡çš„åŠŸèƒ½çº§åˆ«ã€‚
+		&context					// è¿”å›è®¾å¤‡çš„å³æ—¶ä¸Šä¸‹æ–‡ã€‚
 	);
 
-	// Èç¹û³õÊ¼»¯Ê§°Ü£¬Ôò»ØÍËµ½ WARP Éè±¸¡£
+	// å¦‚æœåˆå§‹åŒ–å¤±è´¥ï¼Œåˆ™å›é€€åˆ° WARP è®¾å¤‡ã€‚
 	if (FAILED(hr))
 	{
 		ThrowIfFailed(
 			D3D11CreateDevice(
 				nullptr,
-				D3D_DRIVER_TYPE_WARP, // ´´½¨ WARP Éè±¸¶ø²»ÊÇÓ²¼şÉè±¸¡£
+				D3D_DRIVER_TYPE_WARP, // åˆ›å»º WARP è®¾å¤‡è€Œä¸æ˜¯ç¡¬ä»¶è®¾å¤‡ã€‚
 				0,
 				createDeviceFlags,
 				featureLevels,
@@ -143,7 +143,7 @@ bool D3DApp::CreateDeviceDependentResource()
 		);
 	}
 
-	// ½«Ö¸Õë´æ´¢µ½ Direct3D 11.3 API Éè±¸ºÍ¼´Ê±ÉÏÏÂÎÄÖĞ¡£
+	// å°†æŒ‡é’ˆå­˜å‚¨åˆ° Direct3D 11.3 API è®¾å¤‡å’Œå³æ—¶ä¸Šä¸‹æ–‡ä¸­ã€‚
 	ThrowIfFailed(device.As(&m_pd3dDevice));
 	ThrowIfFailed(context.As(&m_pd3dContext));
 
@@ -210,31 +210,31 @@ bool D3DApp::Initialize()
 
 void D3DApp::CreateWindowSizeDependentResource()
 {
-	// Çå³ıÌØ¶¨ÓÚÉÏÒ»´°¿Ú´óĞ¡µÄÉÏÏÂÎÄ¡£
+	// æ¸…é™¤ç‰¹å®šäºä¸Šä¸€çª—å£å¤§å°çš„ä¸Šä¸‹æ–‡ã€‚
 	ID3D11RenderTargetView* nullViews[] = { nullptr };
 	m_pd3dContext->OMSetRenderTargets(ARRAYSIZE(nullViews), nullViews, nullptr);
 	m_pRenderTargetView = nullptr;
 	m_pDepthStencilView = nullptr;
 	m_pd3dContext->Flush1(D3D11_CONTEXT_TYPE_ALL, nullptr);
 
-	// Èç¹û½»»»Á´Îª¿Õ ´´½¨
+	// å¦‚æœäº¤æ¢é“¾ä¸ºç©º åˆ›å»º
 	if (m_pSwapChain == nullptr)
 	{
-		// ´ËĞòÁĞ»ñÈ¡ÓÃÀ´´´½¨ÉÏÃæµÄ Direct3D Éè±¸µÄ DXGI ¹¤³§¡£
+		// æ­¤åºåˆ—è·å–ç”¨æ¥åˆ›å»ºä¸Šé¢çš„ Direct3D è®¾å¤‡çš„ DXGI å·¥å‚ã€‚
 		ComPtr<IDXGIDevice3> dxgiDevice;
 		ComPtr<IDXGIAdapter> dxgiAdapter;
 		ComPtr<IDXGIFactory4> dxgiFactory;
 
 		ThrowIfFailed(
-			m_pd3dDevice.As(&dxgiDevice), L"dxgiDevice failed"
+			m_pd3dDevice.As(&dxgiDevice)
 		);
 
 		ThrowIfFailed(
-			dxgiDevice->GetAdapter(&dxgiAdapter), L"dxgiAdapter failed"
+			dxgiDevice->GetAdapter(&dxgiAdapter)
 		);
 
 		ThrowIfFailed(
-			dxgiAdapter->GetParent(IID_PPV_ARGS(&dxgiFactory)), L"dxgiFactory failed"
+			dxgiAdapter->GetParent(IID_PPV_ARGS(&dxgiFactory))
 		);
 
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = { 0 };
@@ -276,9 +276,9 @@ void D3DApp::CreateWindowSizeDependentResource()
 	}
 	else
 	{
-		// Èç¹û½»»»Á´ÒÑ´æÔÚ£¬Çëµ÷ÕûÆä´óĞ¡¡£
+		// å¦‚æœäº¤æ¢é“¾å·²å­˜åœ¨ï¼Œè¯·è°ƒæ•´å…¶å¤§å°ã€‚
 		HRESULT hr = m_pSwapChain->ResizeBuffers(
-			2, // Ë«»º³å½»»»Á´¡£
+			2, // åŒç¼“å†²äº¤æ¢é“¾ã€‚
 			lround(m_ClientWidth),
 			lround(m_ClientHeight),
 			DXGI_FORMAT_B8G8R8A8_UNORM,
@@ -287,7 +287,7 @@ void D3DApp::CreateWindowSizeDependentResource()
 
 		if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET)
 		{
-			// Èç¹û³öÓÚÈÎºÎÔ­ÒòÒÆ³ıÁËÉè±¸£¬½«ĞèÒª´´½¨Ò»¸öĞÂµÄÉè±¸ºÍ½»»»Á´¡£
+			// å¦‚æœå‡ºäºä»»ä½•åŸå› ç§»é™¤äº†è®¾å¤‡ï¼Œå°†éœ€è¦åˆ›å»ºä¸€ä¸ªæ–°çš„è®¾å¤‡å’Œäº¤æ¢é“¾ã€‚
 			HandleDeviceLost();
 
 			return;
@@ -298,7 +298,7 @@ void D3DApp::CreateWindowSizeDependentResource()
 		}
 	}
 
-	// ´´½¨½»»»Á´ºóÌ¨»º³åÇøµÄäÖÈ¾Ä¿±êÊÓÍ¼¡£
+	// åˆ›å»ºäº¤æ¢é“¾åå°ç¼“å†²åŒºçš„æ¸²æŸ“ç›®æ ‡è§†å›¾ã€‚
 	ComPtr<ID3D11Texture2D1> backBuffer;
 	ThrowIfFailed(
 		m_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&backBuffer))
@@ -312,13 +312,13 @@ void D3DApp::CreateWindowSizeDependentResource()
 		)
 	);
 
-	// ¸ù¾İĞèÒª´´½¨ÓÃÓÚ 3D äÖÈ¾µÄÉî¶ÈÄ£¾ßÊÓÍ¼¡£
+	// æ ¹æ®éœ€è¦åˆ›å»ºç”¨äº 3D æ¸²æŸ“çš„æ·±åº¦æ¨¡å…·è§†å›¾ã€‚
 	CD3D11_TEXTURE2D_DESC1 depthStencilDesc(
 		DXGI_FORMAT_D24_UNORM_S8_UINT,
 		lround(m_ClientWidth),
 		lround(m_ClientHeight),
-		1, // ´ËÉî¶ÈÄ£¾ßÊÓÍ¼Ö»ÓĞÒ»¸öÎÆÀí¡£
-		1, // Ê¹ÓÃµ¥Ò» mipmap ¼¶±ğ¡£
+		1, // æ­¤æ·±åº¦æ¨¡å…·è§†å›¾åªæœ‰ä¸€ä¸ªçº¹ç†ã€‚
+		1, // ä½¿ç”¨å•ä¸€ mipmap çº§åˆ«ã€‚
 		D3D11_BIND_DEPTH_STENCIL
 	);
 
@@ -339,7 +339,7 @@ void D3DApp::CreateWindowSizeDependentResource()
 		)
 	);
 
-	// ÉèÖÃÓÃÓÚÈ·¶¨Õû¸ö´°¿ÚµÄ 3D äÖÈ¾ÊÓÇø¡£
+	// è®¾ç½®ç”¨äºç¡®å®šæ•´ä¸ªçª—å£çš„ 3D æ¸²æŸ“è§†åŒºã€‚
 	m_ScreenViewport = CD3D11_VIEWPORT(
 		0.0f,
 		0.0f,

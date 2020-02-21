@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Apps/StepTimer.h"
 #include "Utils/ShaderStructures.h"
@@ -18,11 +18,11 @@ namespace Job
 		void Render();
 
 	private:
-		// »º´æµÄÉè±¸×ÊÔ´Ö¸Õë¡£
+		// ç¼“å­˜çš„è®¾å¤‡èµ„æºæŒ‡é’ˆã€‚
 		std::shared_ptr<D3DApp> m_deviceResources;
 		std::shared_ptr<Camera> m_camera;
 
-		// Á¢Ìå¼¸ºÎµÄ Direct3D ×ÊÔ´¡£
+		// ç«‹ä½“å‡ ä½•çš„ Direct3D èµ„æºã€‚
 		Microsoft::WRL::ComPtr<ID3D11InputLayout>	m_inputLayout;
 		Microsoft::WRL::ComPtr<ID3D11Buffer>		m_vertexBuffer;
 		Microsoft::WRL::ComPtr<ID3D11Buffer>		m_indexBuffer;
@@ -30,7 +30,7 @@ namespace Job
 		Microsoft::WRL::ComPtr<ID3D11PixelShader>	m_pixelShader;
 		Microsoft::WRL::ComPtr<ID3D11Buffer>		m_constantBuffer;
 
-		// ÎÆÀí
+		// çº¹ç†
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_TexFrontSRV;
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_TexBackSRV;
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_TexLeftSRV;
@@ -38,7 +38,7 @@ namespace Job
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_TexTopSRV;
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_TexBottomSRV;
 
-		// Á¢Ìå¼¸ºÎµÄÏµÍ³×ÊÔ´¡£
+		// ç«‹ä½“å‡ ä½•çš„ç³»ç»Ÿèµ„æºã€‚
 		ModelViewProjectionConstantBuffer	m_constantBufferData;
 		__int32	m_indexCount;
 		bool m_loadingComplete;

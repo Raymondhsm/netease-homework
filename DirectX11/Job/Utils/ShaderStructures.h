@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "pch.h"
 #include "Utils/ObjReader.h"
 #include "Utils/DirectXHelper.h"
@@ -8,7 +8,7 @@
 using namespace DirectX;
 
 namespace Job {
-	// ÓÃÓÚÏò¶¥µã×ÅÉ«Æ÷·¢ËÍ MVP ¾ØÕóµÄ³£Á¿»º³åÇø¡£
+	// ç”¨äºå‘é¡¶ç‚¹ç€è‰²å™¨å‘é€ MVP çŸ©é˜µçš„å¸¸é‡ç¼“å†²åŒºã€‚
 	struct ModelViewProjectionConstantBuffer
 	{
 		XMFLOAT4X4 model;
@@ -48,7 +48,7 @@ namespace Job {
 		XMFLOAT4 diffuse;
 		XMFLOAT4 specular;
 		XMFLOAT3 direction;
-		float waste;         // Ìî³äÎ»
+		float waste;         // å¡«å……ä½
 	};
 
 	struct LightConstantBuffer
@@ -56,10 +56,10 @@ namespace Job {
 		Materials material;
 		DirectionLight light;
 		XMFLOAT3 eyePos;
-		float waste;  // Ìî³äÎ»
+		float waste;  // å¡«å……ä½
 	};
 
-	// ÓÃÓÚÏò¶¥µã×ÅÉ«Æ÷·¢ËÍÃ¿¸ö¶¥µãµÄÊı¾İ¡£
+	// ç”¨äºå‘é¡¶ç‚¹ç€è‰²å™¨å‘é€æ¯ä¸ªé¡¶ç‚¹çš„æ•°æ®ã€‚
 	struct VertexPositionColor
 	{
 		XMFLOAT3 pos;

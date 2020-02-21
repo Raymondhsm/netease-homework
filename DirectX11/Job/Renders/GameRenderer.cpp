@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "Utils/DirectXHelper.h"
 #include "GameRenderer.h"
 
@@ -25,14 +25,14 @@ GameRenderer::GameRenderer(const std::shared_ptr<D3DApp>& deviceResources,
 	m_FP = true;
 	m_TPDistance = 50.f;
 
-	// ³õÊ¼»¯µÆ¹â
+	// åˆå§‹åŒ–ç¯å…‰
 	m_light.ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
 	m_light.diffuse = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
 	m_light.specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
 	m_light.direction = XMFLOAT3(-0.55f, -0.45f, 1.f);
 	m_lightConstantBufferData.light = m_light;
 
-	// ³õÊ¼»¯³µÁ¾Î»ÖÃ
+	// åˆå§‹åŒ–è½¦è¾†ä½ç½®
 	m_carModel.SetGlobalMatrix(XMMatrixTranslation(50.f, -10.f, -300.f));
 
 	CreateDeviceDependentResources();
@@ -61,7 +61,7 @@ void GameRenderer::Update(StepTimer const & timer)
 {
 	if (m_input->IsKeyReleased(InputController::V)) m_FP = !m_FP;
 
-	UpdateCarMove(timer.GetElapsedSeconds());
+	UpdateCarMove((float)timer.GetElapsedSeconds());
 	UpdateCameraPos();
 
 	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(m_camera->GetView()));
@@ -74,63 +74,63 @@ void GameRenderer::Update(StepTimer const & timer)
 
 void GameRenderer::Render()
 {
-	// È·±£¼ÓÔØÍê³Éºó½øĞĞäÖÈ¾²Ù×÷
+	// ç¡®ä¿åŠ è½½å®Œæˆåè¿›è¡Œæ¸²æŸ“æ“ä½œ
 	if (!m_loadingComplete) return;
 
 	auto context = m_deviceResources->GetD3DDeviceContext();
 
-	// ÉèÖÃ×ÅÉ«Æ÷
+	// è®¾ç½®ç€è‰²å™¨
 	context->VSSetShader(m_vertexShader.Get(), nullptr, 0);
 	context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
 
-	// ÉèÖÃ¶¥µãÊı¾İ
+	// è®¾ç½®é¡¶ç‚¹æ•°æ®
 	UINT stride = sizeof(VertexPosNorTex);
 	UINT offset = 0;
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	context->IASetInputLayout(m_inputLayout.Get());
 
-	for (int i = 0; i < m_carModel.GetObjModels().size(); i++)
+	for (UINT i = 0; i < m_carModel.GetObjModels().size(); i++)
 	{
 		auto objdata = m_carModel.GetObjModels()[i];
-		// ÉèÖÃ¶¥µã»º³å
+		// è®¾ç½®é¡¶ç‚¹ç¼“å†²
 		context->IASetVertexBuffers(0, 1, objdata.vertexBuffer.GetAddressOf(), &stride, &offset);
-		// ÉèÖÃË÷Òı»º³å
+		// è®¾ç½®ç´¢å¼•ç¼“å†²
 		context->IASetIndexBuffer(objdata.indexBuffer.Get(), objdata.indexFormat, 0);
-		// ÉèÖÃÎÆÀí
+		// è®¾ç½®çº¹ç†
 		context->PSSetShaderResources(0, 1, objdata.texSRV.GetAddressOf());
-		// ÉèÖÃVS³£Á¿»º³åÇø
+		// è®¾ç½®VSå¸¸é‡ç¼“å†²åŒº
 		XMStoreFloat4x4(&m_constantBufferData.model, XMMatrixTranspose(m_carModel.GetMatrix(i)));
 		XMStoreFloat4x4(&m_constantBufferData.worldInvTranspose, XMMatrixInverse(nullptr, m_carModel.GetMatrix(i)));
 		context->UpdateSubresource1(m_MVPConstantBuffer.Get(), 0, NULL, &m_constantBufferData, 0, 0, 0);
 		context->VSSetConstantBuffers1(0, 1, m_MVPConstantBuffer.GetAddressOf(), nullptr, nullptr);
-		// ÉèÖÃPS³£Á¿»º³åÇø
+		// è®¾ç½®PSå¸¸é‡ç¼“å†²åŒº
 		m_lightConstantBufferData.material = objdata.material;
 		context->UpdateSubresource1(m_LightConstantBuffer.Get(), 0, NULL, &m_lightConstantBufferData, 0, 0, 0);
 		context->PSSetConstantBuffers1(0, 1, m_LightConstantBuffer.GetAddressOf(), nullptr, nullptr);
-		// »æÍ¼
+		// ç»˜å›¾
 		context->DrawIndexed(objdata.indexCount, 0, 0);
 	}
 
-	// ÉèÖÃVS³£Á¿»º³åÇø
+	// è®¾ç½®VSå¸¸é‡ç¼“å†²åŒº
 	XMStoreFloat4x4(&m_constantBufferData.model, XMMatrixTranspose(XMMatrixScaling(1.f, 1.f, 1.f)));
 	XMStoreFloat4x4(&m_constantBufferData.worldInvTranspose, XMMatrixInverse(nullptr, XMMatrixScaling(1.f, 1.f, 1.f)));
 	context->UpdateSubresource1(m_MVPConstantBuffer.Get(), 0, NULL, &m_constantBufferData, 0, 0, 0);
 	context->VSSetConstantBuffers1(0, 1, m_MVPConstantBuffer.GetAddressOf(), nullptr, nullptr);
-	for (int i = 0; i < m_mapModel.GetObjModels().size(); i++)
+	for (UINT i = 0; i < m_mapModel.GetObjModels().size(); i++)
 	{
 		auto objdata = m_mapModel.GetObjModels()[i];
-		// ÉèÖÃ¶¥µã»º³å
+		// è®¾ç½®é¡¶ç‚¹ç¼“å†²
 		context->IASetVertexBuffers(0, 1, objdata.vertexBuffer.GetAddressOf(), &stride, &offset);
-		// ÉèÖÃË÷Òı»º³å
+		// è®¾ç½®ç´¢å¼•ç¼“å†²
 		context->IASetIndexBuffer(objdata.indexBuffer.Get(), objdata.indexFormat, 0);
-		// ÉèÖÃÎÆÀí
+		// è®¾ç½®çº¹ç†
 		context->PSSetShaderResources(0, 1, objdata.texSRV.GetAddressOf());
-		// ÉèÖÃPS³£Á¿»º³åÇø
+		// è®¾ç½®PSå¸¸é‡ç¼“å†²åŒº
 		m_lightConstantBufferData.material = objdata.material;
 		context->UpdateSubresource1(m_LightConstantBuffer.Get(), 0, NULL, &m_lightConstantBufferData, 0, 0, 0);
 		context->PSSetConstantBuffers1(0, 1, m_LightConstantBuffer.GetAddressOf(), nullptr, nullptr);
-		// »æÍ¼
+		// ç»˜å›¾
 		context->DrawIndexed(objdata.indexCount, 0, 0);
 	}
 }
@@ -142,24 +142,24 @@ void Job::GameRenderer::UpdateCarMove(float deltaTime)
 	float deltaNatureStopSpeed = 45.f * deltaTime;
 	float deltaAngle = XM_PI / 600.f * deltaTime * m_speed;
 
-	// ³µÂÖ¿ØÖÆ
+	// è½¦è½®æ§åˆ¶
 	for (int i = 1; i <= 2; i++)
 		m_carModel.SetModelMatrix(i, XMMatrixRotationAxis(m_carWheelRight, -XM_PI / 700 * m_speed));
 	for (int i = 3; i <= 4; i++)
 		m_carModel.SetModelMatrix(i, XMMatrixRotationX(XM_PI / 700 * m_speed));
 
 
-	// Ç°½ø
+	// å‰è¿›
 	if (m_input->GetKeyState(InputController::W))
 	{
 		m_speed = m_speed + deltaSpeed >= m_maxSpeed ? m_maxSpeed : m_speed + deltaSpeed;
 	}
-	// ºóÍË
+	// åé€€
 	if (m_input->GetKeyState(InputController::S))
 	{
 		m_speed = m_speed - deltaSpeed <= m_minSpeed ? m_minSpeed : m_speed - deltaSpeed;
 	}
-	// É²³µ
+	// åˆ¹è½¦
 	if (m_input->GetKeyState(InputController::Space))
 	{
 		if (m_speed > 0.f) {
@@ -170,13 +170,13 @@ void Job::GameRenderer::UpdateCarMove(float deltaTime)
 		}
 	}
 	
-	//³µÂÖ×ªÏò
+	//è½¦è½®è½¬å‘
 	if (m_input->IsKeyPressed(InputController::A) || m_input->IsKeyPressed(InputController::D))
 	{
 		if (m_input->IsKeyPressed(InputController::A) && m_input->IsKeyPressed(InputController::D))
 			return;
 		float angle = m_input->IsKeyPressed(InputController::A) ? XM_PI / 4 : -XM_PI / 4;
-		// ³µÂÖ×ªÏò
+		// è½¦è½®è½¬å‘
 		m_carWheelRight = XMVector3Transform(m_carWheelRight, XMMatrixRotationY(angle));
 		m_carModel.SetModelMatrix(1, XMMatrixRotationY(angle));
 		m_carModel.SetModelMatrix(2, XMMatrixRotationY(angle));
@@ -186,44 +186,44 @@ void Job::GameRenderer::UpdateCarMove(float deltaTime)
 		if (m_input->IsKeyReleased(InputController::A) && m_input->IsKeyReleased(InputController::D))
 			return;
 		float angle = m_input->IsKeyReleased(InputController::A) ? -XM_PI / 4 : XM_PI / 4;
-		// ³µÂÖ»Ö¸´Õı³£
+		// è½¦è½®æ¢å¤æ­£å¸¸
 		m_carWheelRight = XMVector3Transform(m_carWheelRight, XMMatrixRotationY(angle));
 		m_carModel.SetModelMatrix(1, XMMatrixRotationY(angle));
 		m_carModel.SetModelMatrix(2, XMMatrixRotationY(angle));
 	}
 
-	// »ñÈ¡ºóÂÖĞı×ªÖĞĞÄ
+	// è·å–åè½®æ—‹è½¬ä¸­å¿ƒ
 	XMVECTOR rotatePos = XMVector3Transform(m_carModel.GetRotateVector(), m_carModel.GetMatrix(0));
 	if (m_input->GetKeyState(InputController::A) || m_input->GetKeyState(InputController::D))
 	{
-		// ³µÉí×ªÍä
+		// è½¦èº«è½¬å¼¯
 		if (m_speed != 0.f)
 		{
 			deltaAngle = m_input->GetKeyState(InputController::A) ? deltaAngle : -deltaAngle;
 
 			XMMATRIX matrix;
-			// ÒÆ¶¯ÖĞĞÄµ½Ô­µã Ğı×ª »Ö¸´
+			// ç§»åŠ¨ä¸­å¿ƒåˆ°åŸç‚¹ æ—‹è½¬ æ¢å¤
 			matrix = XMMatrixTranslationFromVector(-rotatePos);
 			matrix = matrix * XMMatrixRotationY(deltaAngle);
 			matrix = matrix * XMMatrixTranslationFromVector(rotatePos);
 
-			// Ğı×ªm_speedVector
+			// æ—‹è½¬m_speedVector
 			m_moveDirection = XMVector3Transform(m_moveDirection, XMMatrixRotationY(deltaAngle));
-			// Ğı×ª
+			// æ—‹è½¬
 			m_carModel.SetGlobalMatrix(matrix);
 
-			// Èç¹ûµÚÒ»ÈË³Æ Ğı×ªÊÓ½Ç
+			// å¦‚æœç¬¬ä¸€äººç§° æ—‹è½¬è§†è§’
 			if (m_FP)m_camera->Yaw(deltaAngle);
 		}
 	}
 
 
 
-	// ³µ×ß
+	// è½¦èµ°
 	XMVECTOR move = deltaTime * m_speed * XMVector3Normalize(m_moveDirection);
 	m_carModel.SetGlobalMatrix(XMMatrixTranslationFromVector(move));
 
-	// Ä¦²Á
+	// æ‘©æ“¦
 	if (!(m_input->GetKeyState(InputController::W) || m_input->GetKeyState(InputController::S)))
 	{
 		if (m_speed > 0.f)
@@ -239,13 +239,13 @@ void Job::GameRenderer::UpdateCameraPos()
 	XMVECTOR camPos = XMVectorSet(0.f, 1.5f, -0.001f*m_speed, 0.f);
 	XMVECTOR carWorldPos = XMVector3Transform(camPos, m_carModel.GetMatrix(0));
 
-	// ÉèÖÃÉãÏñ»ú·½Ïò
+	// è®¾ç½®æ‘„åƒæœºæ–¹å‘
 	float x = m_input->GetMouseMoveDeltaX();
 	float y = m_input->GetMouseMoveDeltaY();
 	m_camera->PitchDegree(y);
 	m_camera->YawDegree(-x);
 
-	// ÉèÖÃÉãÏñ»úÎ»ÖÃ
+	// è®¾ç½®æ‘„åƒæœºä½ç½®
 	if (m_FP)
 	{
 		m_camera->setPosition(carWorldPos);
@@ -272,7 +272,7 @@ void GameRenderer::CreateDeviceDependentResources()
 	Microsoft::WRL::ComPtr<ID3DBlob> VSBlob;
 	Microsoft::WRL::ComPtr<ID3DBlob> PSBlob;
 
-	// ¼ÓÔØ¶¥µãºÍÏñËØ×ÅÉ«Æ÷
+	// åŠ è½½é¡¶ç‚¹å’Œåƒç´ ç€è‰²å™¨
 	ThrowIfFailed(
 		CreateShaderFromFile(
 			L"HSLS/GameVS.cso",
@@ -286,7 +286,7 @@ void GameRenderer::CreateDeviceDependentResources()
 			"PS", "ps_5_0", PSBlob.ReleaseAndGetAddressOf())
 	);
 
-	// ¼ÓÔØ×ÅÉ«Æ÷ºó ´´½¨×ÅÉ«Æ÷
+	// åŠ è½½ç€è‰²å™¨å åˆ›å»ºç€è‰²å™¨
 	ThrowIfFailed(
 		m_deviceResources->GetD3DDevice()->CreateVertexShader(
 			VSBlob->GetBufferPointer(),
@@ -296,7 +296,7 @@ void GameRenderer::CreateDeviceDependentResources()
 		)
 	);
 
-	// ´´½¨¶¥µãÃèÊö
+	// åˆ›å»ºé¡¶ç‚¹æè¿°
 	static const D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -315,7 +315,7 @@ void GameRenderer::CreateDeviceDependentResources()
 	);
 
 
-	// ´´½¨ÏñËØ×ÅÉ«Æ÷
+	// åˆ›å»ºåƒç´ ç€è‰²å™¨
 	ThrowIfFailed(
 		m_deviceResources->GetD3DDevice()->CreatePixelShader(
 			PSBlob->GetBufferPointer(),
@@ -327,19 +327,19 @@ void GameRenderer::CreateDeviceDependentResources()
 
 	
 
-	// ´´½¨³£Á¿»º³åÇø0
+	// åˆ›å»ºå¸¸é‡ç¼“å†²åŒº0
 	CD3D11_BUFFER_DESC constantBufferDesc0(sizeof(ModelViewProjNorConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
 	ThrowIfFailed(
 		m_deviceResources->GetD3DDevice()->CreateBuffer(&constantBufferDesc0, nullptr, &m_MVPConstantBuffer)
 	);
 
-	// ´´½¨³£Á¿»º³åÇø1
+	// åˆ›å»ºå¸¸é‡ç¼“å†²åŒº1
 	CD3D11_BUFFER_DESC constantBufferDesc1(sizeof(LightConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
 	ThrowIfFailed(
 		m_deviceResources->GetD3DDevice()->CreateBuffer(&constantBufferDesc1, nullptr, &m_LightConstantBuffer)
 	);
 
-	// ´´½¨³µÍø¸ñ
+	// åˆ›å»ºè½¦ç½‘æ ¼
 	VertexPosNorTex carBody[] =
 	{	// up
 		{XMFLOAT3(0.5f, 0.5f, 0.5f), XMFLOAT3(0.f, 1.f, 0.f),XMFLOAT2(0.f, 0.f)},
@@ -450,7 +450,7 @@ void GameRenderer::CreateDeviceDependentResources()
 		36,40,39, 36,39,37, 37,39,38, 37,38,26
 	};
 
-	// ´´½¨µØÍ¼Íø¸ñ
+	// åˆ›å»ºåœ°å›¾ç½‘æ ¼
 	if (!m_objReader.ReadObj(L"Assets/model5.obj"))
 		return;
 	m_mapModel = Model(m_deviceResources->GetD3DDevice(), &m_objReader);
@@ -473,6 +473,6 @@ void GameRenderer::CreateDeviceDependentResources()
 	m_carModel.SetWorldMatrix(4, XMMatrixMultiply(XMMatrixScaling(5.f, 5.f, 5.f), XMMatrixTranslation(-10.f, 15.f, -15.f)));
 	m_carModel.SetRotateVector(0, 0, -0.3f);
 
-	// ĞŞ¸Ä¼ÓÔØ³É¹¦±äÁ¿
+	// ä¿®æ”¹åŠ è½½æˆåŠŸå˜é‡
 	m_loadingComplete = true;
 }

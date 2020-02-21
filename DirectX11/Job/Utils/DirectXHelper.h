@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef DIRECTXHELPER_H_
 #define DIRECTXHELPER_H_
 

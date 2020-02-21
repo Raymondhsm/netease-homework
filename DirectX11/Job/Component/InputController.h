@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class InputController
 {
@@ -410,8 +410,8 @@ public:
 	float	GetDeltaWheelValue()			{ return deltaWheelValue; }
 	bool	GetLButtonState(MouseState s)	{ return s == LButton; }
 	bool	GetRButtonState(MouseState s)	{ return s == RButton; }
-	float	GetMouseMoveDeltaX()			{ return deltaMousePos.x; }
-	float	GetMouseMoveDeltaY()			{ return deltaMousePos.y; }
+	float	GetMouseMoveDeltaX()			{ return (float)deltaMousePos.x; }
+	float	GetMouseMoveDeltaY()			{ return (float)deltaMousePos.y; }
 
 	bool	IsKeyPressed(Keys key)			{ return pressState.IsKeyDown(key); }
 	bool	IsKeyReleased(Keys key)			{ return releaseState.IsKeyDown(key); }
@@ -424,7 +424,7 @@ private:
 	void KeyDown(int key, KeyState & state);
 	void KeyUp(int key, KeyState & state);
 
-	// Êó±ê×´Ì¬±êÊ¶±äÁ¿
+	// é¼ æ ‡çŠ¶æ€æ ‡è¯†å˜é‡
 	MouseState LButton;
 	MouseState RButton;
 	float deltaWheelValue;
@@ -432,7 +432,7 @@ private:
 	POINT deltaMousePos;
 	POINT currMousePos;
 
-	// ¼üÅÌ×´Ì¬±êÊ¶
+	// é”®ç›˜çŠ¶æ€æ ‡è¯†
 	KeyState currState;
 	KeyState preState;
 	KeyState pressState;

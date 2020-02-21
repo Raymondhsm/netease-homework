@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "InputController.h"
 
 InputController::InputController()
@@ -7,10 +7,10 @@ InputController::InputController()
 	RButton = MouseState::UP;
 	deltaWheelValue = 0.0f;
 	currWheelValue = 0.0f;
-	deltaMousePos.x = 0.0f;
-	deltaMousePos.y = 0.0f;
-	currMousePos.x = 0.0f;
-	currMousePos.y = 0.0f;
+	deltaMousePos.x = 0;
+	deltaMousePos.y = 0;
+	currMousePos.x = 0;
+	currMousePos.y = 0;
 
 	currState = { 0 };
 	pressState = { 0 };
@@ -100,12 +100,12 @@ void InputController::ProcessKeyboardMessage(UINT message, WPARAM wParam, LPARAM
 
 void InputController::Update()
 {
-	deltaMousePos.x = 0.0f;
-	deltaMousePos.y = 0.0f;
+	deltaMousePos.x = 0;
+	deltaMousePos.y = 0;
 
 	deltaWheelValue = 0.0f;
 
-	// ¸üÐÂ¼üÅÌ
+	// æ›´æ–°é”®ç›˜
 	auto currPtr = reinterpret_cast<const uint32_t*>(&currState);
 	auto prevPtr = reinterpret_cast<const uint32_t*>(&preState);
 	auto releasedPtr = reinterpret_cast<uint32_t*>(&releaseState);
@@ -128,15 +128,15 @@ void InputController::OnMouseMove(float x, float y)
 {
 	if (currMousePos.x == 0.0f && currMousePos.y == 0.0f)
 	{
-		currMousePos.x = x;
-		currMousePos.y = y;
+		currMousePos.x = (long)x;
+		currMousePos.y = (long)y;
 	}
 
-	deltaMousePos.x += x - currMousePos.x;
-	deltaMousePos.y += y - currMousePos.y;
+	deltaMousePos.x += (long)x - currMousePos.x;
+	deltaMousePos.y += (long)y - currMousePos.y;
 
-	currMousePos.x = x;
-	currMousePos.y = y;
+	currMousePos.x = (long)x;
+	currMousePos.y = (long)y;
 }
 
 void InputController::OnWheelMove(float value)

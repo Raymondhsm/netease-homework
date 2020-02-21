@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "Utils/ObjReader.h"
 #include "Model.h"
 
@@ -36,7 +36,7 @@ Job::Model::Model(ID3D11Device * device, ObjReader * objReader):
 		auto obj = objReader->objParts[i];
 		objModels[i].vertexCount = (UINT)obj.vertices.size();
 
-		// ÉèÖÃ¶¥µã»º³åÇøÃèÊö
+		// è®¾ç½®é¡¶ç‚¹ç¼“å†²åŒºæè¿°
 		D3D11_BUFFER_DESC vbd;
 		ZeroMemory(&vbd, sizeof(vbd));
 		vbd.Usage = D3D11_USAGE_IMMUTABLE;
@@ -44,7 +44,7 @@ Job::Model::Model(ID3D11Device * device, ObjReader * objReader):
 		vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		vbd.CPUAccessFlags = 0;
 
-		// ÐÂ½¨¶¥µã»º³åÇø
+		// æ–°å»ºé¡¶ç‚¹ç¼“å†²åŒº
 		D3D11_SUBRESOURCE_DATA InitData;
 		ZeroMemory(&InitData, sizeof(InitData));
 		InitData.pSysMem = obj.vertices.data();
@@ -52,7 +52,7 @@ Job::Model::Model(ID3D11Device * device, ObjReader * objReader):
 			m_device->CreateBuffer(&vbd, &InitData, objModels[i].vertexBuffer.ReleaseAndGetAddressOf())
 		);
 
-		// ÉèÖÃË÷Òý»º³åÇøÃèÊö
+		// è®¾ç½®ç´¢å¼•ç¼“å†²åŒºæè¿°
 		D3D11_BUFFER_DESC ibd;
 		ZeroMemory(&ibd, sizeof(ibd));
 		ibd.Usage = D3D11_USAGE_IMMUTABLE;
@@ -73,13 +73,13 @@ Job::Model::Model(ID3D11Device * device, ObjReader * objReader):
 			ibd.ByteWidth = objModels[i].indexCount * (UINT)sizeof(WORD);
 			InitData.pSysMem = obj.indices16.data();
 		}
-		// ÐÂ½¨Ë÷Òý»º³åÇø
+		// æ–°å»ºç´¢å¼•ç¼“å†²åŒº
 		ThrowIfFailed(
 			m_device->CreateBuffer(&ibd, &InitData, objModels[i].indexBuffer.ReleaseAndGetAddressOf())
 		);
 
 
-		// ´´½¨ÂþÉä¹â¶ÔÓ¦ÎÆÀí
+		// åˆ›å»ºæ¼«å°„å…‰å¯¹åº”çº¹ç†
 		auto& strD = obj.texStrDiffuse;
 		if (strD.size() > 4)
 		{
@@ -119,7 +119,7 @@ int Job::Model::AddObjPart(UINT numOfVertex, VertexPosNorTex* vertices,
 {
 	ObjModel objModel;
 
-	// ÉèÖÃ¶¥µã»º³åÇøÃèÊö
+	// è®¾ç½®é¡¶ç‚¹ç¼“å†²åŒºæè¿°
 	D3D11_BUFFER_DESC vbd;
 	ZeroMemory(&vbd, sizeof(vbd));
 	vbd.Usage = D3D11_USAGE_IMMUTABLE;
@@ -127,7 +127,7 @@ int Job::Model::AddObjPart(UINT numOfVertex, VertexPosNorTex* vertices,
 	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbd.CPUAccessFlags = 0;
 
-	// ÐÂ½¨¶¥µã»º³åÇø
+	// æ–°å»ºé¡¶ç‚¹ç¼“å†²åŒº
 	D3D11_SUBRESOURCE_DATA InitData;
 	ZeroMemory(&InitData, sizeof(InitData));
 	InitData.pSysMem = vertices;
@@ -135,7 +135,7 @@ int Job::Model::AddObjPart(UINT numOfVertex, VertexPosNorTex* vertices,
 		m_device->CreateBuffer(&vbd, &InitData, objModel.vertexBuffer.ReleaseAndGetAddressOf())
 	);
 
-	// ÉèÖÃË÷Òý»º³åÇøÃèÊö
+	// è®¾ç½®ç´¢å¼•ç¼“å†²åŒºæè¿°
 	D3D11_BUFFER_DESC ibd;
 	ZeroMemory(&ibd, sizeof(ibd));
 	ibd.Usage = D3D11_USAGE_IMMUTABLE;
@@ -144,7 +144,7 @@ int Job::Model::AddObjPart(UINT numOfVertex, VertexPosNorTex* vertices,
 	ibd.ByteWidth = numOfIndex * (UINT)sizeof(USHORT);
 	InitData.pSysMem = indices;
 
-	// ÐÂ½¨Ë÷Òý»º³åÇø
+	// æ–°å»ºç´¢å¼•ç¼“å†²åŒº
 	ThrowIfFailed(
 		m_device->CreateBuffer(&ibd, &InitData, objModel.indexBuffer.ReleaseAndGetAddressOf())
 	);
@@ -152,7 +152,7 @@ int Job::Model::AddObjPart(UINT numOfVertex, VertexPosNorTex* vertices,
 	objModel.indexCount = numOfIndex;
 	objModel.indexFormat = format;
 
-	// ´´½¨ÂþÉä¹â¶ÔÓ¦ÎÆÀí
+	// åˆ›å»ºæ¼«å°„å…‰å¯¹åº”çº¹ç†
 	auto& strD = texName;
 	if (strD.size() > 4)
 	{
