@@ -19,8 +19,8 @@ GameRenderer::GameRenderer(const std::shared_ptr<D3DApp>& deviceResources,
 	m_carWheelRight = XMVectorSet(-1.f, 0.f, 0.f, 0.f);
 	m_moveDirection = XMVectorSet(0.f, 0.f, 1.f, 0.f);
 	m_speed = 0.f;
-	m_maxSpeed = 7.f;
-	m_minSpeed = -7.f;
+	m_maxSpeed = 100.f;
+	m_minSpeed = -100.f;
 	m_carStop = true;
 	m_FP = true;
 	m_TPDistance = 50.f;
@@ -33,7 +33,7 @@ GameRenderer::GameRenderer(const std::shared_ptr<D3DApp>& deviceResources,
 	m_lightConstantBufferData.light = m_light;
 
 	// 初始化车辆位置
-	m_carModel.SetGlobalMatrix(XMMatrixTranslation(50.f, 0.f, -300.f));
+	m_carModel.SetGlobalMatrix(XMMatrixTranslation(50.f, -10.f, -300.f));
 
 	CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources();
@@ -59,17 +59,17 @@ void GameRenderer::ReleaseDeviceDependentResources()
 
 void GameRenderer::Update(StepTimer const & timer)
 {
+	if (m_input->IsKeyReleased(InputController::V)) m_FP = !m_FP;
+
+	UpdateCarMove(timer.GetElapsedSeconds());
+	UpdateCameraPos();
+
 	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(m_camera->GetView()));
 	XMMATRIX W = XMMatrixScaling(1.f, 1.f, 1.f);
 	XMStoreFloat4x4(&m_constantBufferData.model, XMMatrixTranspose(W));
 	XMStoreFloat4x4(&m_constantBufferData.worldInvTranspose, XMMatrixInverse(nullptr, W));
 
 	XMStoreFloat3(&m_lightConstantBufferData.eyePos, m_camera->getPosotionV());
-
-	if (m_input->IsKeyReleased(InputController::V)) m_FP = !m_FP;
-
-	UpdateCarMove(timer.GetElapsedSeconds());
-	UpdateCameraPos();
 }
 
 void GameRenderer::Render()
@@ -137,16 +137,16 @@ void GameRenderer::Render()
 
 void Job::GameRenderer::UpdateCarMove(float deltaTime)
 {
-	float deltaSpeed = 6.f * deltaTime;
-	float deltaStopSpeed = 12.f * deltaTime;
-	float deltaNatureStopSpeed = 3.f * deltaTime;
-	float deltaAngle = XM_PI / 15.f * deltaTime * m_speed;
+	float deltaSpeed = 50.f * deltaTime;
+	float deltaStopSpeed = 80.f * deltaTime;
+	float deltaNatureStopSpeed = 45.f * deltaTime;
+	float deltaAngle = XM_PI / 600.f * deltaTime * m_speed;
 
 	// 车轮控制
 	for (int i = 1; i <= 2; i++)
-		m_carModel.SetModelMatrix(i, XMMatrixRotationAxis(m_carWheelRight, -XM_PI / 17 * m_speed));
+		m_carModel.SetModelMatrix(i, XMMatrixRotationAxis(m_carWheelRight, -XM_PI / 700 * m_speed));
 	for (int i = 3; i <= 4; i++)
-		m_carModel.SetModelMatrix(i, XMMatrixRotationX(XM_PI / 17 * m_speed));
+		m_carModel.SetModelMatrix(i, XMMatrixRotationX(XM_PI / 700 * m_speed));
 
 
 	// 前进
@@ -213,26 +213,30 @@ void Job::GameRenderer::UpdateCarMove(float deltaTime)
 			m_carModel.SetGlobalMatrix(matrix);
 
 			// 如果第一人称 旋转视角
-			m_camera->Yaw(deltaAngle);
+			if (m_FP)m_camera->Yaw(deltaAngle);
 		}
 	}
 
 
 
 	// 车走
-	XMVECTOR move = m_speed * XMVector3Normalize(m_moveDirection);
+	XMVECTOR move = deltaTime * m_speed * XMVector3Normalize(m_moveDirection);
 	m_carModel.SetGlobalMatrix(XMMatrixTranslationFromVector(move));
 
 	// 摩擦
-	if (m_speed > 0.f)
-		m_speed = m_speed - deltaNatureStopSpeed <= 0.f ? 0.f : m_speed - deltaNatureStopSpeed;
-	else if (m_speed < 0.f)
-		m_speed = m_speed + deltaNatureStopSpeed >= 0.f ? 0.f : m_speed + deltaNatureStopSpeed;
+	if (!(m_input->GetKeyState(InputController::W) || m_input->GetKeyState(InputController::S)))
+	{
+		if (m_speed > 0.f)
+			m_speed = m_speed - deltaNatureStopSpeed <= 0.f ? 0.f : m_speed - deltaNatureStopSpeed;
+		else if (m_speed < 0.f)
+			m_speed = m_speed + deltaNatureStopSpeed >= 0.f ? 0.f : m_speed + deltaNatureStopSpeed;
+	}
+	
 }
 
 void Job::GameRenderer::UpdateCameraPos()
 {
-	XMVECTOR camPos = XMVectorSet(0.f, 1.5f, 0.f, 0.f);
+	XMVECTOR camPos = XMVectorSet(0.f, 1.5f, -0.001f*m_speed, 0.f);
 	XMVECTOR carWorldPos = XMVector3Transform(camPos, m_carModel.GetMatrix(0));
 
 	// 设置摄像机方向
@@ -248,8 +252,8 @@ void Job::GameRenderer::UpdateCameraPos()
 	}
 	else
 	{
-		if (m_input->GetKeyState(InputController::Up)) m_TPDistance += 1.f;
-		if (m_input->GetKeyState(InputController::Down)) m_TPDistance -= 1.f;
+		if (m_input->GetKeyState(InputController::Up)) m_TPDistance += 5.f;
+		if (m_input->GetKeyState(InputController::Down)) m_TPDistance -= 5.f;
 		m_TPDistance += m_input->GetDeltaWheelValue() * 0.1f;
 
 		m_TPDistance = m_TPDistance < 15.f ? 15.f : m_TPDistance;
@@ -470,7 +474,5 @@ void GameRenderer::CreateDeviceDependentResources()
 	m_carModel.SetRotateVector(0, 0, -0.3f);
 
 	// 修改加载成功变量
-	//createCubeTask.then([this]() {
 	m_loadingComplete = true;
-	//});
 }
