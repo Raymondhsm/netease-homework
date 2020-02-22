@@ -118,7 +118,7 @@ bool D3DApp::CreateDeviceDependentResource()
 		createDeviceFlags,			// 设置调试和 Direct2D 兼容性标志。
 		featureLevels,				// 此应用程序可以支持的功能级别的列表。
 		ARRAYSIZE(featureLevels),	// 上面的列表的大小。
-		D3D11_SDK_VERSION,			// 对于 Windows 应用商店应用，始终将此值设置为 D3D11_SDK_VERSION。
+		D3D11_SDK_VERSION,			// 
 		&device,					// 返回创建的 Direct3D 设备。
 		&m_d3dFeatureLevel,			// 返回所创建设备的功能级别。
 		&context					// 返回设备的即时上下文。
