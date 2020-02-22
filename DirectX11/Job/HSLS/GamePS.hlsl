@@ -53,26 +53,6 @@ float4 main(PixelShaderInput input) : SV_TARGET
 	float4 ambient, diffuse, specular;
 	ambient = diffuse = specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	//// 光向量与照射方向相反
-	//float3 lightVec = -light.direction;
-
-	//// 计算环境光
-	//ambient =light.ambient;
-
-	//// 计算漫反射光影响因子
-	//float diffuseFactor = dot(lightVec, input.normal);
-
-	//// 展开，避免动态分支
-	//[flatten]
-	//if (diffuseFactor > 0.0f)
-	//{
-	//	float3 v = reflect(-lightVec, input.normal);
-	//	float specFactor = pow(max(dot(v, toEye), 0.0f), 5.f);
-
-	//	diffuse = diffuseFactor * material.diffuse * light.diffuse;
-	//	spec = specFactor * material.specular * light.specular;
-	//}
-
 	 //计算环境光
 	ambient = material.ambient * light.ambient;
 
