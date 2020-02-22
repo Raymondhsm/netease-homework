@@ -59,6 +59,12 @@
     <ClInclude Include="Component\Model.h">
       <Filter>Component</Filter>
     </ClInclude>
+    <ClInclude Include="Utils\RenderToTexture.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Component\ShadowEffect.h">
+      <Filter>Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Apps\D3DApp.cpp">
@@ -96,6 +102,12 @@
     <ClCompile Include="Component\Model.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="Utils\RenderToTexture.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Component\ShadowEffect.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="HSLS\SkyboxPS.hlsl">
@@ -108,6 +120,12 @@
       <Filter>HSLS</Filter>
     </FxCompile>
     <FxCompile Include="HSLS\GamePS.hlsl">
+      <Filter>HSLS</Filter>
+    </FxCompile>
+    <FxCompile Include="DepthVS.hlsl">
+      <Filter>HSLS</Filter>
+    </FxCompile>
+    <FxCompile Include="DepthPS.hlsl">
       <Filter>HSLS</Filter>
     </FxCompile>
   </ItemGroup>
