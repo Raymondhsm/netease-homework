@@ -352,6 +352,19 @@ void D3DApp::CreateWindowSizeDependentResource()
 }
 
 
+void D3DApp::ResetRenderTarget()
+{
+	m_pd3dContext->RSSetViewports(1, &m_ScreenViewport);
+
+	// 将呈现目标重置为屏幕。
+	ID3D11RenderTargetView *const targets[1] = { m_pRenderTargetView.Get() };
+	m_pd3dContext->OMSetRenderTargets(1, targets, m_pDepthStencilView.Get());
+
+	// 清除后台缓冲区和深度模具视图。
+	m_pd3dContext->ClearRenderTargetView(m_pRenderTargetView.Get(), DirectX::Colors::CornflowerBlue);
+	m_pd3dContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+}
+
 LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)

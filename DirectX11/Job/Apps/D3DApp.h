@@ -22,15 +22,16 @@ public:
 	virtual void OnDeviceRestore() = 0;
 	virtual void OnInputEvent(UINT message, WPARAM wParam, LPARAM lParam) = 0;
 
+	void ResetRenderTarget();
+
 	virtual LRESULT MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 	HINSTANCE	GetAppInst()const;                 // 获取应用实例的句柄
 	HWND		GetMainWnd()const;                 // 获取主窗口句柄
 	float		GetAspectRatio()const;             // 获取屏幕宽高比
 
-	ID3D11Device3*			GetD3DDevice()const			{ return m_pd3dDevice.Get(); }
-	ID3D11DeviceContext3*	GetD3DDeviceContext()const	{ return m_pd3dContext.Get(); }
-
+	ID3D11Device3*			GetD3DDevice()const				{ return m_pd3dDevice.Get(); }
+	ID3D11DeviceContext3*	GetD3DDeviceContext()const		{ return m_pd3dContext.Get(); }
 
 protected:
 
