@@ -145,5 +145,5 @@ void ShadowEffect::SetViewProjMatrix(XMFLOAT3 direction, XMFLOAT3 pos, float Nea
 
 	XMStoreFloat4x4(&m_MVPData.view, XMMatrixTranspose(XMMatrixLookAtRH(newPos, focusPos, up)));
 
-	XMStoreFloat4x4(&m_MVPData.projection, XMMatrixTranspose(XMMatrixOrthographicRH((float)m_shadowMapWidth, (float)m_shadowMapHeight, NearPlane, FarPlane)));
+	XMStoreFloat4x4(&m_MVPData.projection, XMMatrixTranspose(XMMatrixOrthographicRH((float)m_shadowMapWidth/2, (float)m_shadowMapHeight/2, NearPlane, FarPlane)));
 }
