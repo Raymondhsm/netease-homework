@@ -35,10 +35,10 @@ GameRenderer::GameRenderer(const std::shared_ptr<D3DApp>& deviceResources,
 	// 初始化shadowEffect
 	m_shadow = std::shared_ptr<ShadowEffect>(new ShadowEffect(deviceResources, 2048, 1024));
 	XMVECTOR pos = XMVectorSet(-0.55f, -0.45f, 1.f, 0.f);
-	pos = -2500.f * XMVector3Normalize(pos);
+	pos = -1000.f * XMVector3Normalize(pos);
 	XMFLOAT3 newPos;
 	XMStoreFloat3(&newPos, pos);
-	m_shadow->SetViewProjMatrix(m_light.direction, newPos, 1.f, 5000.f);
+	m_shadow->SetViewProjMatrix(m_light.direction, newPos, 1.f, 2000.f);
 
 	// 初始化车辆位置
 	m_carModel.SetGlobalMatrix(XMMatrixTranslation(50.f, -10.f, -300.f));
