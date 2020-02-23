@@ -343,8 +343,8 @@ void D3DApp::CreateWindowSizeDependentResource()
 	m_ScreenViewport = CD3D11_VIEWPORT(
 		0.0f,
 		0.0f,
-		m_ClientWidth,
-		m_ClientHeight
+		(float)m_ClientWidth,
+		(float)m_ClientHeight
 	);
 
 	m_pd3dContext->RSSetViewports(1, &m_ScreenViewport);

@@ -22,15 +22,6 @@ GameController::~GameController()
 
 void GameController::Update()
 {
-	
-
-	std::wostringstream outs;
-	outs.precision(6);
-	outs << m_MainWndCaption << L"    " << L"FPS: " << m_Timer.GetFramesPerSecond();
-	outs << L"     " << m_inputController->GetMouseMoveDeltaX() << L"-" << m_inputController->GetMouseMoveDeltaY();
-	outs << L"    " << m_camera->getLook().x << m_camera->getLook().y << m_camera->getLook().z;
-	SetWindowText(m_hMainWnd, outs.str().c_str());
-
 	//update function
 	m_skyRenderer->Update(m_Timer);
 	m_gameRender->Update(m_Timer);

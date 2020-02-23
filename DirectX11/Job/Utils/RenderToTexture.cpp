@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "RenderToTexture.h"
 #include "Utils/DirectXHelper.h"
 
@@ -12,7 +12,7 @@ RenderToTexture::RenderToTexture():
 
 bool RenderToTexture::Initialize(ID3D11Device * d3dDevice, int TextureWidth, int TexureHeight)
 {
-	// ×¼±¸Éî¶È»º³åµÄÎÆÀí
+	// å‡†å¤‡æ·±åº¦ç¼“å†²çš„çº¹ç†
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
 	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
 	depthBufferDesc.Width = TextureWidth;
@@ -31,7 +31,7 @@ bool RenderToTexture::Initialize(ID3D11Device * d3dDevice, int TextureWidth, int
 	);
 
 
-	// ×¼±¸Éî¶È»º³åÇø
+	// å‡†å¤‡æ·±åº¦ç¼“å†²åŒº
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
 	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -42,7 +42,7 @@ bool RenderToTexture::Initialize(ID3D11Device * d3dDevice, int TextureWidth, int
 	);
 
 
-	// ×¼±¸×ÊÔ´ÊÓÍ¼
+	// å‡†å¤‡èµ„æºè§†å›¾
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 	shaderResourceViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS; 
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
@@ -52,7 +52,7 @@ bool RenderToTexture::Initialize(ID3D11Device * d3dDevice, int TextureWidth, int
 		d3dDevice->CreateShaderResourceView(m_pDepthStencilBuffer.Get(), &shaderResourceViewDesc, m_pShaderResourceView.GetAddressOf())
 	);
 
-	// ×¼±¸ÊÓ¿Ú
+	// å‡†å¤‡è§†å£
 	m_ScreenViewport.Width = (float)TextureWidth;
 	m_ScreenViewport.Height = (float)TexureHeight;
 	m_ScreenViewport.MinDepth = 0.0f;

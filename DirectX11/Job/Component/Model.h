@@ -19,8 +19,8 @@ namespace Job {
 
 		int AddObjPart(UINT numOfVertex, VertexPosNorTex* vertices,
 			UINT numOfIndex, DXGI_FORMAT format, USHORT * indices, Materials material, std::wstring texName);
-		void SetModelMatrix(int index, DirectX::XMMATRIX matrix);
-		void SetWorldMatrix(int index, DirectX::XMMATRIX matrix);
+		void SetModelMatrix(UINT index, DirectX::XMMATRIX matrix);
+		void SetWorldMatrix(UINT index, DirectX::XMMATRIX matrix);
 		void SetRotateVector(float x, float y, float z);
 		void TransformRotateVector(DirectX::XMMATRIX matrix);
 		void SetGlobalMatrix(DirectX::XMMATRIX matrix);

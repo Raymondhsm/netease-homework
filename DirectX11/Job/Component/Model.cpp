@@ -31,7 +31,7 @@ Job::Model::Model(ID3D11Device * device, ObjReader * objReader):
 {
 	objModels.resize(objReader->objParts.size());
 
-	for (int i = 0; i < objModels.size(); i++) 
+	for (UINT i = 0; i < objModels.size(); i++) 
 	{
 		auto obj = objReader->objParts[i];
 		objModels[i].vertexCount = (UINT)obj.vertices.size();
@@ -189,7 +189,7 @@ int Job::Model::AddObjPart(UINT numOfVertex, VertexPosNorTex* vertices,
 	return objModels.size() - 1;
 }
 
-void Job::Model::SetModelMatrix(int index, DirectX::XMMATRIX matrix)
+void Job::Model::SetModelMatrix(UINT index, DirectX::XMMATRIX matrix)
 {
 	if (index < 0 || index >= objModels.size())
 	{
@@ -197,12 +197,11 @@ void Job::Model::SetModelMatrix(int index, DirectX::XMMATRIX matrix)
 	}
 	else
 	{
-		//m_modelMatrix[index] = XMMatrixMultiply(m_modelMatrix[index], matrix);
 		m_modelMatrix[index] = m_modelMatrix[index] * matrix;
 	}
 }
 
-void Job::Model::SetWorldMatrix(int index, DirectX::XMMATRIX matrix)
+void Job::Model::SetWorldMatrix(UINT index, DirectX::XMMATRIX matrix)
 {
 	if (index < 0 || index >= objModels.size())
 	{
@@ -210,7 +209,6 @@ void Job::Model::SetWorldMatrix(int index, DirectX::XMMATRIX matrix)
 	}
 	else
 	{
-		//m_worldMatrix[index] = XMMatrixMultiply(m_worldMatrix[index], matrix);
 		m_worldMatrix[index] = m_worldMatrix[index] * matrix;
 	}
 }

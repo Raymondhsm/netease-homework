@@ -72,8 +72,8 @@ void GameRenderer::ReleaseDeviceDependentResources()
 
 void GameRenderer::Update(StepTimer const & timer)
 {
-	if (m_input->IsKeyReleased(InputController::V)) m_FP = !m_FP;
 	if (timer.GetFrameCount() > 10) {
+		if (m_input->IsKeyReleased(InputController::V)) m_FP = !m_FP;
 		UpdateCarMove((float)timer.GetElapsedSeconds());
 		UpdateCameraPos();
 	}

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef _RENDER_TO_TEXTURE_H_
 #define _RENDER_TO_TEXTURE_H_
 
