@@ -24,6 +24,16 @@ namespace Job {
 		XMFLOAT4X4 worldInvTranspose;
 	};
 
+	struct ModelViewProjNorShadowConstantBuffer
+	{
+		XMFLOAT4X4 model;
+		XMFLOAT4X4 view;
+		XMFLOAT4X4 projection;
+		XMFLOAT4X4 worldInvTranspose;
+		XMFLOAT4X4 shadowView;
+		XMFLOAT4X4 shadowProj;
+	};
+
 	struct Materials
 	{
 		XMFLOAT4 ambient;

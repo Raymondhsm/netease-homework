@@ -26,14 +26,27 @@ GameRenderer::GameRenderer(const std::shared_ptr<D3DApp>& deviceResources,
 	m_TPDistance = 50.f;
 
 	// 初始化灯光
-	m_light.ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	m_light.diffuse = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
-	m_light.specular = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+	m_light.ambient = XMFLOAT4(0.6f, 0.6f, 0.6f, 1.0f);
+	m_light.diffuse = XMFLOAT4(1.5f, 1.5f, 1.5f, 1.0f);
+	m_light.specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	m_light.direction = XMFLOAT3(-0.55f, -0.45f, 1.f);
 	m_lightConstantBufferData.light = m_light;
 
+	// 初始化shadowEffect
+	m_shadow = std::shared_ptr<ShadowEffect>(new ShadowEffect(deviceResources, 2048, 1024));
+	XMVECTOR pos = XMVectorSet(-0.55f, -0.45f, 1.f, 0.f);
+	pos = -2500.f * XMVector3Normalize(pos);
+	XMFLOAT3 newPos;
+	XMStoreFloat3(&newPos, pos);
+	m_shadow->SetViewProjMatrix(m_light.direction, newPos, 1.f, 5000.f);
+
 	// 初始化车辆位置
 	m_carModel.SetGlobalMatrix(XMMatrixTranslation(50.f, -10.f, -300.f));
+
+	// 初始化模型矩阵
+	XMMATRIX W = XMMatrixScaling(1.f, 1.f, 1.f);
+	XMStoreFloat4x4(&m_constantBufferData.model, XMMatrixTranspose(W));
+	XMStoreFloat4x4(&m_constantBufferData.worldInvTranspose, XMMatrixInverse(nullptr, W));
 
 	CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources();
@@ -60,15 +73,13 @@ void GameRenderer::ReleaseDeviceDependentResources()
 void GameRenderer::Update(StepTimer const & timer)
 {
 	if (m_input->IsKeyReleased(InputController::V)) m_FP = !m_FP;
+	if (timer.GetFrameCount() > 10) {
+		UpdateCarMove((float)timer.GetElapsedSeconds());
+		UpdateCameraPos();
+	}
 
-	UpdateCarMove((float)timer.GetElapsedSeconds());
-	UpdateCameraPos();
-
+	// 更新视图矩阵
 	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(m_camera->GetView()));
-	XMMATRIX W = XMMatrixScaling(1.f, 1.f, 1.f);
-	XMStoreFloat4x4(&m_constantBufferData.model, XMMatrixTranspose(W));
-	XMStoreFloat4x4(&m_constantBufferData.worldInvTranspose, XMMatrixInverse(nullptr, W));
-
 	XMStoreFloat3(&m_lightConstantBufferData.eyePos, m_camera->getPosotionV());
 }
 
@@ -76,6 +87,13 @@ void GameRenderer::Render()
 {
 	// 确保加载完成后进行渲染操作
 	if (!m_loadingComplete) return;
+
+	RenderShadowMap();
+
+	// 设置灯管视图投影矩阵
+	XMStoreFloat4x4(&m_constantBufferData.shadowView ,m_shadow->GetViewMatrix());
+	XMStoreFloat4x4(&m_constantBufferData.shadowProj ,m_shadow->GetProjMatrix());
+	m_shadowSRV = m_shadow->GetShadowMapSRV();
 
 	auto context = m_deviceResources->GetD3DDeviceContext();
 
@@ -89,6 +107,7 @@ void GameRenderer::Render()
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	context->IASetInputLayout(m_inputLayout.Get());
+	context->PSSetShaderResources(1, 1, m_shadowSRV.GetAddressOf());
 
 	for (UINT i = 0; i < m_carModel.GetObjModels().size(); i++)
 	{
@@ -173,9 +192,9 @@ void Job::GameRenderer::UpdateCarMove(float deltaTime)
 	//车轮转向
 	if (m_input->IsKeyPressed(InputController::A) || m_input->IsKeyPressed(InputController::D))
 	{
-		if (m_input->IsKeyPressed(InputController::A) && m_input->IsKeyPressed(InputController::D))
-			return;
-		float angle = m_input->IsKeyPressed(InputController::A) ? XM_PI / 4 : -XM_PI / 4;
+		float angle = 0;
+		if (m_input->IsKeyPressed(InputController::A)) angle += XM_PI / 4;
+		if (m_input->IsKeyPressed(InputController::D))angle -= XM_PI / 4;
 		// 车轮转向
 		m_carWheelRight = XMVector3Transform(m_carWheelRight, XMMatrixRotationY(angle));
 		m_carModel.SetModelMatrix(1, XMMatrixRotationY(angle));
@@ -183,9 +202,9 @@ void Job::GameRenderer::UpdateCarMove(float deltaTime)
 	}
 	if (m_input->IsKeyReleased(InputController::A)|| m_input->IsKeyReleased(InputController::D))
 	{
-		if (m_input->IsKeyReleased(InputController::A) && m_input->IsKeyReleased(InputController::D))
-			return;
-		float angle = m_input->IsKeyReleased(InputController::A) ? -XM_PI / 4 : XM_PI / 4;
+		float angle = 0;
+		if (m_input->IsKeyReleased(InputController::A)) angle -= XM_PI / 4;
+		if (m_input->IsKeyReleased(InputController::D)) angle += XM_PI / 4;
 		// 车轮恢复正常
 		m_carWheelRight = XMVector3Transform(m_carWheelRight, XMMatrixRotationY(angle));
 		m_carModel.SetModelMatrix(1, XMMatrixRotationY(angle));
@@ -266,6 +285,29 @@ void Job::GameRenderer::UpdateCameraPos()
 	}
 }
 
+void Job::GameRenderer::RenderShadowMap()
+{
+	m_shadow->BeginRender();
+
+	for (UINT i = 0; i < m_carModel.GetObjModels().size(); i++)
+	{
+		auto objdata = m_carModel.GetObjModels()[i];
+		
+		m_shadow->SetModelMatrix(m_carModel.GetMatrix(i));
+		m_shadow->Render(objdata.vertexBuffer.Get(), objdata.indexBuffer.Get(), objdata.indexCount);
+	}
+
+	for (UINT i = 0; i < m_mapModel.GetObjModels().size(); i++)
+	{
+		auto objdata = m_mapModel.GetObjModels()[i];
+		
+		m_shadow->SetModelMatrix(XMMatrixScaling(1.0f, 1.0f, 1.0f));
+		m_shadow->Render(objdata.vertexBuffer.Get(), objdata.indexBuffer.Get(), objdata.indexCount);
+	}
+
+	m_shadow->EndRender();
+}
+
 
 void GameRenderer::CreateDeviceDependentResources()
 {
@@ -328,7 +370,7 @@ void GameRenderer::CreateDeviceDependentResources()
 	
 
 	// 创建常量缓冲区0
-	CD3D11_BUFFER_DESC constantBufferDesc0(sizeof(ModelViewProjNorConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
+	CD3D11_BUFFER_DESC constantBufferDesc0(sizeof(ModelViewProjNorShadowConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
 	ThrowIfFailed(
 		m_deviceResources->GetD3DDevice()->CreateBuffer(&constantBufferDesc0, nullptr, &m_MVPConstantBuffer)
 	);
@@ -457,7 +499,7 @@ void GameRenderer::CreateDeviceDependentResources()
 
 	Materials mat;
 	mat.ambient = XMFLOAT4(0.2584314f, 0.2584314f, 0.2584314f, 1.f);
-	mat.diffuse = XMFLOAT4(0.2584314f, 0.2584314f, 0.2584314f, 1.f);
+	mat.diffuse = XMFLOAT4(0.9258414f, 0.9258414f, 0.9258414f, 1.f);
 	mat.specular = XMFLOAT4(0.350000f, 0.350000f, 0.350000f, 1.f);
 	mat.reflect = XMFLOAT4(0.f, 0.f, 0.f, 0.f);
 	m_carModel.AddObjPart(ARRAYSIZE(carBody), carBody, ARRAYSIZE(carBodyIndex), DXGI_FORMAT_R16_UINT,

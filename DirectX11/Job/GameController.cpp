@@ -28,7 +28,7 @@ void GameController::Update()
 	outs.precision(6);
 	outs << m_MainWndCaption << L"    " << L"FPS: " << m_Timer.GetFramesPerSecond();
 	outs << L"     " << m_inputController->GetMouseMoveDeltaX() << L"-" << m_inputController->GetMouseMoveDeltaY();
-	outs << L"    " << m_inputController->GetKeyState(InputController::W);
+	outs << L"    " << m_camera->getLook().x << m_camera->getLook().y << m_camera->getLook().z;
 	SetWindowText(m_hMainWnd, outs.str().c_str());
 
 	//update function
@@ -54,8 +54,9 @@ bool GameController::Render()
 	m_pd3dContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	// render function
-	m_skyRenderer->Render();
 	m_gameRender->Render();
+	m_skyRenderer->Render();
+
 
 	return true;
 }

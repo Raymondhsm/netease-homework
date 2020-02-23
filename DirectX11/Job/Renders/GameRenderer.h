@@ -3,6 +3,7 @@
 #include "Utils/ShaderStructures.h"
 #include "Component/Camera.h"
 #include "Component/InputController.h"
+#include "Component/ShadowEffect.h"
 #include "Utils/ObjReader.h"
 #include "Apps/D3DApp.h"
 #include "Component/Model.h"
@@ -28,29 +29,32 @@ namespace Job
 	private:
 		void UpdateCarMove(float deltaTime);
 		void UpdateCameraPos();
+		void RenderShadowMap();
 
 		// 缓存的设备资源指针。
-		std::shared_ptr<D3DApp> m_deviceResources;
-		std::shared_ptr<Camera> m_camera;
-		std::shared_ptr<InputController> m_input;
+		std::shared_ptr<D3DApp>				m_deviceResources;
+		std::shared_ptr<Camera>				m_camera;
+		std::shared_ptr<InputController>	m_input;
+		std::shared_ptr<ShadowEffect>		m_shadow;
 
 		ObjReader m_objReader;
 
 		// 立体几何的 Direct3D 资源。
-		ComPtr<ID3D11InputLayout>	m_inputLayout;
-		ComPtr<ID3D11Buffer>		m_vertexBuffer;
-		ComPtr<ID3D11Buffer>		m_indexBuffer;
-		ComPtr<ID3D11VertexShader>	m_vertexShader;
-		ComPtr<ID3D11PixelShader>	m_pixelShader;
-		ComPtr<ID3D11Buffer>		m_MVPConstantBuffer;
-		ComPtr<ID3D11Buffer>		m_LightConstantBuffer;
+		ComPtr<ID3D11InputLayout>			m_inputLayout;
+		ComPtr<ID3D11Buffer>				m_vertexBuffer;
+		ComPtr<ID3D11Buffer>				m_indexBuffer;
+		ComPtr<ID3D11VertexShader>			m_vertexShader;
+		ComPtr<ID3D11PixelShader>			m_pixelShader;
+		ComPtr<ID3D11Buffer>				m_MVPConstantBuffer;
+		ComPtr<ID3D11Buffer>				m_LightConstantBuffer;
+		ComPtr<ID3D11ShaderResourceView>	m_shadowSRV;
 
 		Model			m_carModel;
 		Model			m_mapModel;
 
 		// 立体几何的系统资源。
-		ModelViewProjNorConstantBuffer		m_constantBufferData;
-		LightConstantBuffer					m_lightConstantBufferData;
+		ModelViewProjNorShadowConstantBuffer		m_constantBufferData;
+		LightConstantBuffer							m_lightConstantBufferData;
 
 		DirectionLight	m_light;
 

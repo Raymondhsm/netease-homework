@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "Utils/DirectXHelper.h"
 #include "Utils/ShaderStructures.h"
 #include "ShadowEffect.h"
@@ -14,9 +14,11 @@ ShadowEffect::ShadowEffect(const std::shared_ptr<D3DApp>& deviceResources, UINT 
 	m_renderToTexture = std::unique_ptr<RenderToTexture>(new RenderToTexture());
 	m_renderToTexture->Initialize(m_deviceResource->GetD3DDevice(), m_shadowMapWidth, m_shadowMapHeight);
 
-	// ÉèÖÃÈý¸ö¾ØÕó
+	// è®¾ç½®ä¸‰ä¸ªçŸ©é˜µ
 	SetModelMatrix(XMMatrixScaling(1.f, 1.f, 1.f));
 	SetViewProjMatrix(XMFLOAT3(0.f, 0.f, 1.f), XMFLOAT3(0.f, 0.f, -2500.f), 1.f, 5000.f);
+
+	Initialize();
 }
 
 void ShadowEffect::Initialize()
@@ -24,7 +26,7 @@ void ShadowEffect::Initialize()
 	Microsoft::WRL::ComPtr<ID3DBlob> VSBlob;
 	Microsoft::WRL::ComPtr<ID3DBlob> PSBlob;
 
-	// ¼ÓÔØ¶¥µãºÍÏñËØ×ÅÉ«Æ÷
+	// åŠ è½½é¡¶ç‚¹å’Œåƒç´ ç€è‰²å™¨
 	ThrowIfFailed(
 		DXHelper::CreateShaderFromFile(
 			L"HSLS/DepthVS.cso",
@@ -38,7 +40,7 @@ void ShadowEffect::Initialize()
 			"PS", "ps_5_0", PSBlob.ReleaseAndGetAddressOf())
 	);
 
-	// ¼ÓÔØ×ÅÉ«Æ÷ºó ´´½¨×ÅÉ«Æ÷
+	// åŠ è½½ç€è‰²å™¨åŽ åˆ›å»ºç€è‰²å™¨
 	ThrowIfFailed(
 		m_deviceResource->GetD3DDevice()->CreateVertexShader(
 			VSBlob->GetBufferPointer(),
@@ -48,7 +50,7 @@ void ShadowEffect::Initialize()
 		)
 	);
 
-	// ´´½¨¶¥µãÃèÊö
+	// åˆ›å»ºé¡¶ç‚¹æè¿°
 	static const D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -67,7 +69,7 @@ void ShadowEffect::Initialize()
 	);
 
 
-	// ´´½¨ÏñËØ×ÅÉ«Æ÷
+	// åˆ›å»ºåƒç´ ç€è‰²å™¨
 	ThrowIfFailed(
 		m_deviceResource->GetD3DDevice()->CreatePixelShader(
 			PSBlob->GetBufferPointer(),
@@ -77,7 +79,7 @@ void ShadowEffect::Initialize()
 		)
 	);
 
-	// ´´½¨³£Á¿»º³åÇø0
+	// åˆ›å»ºå¸¸é‡ç¼“å†²åŒº0
 	CD3D11_BUFFER_DESC constantBufferDesc0(sizeof(ModelViewProjectionConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
 	ThrowIfFailed(
 		m_deviceResource->GetD3DDevice()->CreateBuffer(&constantBufferDesc0, nullptr, &m_MVPConstantBuffer)
@@ -91,16 +93,9 @@ bool ShadowEffect::Render(ID3D11Buffer * vertexBuffer, ID3D11Buffer * indexBuffe
 
 	auto context = m_deviceResource->GetD3DDeviceContext();
 
-	// ÉèÖÃ×ÅÉ«Æ÷
-	context->VSSetShader(m_vertexShader.Get(), nullptr, 0);
-	context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
-
-	// ÉèÖÃ¶¥µãÊý¾Ý
+	// è®¾ç½®é¡¶ç‚¹æ•°æ®
 	UINT stride = sizeof(VertexPosNorTex);
 	UINT offset = 0;
-
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	context->IASetInputLayout(m_inputLayout.Get());
 
 	context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 	context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0);
@@ -118,6 +113,14 @@ void ShadowEffect::BeginRender()
 	m_renderToTexture->SetRenderTarget(m_deviceResource->GetD3DDeviceContext());
 	m_renderToTexture->ClearRenderTarget(m_deviceResource->GetD3DDeviceContext(), 0.f, 0.f, 0.f, 1.f);
 
+	auto context = m_deviceResource->GetD3DDeviceContext();
+
+	// è®¾ç½®ç€è‰²å™¨
+	context->VSSetShader(m_vertexShader.Get(), nullptr, 0);
+	context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->IASetInputLayout(m_inputLayout.Get());
+
 	m_IsBegin = true;
 }
 
@@ -130,16 +133,17 @@ void ShadowEffect::EndRender()
 
 void ShadowEffect::SetModelMatrix(XMMATRIX matrix)
 {
-	XMStoreFloat4x4(&m_MVPData.model, matrix);
+	XMStoreFloat4x4(&m_MVPData.model, XMMatrixTranspose(matrix));
 }
 
 void ShadowEffect::SetViewProjMatrix(XMFLOAT3 direction, XMFLOAT3 pos, float NearPlane, float FarPlane)
 {
-	XMVECTOR eye = XMLoadFloat3(&pos);
-	XMVECTOR look = XMLoadFloat3(&direction);
-	XMVECTOR up = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+	XMVECTOR newPos = XMLoadFloat3(&pos);
+	XMVECTOR lookDirection = XMLoadFloat3(&direction);
+	XMVECTOR focusPos = newPos + lookDirection;
+	XMVECTOR up = { 0.0f,1.0f,0.0f,0.0f };
 
-	XMStoreFloat4x4(&m_MVPData.view, XMMatrixLookAtLH(eye, look, up));
+	XMStoreFloat4x4(&m_MVPData.view, XMMatrixTranspose(XMMatrixLookAtRH(newPos, focusPos, up)));
 
-	XMStoreFloat4x4(&m_MVPData.projection, XMMatrixOrthographicLH(m_shadowMapWidth, m_shadowMapHeight, NearPlane, FarPlane));
+	XMStoreFloat4x4(&m_MVPData.projection, XMMatrixTranspose(XMMatrixOrthographicRH(m_shadowMapWidth, m_shadowMapHeight, NearPlane, FarPlane)));
 }
