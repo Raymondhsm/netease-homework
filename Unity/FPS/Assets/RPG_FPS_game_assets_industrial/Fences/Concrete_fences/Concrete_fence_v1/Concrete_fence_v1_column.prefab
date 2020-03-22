@@ -12,12 +12,12 @@ GameObject:
   - component: {fileID: 33000014143242630}
   - component: {fileID: 23000011945749940}
   - component: {fileID: 65000012194722020}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Concrete_fence_v1_column
-  m_TagString: Untagged
+  m_TagString: Terrain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &4000012234785446
 Transform:

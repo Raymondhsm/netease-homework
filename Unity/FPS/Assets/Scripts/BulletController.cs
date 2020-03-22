@@ -10,6 +10,7 @@ public class BulletController : MonoBehaviour
 	private Vector3 direction;
 	private float time;
 	private GameObject _canvas;
+	private Vector3 _staticHitPos;
 
     // Start is called before the first frame update
     void Start()
@@ -40,7 +41,12 @@ public class BulletController : MonoBehaviour
 		}
 		else if(obj.CompareTag("Terrain"))
 		{
-
+			GameObject go = (GameObject)Resources.Load("Prefabs/BulletHole");
+			GameObject bulletHole = Instantiate(go);
+			bulletHole.transform.position = _staticHitPos;
+			bulletHole.transform.LookAt(transform);
+			bulletHole.transform.Translate(Vector3.back * 0.01f);
+			Destroy(bulletHole, 5);
 		}
 
 		Destroy(gameObject);
@@ -62,5 +68,8 @@ public class BulletController : MonoBehaviour
 		set { direction = value; }
 	}
 
-
+	public Vector3 StaticHitPos
+	{
+		set { _staticHitPos = value; }
+	}
 }
