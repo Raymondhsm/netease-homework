@@ -41,6 +41,7 @@ public class BulletController : MonoBehaviour
 		}
 		else if(obj.CompareTag("Terrain"))
 		{
+			Debug.Log(_staticHitPos);
 			GameObject go = (GameObject)Resources.Load("Prefabs/BulletHole");
 			GameObject bulletHole = Instantiate(go);
 			bulletHole.transform.position = _staticHitPos;
@@ -52,9 +53,10 @@ public class BulletController : MonoBehaviour
 		Destroy(gameObject);
 	}
 
-	void OnDestroy()
+	public void AddForce(Vector3 dir)
 	{
-
+		this.direction = dir;
+		transform.GetComponent<Rigidbody>().AddForce(dir * bulletSpeed, ForceMode.Impulse);
 	}
 
 	public int BulletDamage

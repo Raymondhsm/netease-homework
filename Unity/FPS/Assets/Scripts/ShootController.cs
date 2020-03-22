@@ -141,7 +141,7 @@ public class ShootController : MonoBehaviour
 			bulletPrefab.transform.position = startPoint;
 			GameObject bullet= Instantiate(bulletPrefab);
 			bullet.GetComponent<BulletController>().StaticHitPos = endPoint;
-			bullet.GetComponent<Rigidbody>().AddForce(direction.normalized*10f ,ForceMode.Impulse);
+			bullet.GetComponent<BulletController>().AddForce(direction.normalized);
 
 			// 播放声音
 			if (shootAudio)
