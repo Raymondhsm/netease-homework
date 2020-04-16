@@ -14,25 +14,26 @@ mySocket.connect((host, port))
 print("connected")
  
 while True:
-    # print("read")
-    # msg = mySocket.recv(1024)
-    # print("%s" % msg)
-    # print("read completed")
-    # if msg == b"EOF":
-    #     break
-    # if msg == b"quit":
-    #     mySocket.close()
-    #     print("quit\n")
-    #     exit()
+    print("read")
+    msg = mySocket.recv(1024)
+    a = struct.unpack()
+    print("%s" % msg)
+    print("read completed")
+    if msg == b"EOF":
+        break
+    if msg == b"quit":
+        mySocket.close()
+        print("quit\n")
+        exit()
  
     #   发送消息
-    msg = raw_input("send:")
-    data = struct.pack(config.NET_HEAD_LENGTH_FORMAT,len(msg)+4)+msg
-    mySocket.send(data)
-    print("send ok")
-    if msg == "EOF":
-        break
-    if msg == "quit":
-        mySocket.close()
-        print("end")
-        exit()
+    # msg = raw_input("send:")
+    # data = struct.pack(config.NET_HEAD_LENGTH_FORMAT,len(msg)+4)+msg
+    # mySocket.send(data)
+    # print("send ok")
+    # if msg == "EOF":
+    #     break
+    # if msg == "quit":
+    #     mySocket.close()
+    #     print("end")
+    #     exit()

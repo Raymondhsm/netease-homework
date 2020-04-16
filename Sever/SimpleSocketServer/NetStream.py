@@ -132,7 +132,6 @@ class NetStream(object):
 		rsize = self.__peekRaw(config.NET_HEAD_LENGTH_SIZE)
 		if (len(rsize) < config.NET_HEAD_LENGTH_SIZE):
 			return ''
-
 		size = struct.unpack(config.NET_HEAD_LENGTH_FORMAT, rsize)[0]
 		if (len(self.recv_buf) < size):
 			return ''
@@ -162,7 +161,7 @@ class NetStream(object):
 				break
 
 			rdata = rdata + text
-
+		# print("rdata = "+rdata)
 		self.recv_buf = self.recv_buf + rdata
 		return len(rdata)
 	

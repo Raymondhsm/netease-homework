@@ -1,53 +1,35 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using System;
 using System.IO;
 using System.Net.Sockets;
-
  
 
 public class NetworkSocket : MonoBehaviour
 {
+    public static int NET_HEAD_LENGTH_SIZE	= 4;		// 4 bytes little endian (x86)
+
     public String host = "localhost";
     public Int32 port = 8765;
 
     internal Boolean socket_ready = false;
-    internal String input_buffer = "";
     TcpClient tcp_socket;
     NetworkStream net_stream;
 
     StreamWriter socket_writer;
     StreamReader socket_reader;
 
+    Queue<string> recv_buff;
 
+
+    void Start()
+    {
+        recv_buff = new Queue<string>();
+    }
 
     void Update()
     {
-        string received_data = readSocket();
-        // string key_stroke = Input.inputString;
-
-        // // Collects keystrokes into a buffer
-        // if (key_stroke != ""){
-        //     input_buffer += key_stroke;
-
-        //     if (key_stroke == "\n"){
-        //     	// Send the buffer, clean it
-        //     	Debug.Log("Sending: " + input_buffer);
-        //     	writeSocket(input_buffer);
-        //     	input_buffer = "";
-        //     }
-
-        // }
-
-        // writeSocket("kasjdhakjhdjkashjkdhasjkdhkjashdjkahdjkahdjkhajkshdjka");
-
-
-        if (received_data != "")
-        {
-        	// Do something with the received data,
-        	// print it in the log for now
-            Debug.Log(received_data);
-        }
+        
     }
 
 
@@ -80,35 +62,50 @@ public class NetworkSocket : MonoBehaviour
         }
     }
 
-    public void writeSocket(string line)
+    public void writeSocket(string msg)
     {
         if (!socket_ready)
             return;
             
-        line = line + "\r\n";
-        socket_writer.Write(line);
+        int size = msg.Length + NET_HEAD_LENGTH_SIZE;
+        byte [] sizeBuff = BitConverter.GetBytes(size);     // 将 int 转换成字节数组
+        string data = System.Text.Encoding.Default.GetString(sizeBuff) + msg;
+        socket_writer.Write(data);
         socket_writer.Flush();
     }
 
-    public String readSocket()
+    public void send(int command, string msg)
     {
         if (!socket_ready)
-            return "";
+            return;
 
-        if (net_stream.DataAvailable){
-            // string data = "";
-            // for(int i=0; i<2 && !socket_reader.EndOfStream; i++)
-            //     data += socket_reader.ReadLine();
-            // return data;
-            // return socket_reader.ReadLine();
-            byte[] b = new byte[1024];
-            net_stream.Read(b,0,1024);
-            Debug.Log(System.Text.Encoding.UTF8.GetString(b));
-            return System.Text.Encoding.ASCII.GetString(b);
+        byte[] commandBuff = BitConverter.GetBytes(command);
+        string data = System.Text.Encoding.Default.GetString(commandBuff) + msg;
+        writeSocket(data);
+    }
 
+    public void readSocket()
+    {
+        if (!socket_ready)return;
+
+        while (net_stream.DataAvailable)
+        {
+            char[] head = new char[NET_HEAD_LENGTH_SIZE];
+            socket_reader.Read(head, 0, head.Length);
+
+            int dataLen = Utils.CharArrayToInt32(head) - NET_HEAD_LENGTH_SIZE;
+            char[] data = new char[dataLen];
+            socket_reader.Read(data, 0, data.Length);
+
+            recv_buff.Enqueue(new String(data));
         }
+    }
 
-        return "";
+    public String read()
+    {
+        if(recv_buff.Count == 0) return "";
+
+        return recv_buff.Dequeue();
     }
 
     public void closeSocket()
