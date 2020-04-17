@@ -29,7 +29,10 @@ public class NetworkSocket : MonoBehaviour
 
     void Update()
     {
-        
+        readSocket();
+        while(recv_buff.Count > 0){
+            Debug.Log(read());
+        }
     }
 
 
