@@ -19,19 +19,27 @@ public class NetworkSocket : MonoBehaviour
     StreamWriter socket_writer;
     StreamReader socket_reader;
 
-    Queue<string> recv_buff;
+    Queue<Recv_data> recv_buff;
 
+    public struct Recv_data
+    {
+        public int command;
+        public string data;
+    }
 
     void Start()
     {
-        recv_buff = new Queue<string>();
+        recv_buff = new Queue<Recv_data>();
     }
 
     void Update()
     {
         readSocket();
         while(recv_buff.Count > 0){
-            Debug.Log(read());
+            Recv_data recv = read();
+            Debug.Log(recv.command);
+            Debug.Log(recv.data);
+            Service.Instance().ServiceProvess(recv.command, recv.data);
         }
     }
 
@@ -96,18 +104,24 @@ public class NetworkSocket : MonoBehaviour
             char[] head = new char[NET_HEAD_LENGTH_SIZE];
             socket_reader.Read(head, 0, head.Length);
 
-            int dataLen = Utils.CharArrayToInt32(head) - NET_HEAD_LENGTH_SIZE;
+            char[] command = new char[Config.COMMAND_LENGTH_SIZE];
+            socket_reader.Read(command, 0, command.Length);
+            int com = Utils.CharArrayToInt32(command);
+
+            int dataLen = Utils.CharArrayToInt32(head) - NET_HEAD_LENGTH_SIZE - Config.COMMAND_LENGTH_SIZE;
             char[] data = new char[dataLen];
             socket_reader.Read(data, 0, data.Length);
 
-            recv_buff.Enqueue(new String(data));
+            Recv_data recv_data;
+            recv_data.command = com;
+            recv_data.data = new String(data);
+
+            recv_buff.Enqueue(recv_data);
         }
     }
 
-    public String read()
+    public Recv_data read()
     {
-        if(recv_buff.Count == 0) return "";
-
         return recv_buff.Dequeue();
     }
 

@@ -1,6 +1,10 @@
 class Config
 {
-    public static int COMMAND_REGISTER = 0;
-    public static int COMMAND_LOGIN = 1;
-    public static int COMMAND_MOVE = 2;
+
+    public const int COMMAND_LENGTH_SIZE = 4;
+    public const int COMMAND_REGISTER = 0;
+    public const int COMMAND_LOGIN = 1;
+    public const int COMMAND_MOVE = 2;
+
+
 }
