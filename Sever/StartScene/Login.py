@@ -2,28 +2,32 @@ import os,sys
 sys.path.append(os.path.realpath('./'))
 import Database.Database as DB
 import uuid
+import time
 
 def login(data):
     db = DB.database
     (status, result) = db.select("user", "password", "account = '%s'"%data["account"])
 
     if status:
-        pwd = result[0][0]
-        if pwd == data["password"]:
-            loginStatus = True
-            sessionId = uuid.uuid4()
-            print(sessionId)
-            re = db.update("user",{"sessionId":sessionId},"account = '%s'"%data["account"])
-            print(re)
-            if re: 
-                loginStatus = False
-                sessionId = ""
-        else:
+        if result == []:
             loginStatus = False
-            sessionId = ""
+            sessionId = "account wrong"
+        else:
+            pwd = result[0][0]
+            if pwd == data["password"]:
+                loginStatus = True
+                sessionId = uuid.uuid4().hex
+                idTime = time.strftime('%Y-%m-%d %H:%M:%S',time.gmtime(time.time()))
+                re = db.update("user",{"sessionId":sessionId,"idTime":idTime},"account = '%s'"%data["account"])
+                if not re: 
+                    loginStatus = False
+                    sessionId = "service wrong"
+            else:
+                loginStatus = False
+                sessionId = "password wrong"
     else:
         loginStatus = False
-        sessionId = ""
+        sessionId = "service wrong"
 
     sendDict = {
         "loginStatus": loginStatus,
@@ -32,6 +36,26 @@ def login(data):
     return sendDict
 
 def register(data):
-    pass
+    db = DB.database
+    (status, result) = db.select("user", "password", "account = '%s'"%data["account"])
 
-login({"account":"net","password":"123"})
+    registerStatus = False
+    if status and result == []:
+        info = {
+            "account": data["account"],
+            "password": data["password"]
+        }
+        re = db.insert("user",info)
+        if re:
+            registerStatus = True
+            registerInfo = "success"
+        else:
+            registerInfo = "service wrong"
+    else:
+        registerInfo = "account exist"
+    
+    sendData = {
+        "registerStatus": registerStatus,
+        "registerInfo": registerInfo
+        }
+    return sendData

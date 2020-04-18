@@ -29,13 +29,10 @@ class SimpleSocketServer(object):
         try:
             command = struct.unpack(config.NET_HEAD_LENGTH_FORMAT, data[0:config.COMMAND_LENGTH_SIZE])[0]
             dataJson = json.loads(data[config.COMMAND_LENGTH_SIZE:])
-            print("123")
             returnData = Service.service_dict[command](dataJson)
-            print("456")
-            self.send(hid, returnData)
+            self.send(hid, data[0:config.COMMAND_LENGTH_SIZE], returnData)
         except:
-            print("false")
-            return None
+            print("send return data failed")
 
 
     def Tick(self):
@@ -51,22 +48,22 @@ class SimpleSocketServer(object):
             elif type == config.NET_CONNECTION_DATA:
                 return self.HandleData(hid,data)
 
-    def send(self, hid, data):
+    def send(self, hid, command, data):
         if isinstance(data,dict):
             sendData = json.dumps(data)
         else:
             sendData = data
         print(sendData)
-        self.host.sendClient(hid, sendData)
+        self.host.sendClient(hid, command + sendData)
 
-    def boardcast(self, data):
+    def boardcast(self, command, data):
         if isinstance(data,dict):
             sendData = json.dumps(data)
         else:
             sendData = data
         
         for client in self.host.clients:
-            self.host.sendClient(client.hid, sendData)
+            self.host.sendClient(client.hid, command + sendData)
 
 socketServer = SimpleSocketServer()
 
