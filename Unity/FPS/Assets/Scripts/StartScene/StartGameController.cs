@@ -16,8 +16,8 @@ public class StartGameController : MonoBehaviour
     void Start()
     {
         m_network = GameObject.Find("NetworkController").GetComponent<NetworkSocket>();
-        Service.Instance().loginRecvCallback = new Service.LoginRecvHandler(this.LoginCallback);
-        Service.Instance().registerRecvCallback = new Service.RegisterRecvhandler(this.RegisterCallback);
+        Service.Instance().loginRecvCallback = new Service.RecvHandler(this.LoginCallback);
+        Service.Instance().registerRecvCallback = new Service.RecvHandler(this.RegisterCallback);
     }
 
     // Update is called once per frame

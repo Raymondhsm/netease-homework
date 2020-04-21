@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using System.IO;
+using System.Web;
 using System.Net.Sockets;
  
 
@@ -37,9 +38,7 @@ public class NetworkSocket : MonoBehaviour
         readSocket();
         while(recv_buff.Count > 0){
             Recv_data recv = read();
-            Debug.Log(recv.command);
-            Debug.Log(recv.data);
-            Service.Instance().ServiceProvess(recv.command, recv.data);
+            Service.Instance().ServiceProcess(recv.command, recv.data);
         }
     }
 
@@ -73,16 +72,20 @@ public class NetworkSocket : MonoBehaviour
         }
     }
 
-    public void writeSocket(string msg)
+    public void writeSocket(byte[] msg)
     {
         if (!socket_ready)
             return;
             
         int size = msg.Length + NET_HEAD_LENGTH_SIZE;
-        byte [] sizeBuff = BitConverter.GetBytes(size);     // 将 int 转换成字节数组
-        string data = System.Text.Encoding.Default.GetString(sizeBuff) + msg;
-        socket_writer.Write(data);
-        socket_writer.Flush();
+        byte[] sizeBuff = BitConverter.GetBytes(size);     // 将 int 转换成字节数组
+        byte[] sendData = Utils.MergeByteArray(sizeBuff, msg); 
+
+        net_stream.Write(sendData, 0, sendData.Length);
+        net_stream.Flush();
+
+        // socket_writer.Write(data);
+        // socket_writer.Flush();
     }
 
     public void send(int command, string msg)
@@ -91,8 +94,8 @@ public class NetworkSocket : MonoBehaviour
             return;
 
         byte[] commandBuff = BitConverter.GetBytes(command);
-        string data = System.Text.Encoding.Default.GetString(commandBuff) + msg;
-        writeSocket(data);
+        byte[] data = System.Text.Encoding.Default.GetBytes(msg);
+        writeSocket(Utils.MergeByteArray(commandBuff, data));
     }
 
     public void readSocket()
@@ -101,20 +104,20 @@ public class NetworkSocket : MonoBehaviour
 
         while (net_stream.DataAvailable)
         {
-            char[] head = new char[NET_HEAD_LENGTH_SIZE];
-            socket_reader.Read(head, 0, head.Length);
+            byte[] head = new byte[NET_HEAD_LENGTH_SIZE];
+            net_stream.Read(head, 0, head.Length);
 
-            char[] command = new char[Config.COMMAND_LENGTH_SIZE];
-            socket_reader.Read(command, 0, command.Length);
-            int com = Utils.CharArrayToInt32(command);
+            byte[] command = new byte[Config.COMMAND_LENGTH_SIZE];
+            net_stream.Read(command, 0, command.Length);
+            int com = BitConverter.ToInt32(command, 0);
 
-            int dataLen = Utils.CharArrayToInt32(head) - NET_HEAD_LENGTH_SIZE - Config.COMMAND_LENGTH_SIZE;
-            char[] data = new char[dataLen];
-            socket_reader.Read(data, 0, data.Length);
+            int dataLen = BitConverter.ToInt32(head, 0) - NET_HEAD_LENGTH_SIZE - Config.COMMAND_LENGTH_SIZE;
+            byte[] data = new byte[dataLen];
+            net_stream.Read(data, 0, data.Length);
 
             Recv_data recv_data;
             recv_data.command = com;
-            recv_data.data = new String(data);
+            recv_data.data = System.Text.Encoding.Default.GetString(data);
 
             recv_buff.Enqueue(recv_data);
         }

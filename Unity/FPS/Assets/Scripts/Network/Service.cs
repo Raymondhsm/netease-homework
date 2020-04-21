@@ -2,11 +2,11 @@
 
 class Service
 {
-    public delegate void LoginRecvHandler(string str);
-    public delegate void RegisterRecvhandler(string str);
+    public delegate void RecvHandler(string str);
 
-    public LoginRecvHandler loginRecvCallback;
-    public RegisterRecvhandler registerRecvCallback;
+    public RecvHandler loginRecvCallback;
+    public RecvHandler registerRecvCallback;
+    public RecvHandler EntityNewRecvCallback;
 
     private static Service instance;
     public static Service Instance()
@@ -23,7 +23,7 @@ class Service
 
     }
 
-    public void ServiceProvess(int command, string dataStr)
+    public void ServiceProcess(int command, string dataStr)
     {
         switch(command)
         {
@@ -35,6 +35,11 @@ class Service
             case Config.COMMAND_REGISTER:
                 if(registerRecvCallback != null)
                     registerRecvCallback(dataStr);
+                break;
+
+            case Config.COMMAND_NEW_ENTITY:
+                if(EntityNewRecvCallback != null)
+                    EntityNewRecvCallback(dataStr);
                 break;
         }
     }
