@@ -161,7 +161,7 @@ class NetStream(object):
 				break
 
 			rdata = rdata + text
-		# print("rdata = "+rdata)
+
 		self.recv_buf = self.recv_buf + rdata
 		return len(rdata)
 	

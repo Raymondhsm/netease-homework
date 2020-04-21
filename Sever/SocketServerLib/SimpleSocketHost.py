@@ -175,7 +175,6 @@ class SimpleSocketHost(object):
 				data = client.recv()
 				if data == '':
 					break
-				# print('data'+data)
 				self.queue.append((config.NET_CONNECTION_DATA, client.hid, data))
 				client.active = current
 
