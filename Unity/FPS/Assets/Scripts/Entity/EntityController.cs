@@ -16,6 +16,8 @@ public class EntityController : MonoBehaviour
     {
         m_network = GameObject.Find("NetworkController").GetComponent<NetworkSocket>();
         Service.Instance().EntityNewRecvCallback = new Service.RecvHandler(this.RegisterEntityCallback);
+        Service.Instance().EntityMoveCallback = new Service.RecvHandler(this.EntityMoveCallback);
+
         m_entities = new Dictionary<int, Entity>();
         m_entityIndex = 0;
     }
@@ -24,7 +26,6 @@ public class EntityController : MonoBehaviour
     void Update()
     {
         if(Input.GetButtonDown("Mode")){
-            Debug.Log("click");
             Vector3[] a = {new Vector3(),new Vector3(),new Vector3()};
             RegisterEntity(Config.ENTITY_PLAYER, a);
         }
@@ -45,11 +46,24 @@ public class EntityController : MonoBehaviour
 
     public void RegisterEntityCallback(string data)
     {
-        Debug.Log(data);
         EntityRecv entity = JsonUtility.FromJson<EntityRecv>(data);
 
-        GameObject go = Instantiate(player);
-        go.transform.position = entity.pos;
+        switch(entity.Type)
+        {
+            case Config.ENTITY_PLAYER:
+                GameObject go = Instantiate(player);
+                go.transform.position = entity.pos;
+                go.GetComponent<Entity>().eid = entity.eid;
+
+                m_entities.Add(entity.eid, go.GetComponent<Entity>());
+                break;
+        }
+    }
+
+    public void EntityMoveCallback(string data)
+    {
+        Entity.EntityMoveInfo dataRecv = JsonUtility.FromJson<Entity.EntityMoveInfo>(data);
+        m_entities[dataRecv.eid].ProcessMoveRecv(dataRecv);
     }
 
     public struct EntityInfo
@@ -64,6 +78,7 @@ public class EntityController : MonoBehaviour
     public struct EntityRecv
     {
         public int eid;
+        public int Type;
         public Vector3 pos;
         public Vector3 direction;
         public Vector3 velocity;

@@ -7,6 +7,7 @@ class Service
     public RecvHandler loginRecvCallback;
     public RecvHandler registerRecvCallback;
     public RecvHandler EntityNewRecvCallback;
+    public RecvHandler EntityMoveCallback;
 
     private static Service instance;
     public static Service Instance()
@@ -40,6 +41,11 @@ class Service
             case Config.COMMAND_NEW_ENTITY:
                 if(EntityNewRecvCallback != null)
                     EntityNewRecvCallback(dataStr);
+                break;
+
+            case Config.COMMAND_MOVE:
+                if(EntityMoveCallback != null)
+                    EntityMoveCallback(dataStr);
                 break;
         }
     }

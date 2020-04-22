@@ -70,16 +70,16 @@ public class test : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		moveCharactor();
+		// moveCharactor();
 		RotateCharactor();
 		Jump();
 		
 	}
 
-	private void moveCharactor()
+	public void moveCharactor(float strafe, float move, bool run)
 	{
-		var direction = new Vector3(input.Strafe, 0.0f, input.Move).normalized;
-		var velocity = direction * (input.Run ? runSpeed : walkSpeed);
+		var direction = new Vector3(strafe, 0.0f, move).normalized;
+		var velocity = direction * (run ? runSpeed : walkSpeed);
 		var smoothX = _velocityX.Update(velocity.x, movementSmoothness);
 		var smoothZ = _velocityZ.Update(velocity.z, movementSmoothness);
 		var rigidbodyVelocity = _rigidbody.velocity;
