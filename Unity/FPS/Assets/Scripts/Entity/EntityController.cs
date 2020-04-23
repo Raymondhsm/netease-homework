@@ -17,6 +17,7 @@ public class EntityController : MonoBehaviour
         m_network = GameObject.Find("NetworkController").GetComponent<NetworkSocket>();
         Service.Instance().EntityNewRecvCallback = new Service.RecvHandler(this.RegisterEntityCallback);
         Service.Instance().EntityMoveCallback = new Service.RecvHandler(this.EntityMoveCallback);
+        Service.Instance().EntityShootCallback = new Service.RecvHandler(this.EntityShootCallback);
 
         m_entities = new Dictionary<int, Entity>();
         m_entityIndex = 0;
@@ -64,6 +65,12 @@ public class EntityController : MonoBehaviour
     {
         Entity.EntityMoveInfo dataRecv = JsonUtility.FromJson<Entity.EntityMoveInfo>(data);
         m_entities[dataRecv.eid].ProcessMoveRecv(dataRecv);
+    }
+
+    public void EntityShootCallback(string data)
+    {
+        Entity.EntityShootInfo dataRecv = JsonUtility.FromJson<Entity.EntityShootInfo>(data);
+        m_entities[dataRecv.eid].ProcessShootRecv(dataRecv);
     }
 
     public struct EntityInfo

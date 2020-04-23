@@ -61,6 +61,13 @@ public class WeaponController
 		return true;
 	}
 
+	public bool canShoot()
+	{
+		if (_weaponCurrBullet[_weaponIndex] - 1 < 0)
+			return false;
+		return true;
+	}
+
 	public void ChangeMode()
 	{
 		_weaponMode[_weaponIndex] = (_weaponMode[_weaponIndex] + 1) % 2;

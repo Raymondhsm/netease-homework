@@ -13,6 +13,4 @@ import SocketServerLib.FightServer as fs
 socketServer = fs.fightServer
 socketServer.StartServer()
 while True:
-    if socketServer.host.queue != []:
-        print(socketServer.host.queue)
     socketServer.Tick()

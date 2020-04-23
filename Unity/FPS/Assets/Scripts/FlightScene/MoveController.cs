@@ -73,24 +73,24 @@ public class MoveController : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		moveCharactor();
-		RotateCharactor();
-		Jump();
-		
+		AnimatorChange();
 		playerAnimator.SetBool("IsGround", _isGround);
 	}
 
-	private void moveCharactor()
+	public void moveCharactor(float strafe, float move, bool run)
 	{
-		var direction = new Vector3(input.Strafe, 0.0f, input.Move).normalized;
-		var velocity = direction * (input.Run ? runSpeed : walkSpeed);
+		var direction = new Vector3(strafe, 0.0f, move).normalized;
+		var velocity = direction * (run ? runSpeed : walkSpeed);
 		var smoothX = _velocityX.Update(velocity.x, movementSmoothness);
 		var smoothZ = _velocityZ.Update(velocity.z, movementSmoothness);
 		var rigidbodyVelocity = _rigidbody.velocity;
 		var force = new Vector3(smoothX - rigidbodyVelocity.x, 0.0f, smoothZ - rigidbodyVelocity.z);
 		transform.Translate(force * Time.fixedDeltaTime);
 		//_rigidbody.AddForce(force, ForceMode.Force);
+	}
 
+	private void AnimatorChange()
+	{
 		// change animation
 		playerAnimator.SetBool("IsForward", input.Move > 0);
 		playerAnimator.SetBool("IsBack", input.Move < 0);
@@ -99,8 +99,8 @@ public class MoveController : MonoBehaviour
 		playerAnimator.SetBool("IsRun", input.Run);
 
 		// 播放声音
-		bool move = input.Move != 0 || input.Strafe != 0;
-		if(audioSource && move)
+		bool isMove = input.Move != 0 || input.Strafe != 0;
+		if(audioSource && isMove)
 		{
 			if (input.Run) audioSource.clip = runClip;
 			else audioSource.clip = moveClip;
@@ -112,7 +112,7 @@ public class MoveController : MonoBehaviour
 		}
 	}
 
-	private void Jump()
+	public void Jump()
 	{
 		_isJump = !(_rigidbody.velocity.y <= 0);
 		if (_isGround && input.Jump && !_isJump) 
@@ -123,8 +123,11 @@ public class MoveController : MonoBehaviour
 		}
 	}
 
-	private void RotateCharactor()
+	public void RotateCharactor(float RotateX, float RotateY)
 	{
+		RotateX *= mouseSensitivity;
+		RotateY *= mouseSensitivity;
+
 		Quaternion cameraRotation = camera.GetComponent<Transform>().rotation;
 		float camXAngle = cameraRotation.eulerAngles.x;
 
@@ -205,71 +208,4 @@ public class MoveController : MonoBehaviour
 		}
 	}
 
-	/// Input mappings
-	[Serializable]
-    private class FpsInput
-    {
-        [Tooltip("The name of the virtual axis mapped to rotate the camera around the y axis."), SerializeField]
-        private string rotateX = "Mouse X";
-
-        [Tooltip("The name of the virtual axis mapped to rotate the camera around the x axis."), SerializeField]
-        private string rotateY = "Mouse Y";
-
-        [Tooltip("back and forth."), SerializeField]
-        private string move = "Horizontal";
-
-        [Tooltip("left and right."), SerializeField]
-        private string strafe = "Vertical";
-
-        [Tooltip("The name of the virtual button mapped to run."), SerializeField]
-        private string run = "Fire3";
-
-        [Tooltip("The name of the virtual button mapped to jump."), SerializeField]
-        private string jump = "Jump";
-
-		[Tooltip("reload bullet."), SerializeField]
-		private string reload = "Reload";
-
-
-		/// Returns the value of the virtual axis mapped to rotate the camera around the y axis.
-		public float RotateX
-        {
-            get { return Input.GetAxisRaw(rotateX); }
-        }
-
-        /// Returns the value of the virtual axis mapped to rotate the camera around the x axis.        
-        public float RotateY
-        {
-            get { return Input.GetAxisRaw(rotateY); }
-        }
-
-        /// Returns the value of the virtual axis mapped to move the character back and forth.        
-        public float Move
-        {
-            get { return Input.GetAxisRaw(move); }
-        }
-
-        /// Returns the value of the virtual axis mapped to move the character left and right.         
-        public float Strafe
-        {
-            get { return Input.GetAxisRaw(strafe); }
-        }
-
-        /// Returns true while the virtual button mapped to run is held down.          
-        public bool Run
-        {
-            get { return Input.GetButton(run); }
-        }
-
-        /// Returns true during the frame the user pressed down the virtual button mapped to jump.          
-        public bool Jump
-        {
-            get { return Input.GetButtonDown(jump); }
-        }
-
-		public bool Reload
-		{
-			get { return Input.GetButtonDown(reload); }
-		}
-	}
 }

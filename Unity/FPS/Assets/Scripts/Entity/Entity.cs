@@ -28,6 +28,11 @@ public class Entity : MonoBehaviour
         return;
     }
 
+    public virtual void ProcessShootRecv(EntityShootInfo esi)
+    {
+        return;
+    }
+
     public int eid
     {
         set { m_eid = value; }
@@ -41,6 +46,16 @@ public class Entity : MonoBehaviour
         public float strafe;
         public bool run;
         public bool jump;
+        public float rotateX;
+        public float rotateY;
+    }
+
+    public struct EntityShootInfo
+    {
+        public int eid;
+        public float endPointX;
+        public float endPointY;
+        public float endPointZ;
     }
 
 }

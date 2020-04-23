@@ -21,8 +21,8 @@ public class ShootController : MonoBehaviour
 	public float fireInterval = 100f;
 
 	[Header("UI Component")]
-	public Text textBullet;
-	public Text textWeaponMode;
+	private Text textBullet;
+	private Text textWeaponMode;
 
 	[SerializeField]
 	private ShootingInput input;
@@ -30,6 +30,7 @@ public class ShootController : MonoBehaviour
 	[SerializeField]
 	private WeaponController weapon;
 
+	private GameObject _bulletPrefab;	
 	private bool _singleShooting;
 	private float _nextFireTime;
 	private Coroutine _reloadCompleted;
@@ -42,6 +43,10 @@ public class ShootController : MonoBehaviour
 		_nextFireTime = Time.time;
 		_IsReloading = false;
 
+		textBullet = GameObject.Find("GameController").GetComponent<GameController>().textBullet;
+		textWeaponMode = GameObject.Find("GameController").GetComponent<GameController>().textWeaponMode;
+
+		_bulletPrefab = (GameObject)Resources.Load("Prefabs/bullet");
 		// 初始化UI
 		SetWeaponBulletText(weapon.CurrBullet);
     }
@@ -109,15 +114,13 @@ public class ShootController : MonoBehaviour
 
 	private void Shooting()
 	{
-		bool hasShoot = false;
-		if (_nextFireTime > Time.time || _IsReloading) return;
+		if (_nextFireTime > Time.time || _IsReloading || !weapon.canShoot()) return;
 
 		// 两种模式
 		if((_singleShooting && input.LeftButtonDown) || (!_singleShooting && input.LeftButtonHold))
 		{
-			if (!weapon.Shoot()) return;
+			// if (!weapon.Shoot()) return;
 			_nextFireTime = Time.time + fireInterval;
-			SetWeaponBulletText(weapon.CurrBullet);
 
 			Vector3 rayOrigin = camera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0.0f));
 			RaycastHit hit;
@@ -133,29 +136,34 @@ public class ShootController : MonoBehaviour
 				endPoint = rayOrigin + (camera.transform.forward * weaponRange);
 			}
 
-			// 计算方向
-			var startPoint = bulletPos.transform.position;
-			var direction = endPoint - startPoint;
-
-			GameObject bulletPrefab = (GameObject)Resources.Load("Prefabs/bullet");
-			bulletPrefab.transform.position = startPoint;
-			GameObject bullet= Instantiate(bulletPrefab);
-			bullet.GetComponent<BulletController>().StaticHitPos = endPoint;
-			bullet.GetComponent<BulletController>().AddForce(direction.normalized);
-
-			// 播放声音
-			if (shootAudio)
-			{
-				shootAudio.clip = shootClip;
-				shootAudio.Play();
-			}
-			shootEffect.Play();
-
-			if (_singleShooting) playerAnimator.SetTrigger("IsShoot");
-			else hasShoot = true;
+			gameObject.GetComponent<PlayerEntity>().ShootUpload(endPoint);
 		}
 
-		playerAnimator.SetBool("IsShootBrust", hasShoot);
+	}
+
+	public void ShootRecv(Vector3 endPoint)
+	{
+		weapon.Shoot();
+		SetWeaponBulletText(weapon.CurrBullet);
+		// 计算方向
+		var startPoint = bulletPos.transform.position;
+		var direction = endPoint - startPoint;
+
+		_bulletPrefab.transform.position = startPoint;
+		GameObject bullet= Instantiate(_bulletPrefab);
+		bullet.GetComponent<BulletController>().StaticHitPos = endPoint;
+		bullet.GetComponent<BulletController>().AddForce(direction.normalized);
+
+		// 播放声音
+		if (shootAudio)
+		{
+			shootAudio.clip = shootClip;
+			shootAudio.Play();
+		}
+		shootEffect.Play();
+
+		if (_singleShooting) playerAnimator.SetTrigger("IsShoot");
+		else playerAnimator.SetBool("IsShootBrust", true);
 	}
 
 	[Serializable]

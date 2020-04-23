@@ -66,4 +66,9 @@ class FpsInput
     {
         get { return Input.GetButtonDown(reload); }
     }
+
+    public bool isChange
+    {
+        get { return Move != 0 || Strafe != 0 || Run || Jump || RotateX != 0 || RotateY != 0; }
+    }
 }

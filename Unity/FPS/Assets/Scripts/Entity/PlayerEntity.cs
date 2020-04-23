@@ -5,14 +5,16 @@ using UnityEngine;
 public class PlayerEntity : Entity
 {
     private FpsInput m_fpsInput;
-    private test m_moveController;
+    private MoveController m_moveController;
+    private ShootController m_shootController;
 
     // Start is called before the first frame update
     public override void Start()
     {
         base.Start();
         m_fpsInput = new FpsInput();
-        m_moveController = gameObject.GetComponent<test>();
+        m_moveController = gameObject.GetComponent<MoveController>();
+        m_shootController = gameObject.GetComponent<ShootController>();
     }
 
     // Update is called once per frame
@@ -23,8 +25,7 @@ public class PlayerEntity : Entity
 
     public override void StatusUpload()
     {
-        bool toSend = m_fpsInput.Move != 0 || m_fpsInput.Strafe != 0 || m_fpsInput.Run || m_fpsInput.Jump;
-        if(!toSend) return;
+        if(!m_fpsInput.isChange) return;
 
         EntityMoveInfo en;
         en.move = m_fpsInput.Move;
@@ -32,6 +33,8 @@ public class PlayerEntity : Entity
         en.run = m_fpsInput.Run;
         en.jump = m_fpsInput.Jump;
         en.eid = m_eid;
+        en.rotateX = m_fpsInput.RotateX;
+        en.rotateY = m_fpsInput.RotateY;
 
         string data = JsonUtility.ToJson(en);
         m_network.send(Config.COMMAND_MOVE, data);
@@ -39,10 +42,26 @@ public class PlayerEntity : Entity
 
     public override void ProcessMoveRecv(EntityMoveInfo entity)
     {
-        Debug.Log(entity.move);
-        Debug.Log(entity.strafe);
-        Debug.Log(entity.run);
-        Debug.Log(entity.jump);
         m_moveController.moveCharactor(entity.strafe, entity.move, entity.run);
+        m_moveController.Jump();
+        m_moveController.RotateCharactor(entity.rotateX, entity.rotateY);
+    }
+
+    public void ShootUpload(Vector3 endPoint)
+    {
+        EntityShootInfo esi;
+        esi.eid = m_eid;
+        esi.endPointX = endPoint.x;
+        esi.endPointY = endPoint.y;
+        esi.endPointZ = endPoint.z;
+
+        string data = JsonUtility.ToJson(esi);
+        m_network.send(Config.COMMAND_SHOOT, data);
+    }
+
+    public override void ProcessShootRecv(EntityShootInfo esi)
+    {
+        Vector3 endPoint = new Vector3(esi.endPointX, esi.endPointY, esi.endPointZ);
+        m_shootController.ShootRecv(endPoint);
     }
 }
