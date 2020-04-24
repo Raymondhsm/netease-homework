@@ -5,6 +5,7 @@ using UnityEngine;
 public class EntityController : MonoBehaviour
 {
     public GameObject player;
+    public GameObject playerOther;
 
     private Dictionary<int, Entity> m_entities;
     private int m_entityIndex;
@@ -35,6 +36,7 @@ public class EntityController : MonoBehaviour
     public void RegisterEntity(int entity, Vector3[] pdv, int life = 0)
     {
         EntityInfo entityInfo;
+        entityInfo.privateID = PlayerPrefs.GetString("privateID");
         entityInfo.entityCommand = entity;
         entityInfo.pos = pdv[0];
         entityInfo.direction = pdv[1];
@@ -50,45 +52,41 @@ public class EntityController : MonoBehaviour
         EntityRecv entity = JsonUtility.FromJson<EntityRecv>(data);
 
         switch(entity.Type)
-        {
+        {       
             case Config.ENTITY_PLAYER:
-                GameObject go = Instantiate(player);
+                GameObject go;
+                Debug.Log(entity.publicID);
+                Debug.Log(PlayerPrefs.GetString("publicID"));
+                if(entity.publicID == PlayerPrefs.GetString("publicID"))
+                    go = Instantiate(player);
+                else
+                    go = Instantiate(playerOther);
+
                 go.transform.position = entity.pos;
                 go.GetComponent<Entity>().eid = entity.eid;
 
                 m_entities.Add(entity.eid, go.GetComponent<Entity>());
+                break;
+
+            case Config.ENTITY_ENEMY:
+                GameObject enemy = Instantiate(playerOther);
+                enemy.transform.position = entity.pos;
+                enemy.GetComponent<Entity>().eid = entity.eid;
+
+                m_entities.Add(entity.eid, enemy.GetComponent<Entity>());
                 break;
         }
     }
 
     public void EntityMoveCallback(string data)
     {
-        Entity.EntityMoveInfo dataRecv = JsonUtility.FromJson<Entity.EntityMoveInfo>(data);
+        EntityMoveInfo dataRecv = JsonUtility.FromJson<EntityMoveInfo>(data);
         m_entities[dataRecv.eid].ProcessMoveRecv(dataRecv);
     }
 
     public void EntityShootCallback(string data)
     {
-        Entity.EntityShootInfo dataRecv = JsonUtility.FromJson<Entity.EntityShootInfo>(data);
+        EntityShootInfo dataRecv = JsonUtility.FromJson<EntityShootInfo>(data);
         m_entities[dataRecv.eid].ProcessShootRecv(dataRecv);
-    }
-
-    public struct EntityInfo
-    {
-        public int entityCommand;
-        public Vector3 pos;
-        public Vector3 direction;
-        public Vector3 velocity;
-        public float life;
-    }
-
-    public struct EntityRecv
-    {
-        public int eid;
-        public int Type;
-        public Vector3 pos;
-        public Vector3 direction;
-        public Vector3 velocity;
-        public float life;
     }
 }

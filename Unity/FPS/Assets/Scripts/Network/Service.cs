@@ -1,4 +1,4 @@
-
+using UnityEngine;
 
 class Service
 {
@@ -39,6 +39,12 @@ class Service
                     registerRecvCallback(dataStr);
                 break;
 
+            case Config.COMMAND_NEW_CLIENT:
+                IDs ids = JsonUtility.FromJson<IDs>(dataStr);
+                PlayerPrefs.SetString("publicID", ids.publicID);
+                PlayerPrefs.SetString("privateID", ids.privateID);
+                break;
+
             case Config.COMMAND_NEW_ENTITY:
                 if(EntityNewRecvCallback != null)
                     EntityNewRecvCallback(dataStr);
@@ -54,5 +60,11 @@ class Service
                     EntityShootCallback(dataStr);
                 break;
         }
+    }
+
+    public struct IDs
+    {
+        public string publicID;
+        public string privateID;
     }
 }

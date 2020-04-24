@@ -12,12 +12,18 @@ public class BulletController : MonoBehaviour
 	private GameObject _canvas;
 	private Vector3 _staticHitPos;
 
+	private GameObject _bulletHole;
+	private GameObject _bulletDamageObj;
+
     // Start is called before the first frame update
     void Start()
     {
 		time = 0f;
 		direction = transform.forward;
 		_canvas = GameObject.Find("Canvas");
+
+		_bulletHole = (GameObject)Resources.Load("Prefabs/BulletHole");
+		_bulletDamageObj = (GameObject)Resources.Load("Prefabs/BulletDamage");
     }
 
     // Update is called once per frame
@@ -33,17 +39,14 @@ public class BulletController : MonoBehaviour
 		var obj = other.gameObject;
 		if(obj.CompareTag("Enemy"))
 		{
-			GameObject bulletDamage = (GameObject)Resources.Load("Prefabs/BulletDamage");
-			GameObject go = Instantiate(bulletDamage);
+			GameObject go = Instantiate(_bulletDamageObj);
 			BulletDamageController bdc = go.GetComponent<BulletDamageController>();
 			bdc.Parent = _canvas;
 			bdc.Position = transform.position;
 		}
 		else if(obj.CompareTag("Terrain"))
 		{
-			Debug.Log(_staticHitPos);
-			GameObject go = (GameObject)Resources.Load("Prefabs/BulletHole");
-			GameObject bulletHole = Instantiate(go);
+			GameObject bulletHole = Instantiate(_bulletHole);
 			bulletHole.transform.position = _staticHitPos;
 			bulletHole.transform.LookAt(transform);
 			bulletHole.transform.Translate(Vector3.back * 0.01f);

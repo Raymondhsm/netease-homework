@@ -18,11 +18,6 @@ public class Entity : MonoBehaviour
     {
         
     }
-
-    public virtual void StatusUpload()
-    {
-        return;
-    }
     public virtual void ProcessMoveRecv(EntityMoveInfo entity)
     {
         return;
@@ -39,23 +34,5 @@ public class Entity : MonoBehaviour
         get { return m_eid; }
     }
 
-    public struct EntityMoveInfo
-    {
-        public int eid;
-        public float move;
-        public float strafe;
-        public bool run;
-        public bool jump;
-        public float rotateX;
-        public float rotateY;
-    }
-
-    public struct EntityShootInfo
-    {
-        public int eid;
-        public float endPointX;
-        public float endPointY;
-        public float endPointZ;
-    }
 
 }

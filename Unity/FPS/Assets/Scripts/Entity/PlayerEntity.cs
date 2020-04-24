@@ -23,7 +23,7 @@ public class PlayerEntity : Entity
         StatusUpload();
     }
 
-    public override void StatusUpload()
+    public void StatusUpload()
     {
         if(!m_fpsInput.isChange) return;
 
