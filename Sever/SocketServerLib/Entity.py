@@ -1,27 +1,11 @@
-class Vector3:
-    def __init__(self, dict = {'x':0.0, 'y':0.0, 'z':0.0}):
-        self.x = dict['x']
-        self.y = dict['y']
-        self.z = dict['z']
-
-    def toDict(self):
-        return {
-            'x': self.x,
-            'y': self.y,
-            'z': self.z
-        }
-
-COMMAND_MOVE = 0x00
-COMMAND_RUN = 0x01
-COMMAND_JUMP = 0x02
-COMMAND_SHOOT = 0x03
-COMMAND_HIT = 0x04
-COMMAND_RELOAD = 0x05
-
-COMMAND_NEW_ENTITY = 0x0100
+import os,sys
+sys.path.append(os.path.realpath('./'))
+from Config.Struct import Vector3
 
 class Entity:
     def __init__(self, eid):
+        self.publicID = 0
+        self.private = 0
         self.eid = eid
         self.eType = -1
         self.pos = Vector3()
@@ -34,6 +18,7 @@ class Entity:
 
     def InfoDict(self):
         data = {
+            "publicID": self.publicID,
             "Type": self.eType,
             "eid": self.eid,
             "pos": self.pos.toDict(),

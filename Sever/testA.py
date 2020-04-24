@@ -1,5 +1,4 @@
-import test.route
+import random
 
-@route
-def login():
-    return 2
+a = random.randint(1,9)
+print(a)

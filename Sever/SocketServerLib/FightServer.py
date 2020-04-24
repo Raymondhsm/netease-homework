@@ -1,8 +1,11 @@
 # -*- coding: GBK -*-
+import os,sys
+sys.path.append(os.path.realpath('./'))
 from SimpleSocketHost import SimpleSocketHost
-import config
-from Entity import *
+from Config import config
+import EntityManager
 import struct
+import uuid
 import json
 
 class FightServer(object):
@@ -10,31 +13,26 @@ class FightServer(object):
     def __init__(self):
         super(FightServer, self).__init__()
         self.host = SimpleSocketHost()
-        self.entities = {}
-        self.eidIndex = 0
+        self.entityManager = EntityManager.entityManager
+        self.clientDict = {}
 
     def StartServer(self):
         self.host.startup(8765)
 
     def HandleNewClient(self, hid):
-        # sid = self.GenerateSid(hid)
-        # self.dispatcher.register(sid,svc)
-        pass
+        publicID = uuid.uuid4().hex
+        privateID = uuid.uuid4().hex
+
+        self.clientDict[hid] = (publicID, privateID)
+        data = {
+            "publicID" : publicID,
+            "privateID" : privateID
+        }
+        self.send(hid, config.COMMAND_NEW_CLIENT, data)
 
     def HandleClientLeave(self, hid):
-        return
-
-    def RegisterEntity(self, entityInfo):
-        entity = Entity(self.eidIndex)
-        entity.eType = entityInfo['entityCommand']
-        entity.pos = Vector3(entityInfo['pos'])
-        entity.direction = Vector3(entityInfo['direction'])
-        entity.velocity = Vector3(entityInfo['velocity'])
-        entity.life = entityInfo['life']
-
-        self.entities[self.eidIndex] = entity
-        self.eidIndex += 1
-        return self.entities[self.eidIndex-1].InfoDict()
+        # delete own entity
+        del self.clientDict[hid]
 
     def HandleData(self, hid, data):
         try:
@@ -43,8 +41,9 @@ class FightServer(object):
             if command < 10:
                 self.boardcast(data)
 
-            elif command == COMMAND_NEW_ENTITY:
-                self.boardcastCommand(command, self.RegisterEntity(dataJson))
+            elif command == config.COMMAND_NEW_ENTITY:
+                publicID, privateID = self.clientDict[hid]
+                self.boardcastCommand(command, self.entityManager.RegisterEntity(dataJson, publicID, privateID))
 
         except:
             print("send return data failed")
@@ -68,8 +67,9 @@ class FightServer(object):
             sendData = json.dumps(data)
         else:
             sendData = data
-            
-        self.host.sendClient(hid, command + sendData)
+        
+        com = struct.pack(config.NET_HEAD_LENGTH_FORMAT, command)
+        self.host.sendClient(hid, com + sendData)
 
     def boardcastCommand(self, command, data):
         if isinstance(data,dict):

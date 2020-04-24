@@ -1,5 +1,5 @@
 # coding=utf-8
-import config
+from Config import config
 import socket
 import time
 import sys

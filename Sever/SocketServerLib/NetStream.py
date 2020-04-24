@@ -1,4 +1,4 @@
-import config
+from Config import config
 import errno
 import socket
 import struct
