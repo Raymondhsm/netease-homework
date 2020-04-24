@@ -19,6 +19,7 @@ public class EntityController : MonoBehaviour
         Service.Instance().EntityNewRecvCallback = new Service.RecvHandler(this.RegisterEntityCallback);
         Service.Instance().EntityMoveCallback = new Service.RecvHandler(this.EntityMoveCallback);
         Service.Instance().EntityShootCallback = new Service.RecvHandler(this.EntityShootCallback);
+        Service.Instance().EntityReloadCallback = new Service.RecvHandler(this.EntityReloadCallback);
 
         m_entities = new Dictionary<int, Entity>();
         m_entityIndex = 0;
@@ -88,5 +89,11 @@ public class EntityController : MonoBehaviour
     {
         EntityShootInfo dataRecv = JsonUtility.FromJson<EntityShootInfo>(data);
         m_entities[dataRecv.eid].ProcessShootRecv(dataRecv);
+    }
+
+    public void EntityReloadCallback(string data)
+    {
+        EntityReload dataRecv = JsonUtility.FromJson<EntityReload>(data);
+        m_entities[dataRecv.eid].ProcessReloadRecv(dataRecv);
     }
 }

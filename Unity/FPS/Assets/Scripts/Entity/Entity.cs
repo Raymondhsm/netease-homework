@@ -28,6 +28,11 @@ public class Entity : MonoBehaviour
         return;
     }
 
+    public virtual void ProcessReloadRecv(EntityReload er)
+    {
+        return;
+    }
+
     public int eid
     {
         set { m_eid = value; }

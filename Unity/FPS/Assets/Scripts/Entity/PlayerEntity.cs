@@ -64,4 +64,16 @@ public class PlayerEntity : Entity
         Vector3 endPoint = new Vector3(esi.endPointX, esi.endPointY, esi.endPointZ);
         m_shootController.ShootRecv(endPoint);
     }
+
+    public void ReloadUpload()
+    {
+        EntityReload er;
+        er.eid = m_eid;
+        m_network.send(Config.COMMAND_RELOAD, JsonUtility.ToJson(er));
+    }
+
+    public override void ProcessReloadRecv(EntityReload er)
+    {
+        m_shootController.ReloadRecv();
+    }
 }

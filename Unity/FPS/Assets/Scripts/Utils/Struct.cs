@@ -39,3 +39,14 @@ public struct EntityShootInfo
     public float endPointY;
     public float endPointZ;
 }
+
+public struct EntityReload
+{
+    public int eid;
+}
+
+public struct IDs
+{
+    public string publicID;
+    public string privateID;
+}

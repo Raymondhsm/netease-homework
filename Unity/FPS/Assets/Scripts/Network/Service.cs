@@ -9,6 +9,7 @@ class Service
     public RecvHandler EntityNewRecvCallback;
     public RecvHandler EntityMoveCallback;
     public RecvHandler EntityShootCallback;
+    public RecvHandler EntityReloadCallback;
 
     private static Service instance;
     public static Service Instance()
@@ -59,12 +60,12 @@ class Service
                 if(EntityShootCallback != null)
                     EntityShootCallback(dataStr);
                 break;
+
+            case Config.COMMAND_RELOAD:
+                if(EntityReloadCallback != null)
+                    EntityReloadCallback(dataStr);
+                break;
         }
     }
 
-    public struct IDs
-    {
-        public string publicID;
-        public string privateID;
-    }
 }

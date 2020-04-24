@@ -35,6 +35,7 @@ public class ShootController : MonoBehaviour
 	private float _nextFireTime;
 	private Coroutine _reloadCompleted;
 	private bool _IsReloading;
+	private bool _reloadRecv;
 
     // Start is called before the first frame update
     void Start()
@@ -42,6 +43,7 @@ public class ShootController : MonoBehaviour
 		_singleShooting = true;
 		_nextFireTime = Time.time;
 		_IsReloading = false;
+		_reloadRecv = false;
 
 		textBullet = GameObject.Find("GameController").GetComponent<GameController>().textBullet;
 		textWeaponMode = GameObject.Find("GameController").GetComponent<GameController>().textWeaponMode;
@@ -74,22 +76,33 @@ public class ShootController : MonoBehaviour
 		if(_reloadCompleted != null)
 			StopCoroutine(_reloadCompleted);
 		_reloadCompleted = StartCoroutine(ReloadCompleted());
+
+		_reloadRecv = false;
+		gameObject.GetComponent<PlayerEntity>().ReloadUpload();
 	}
 
 	private IEnumerator ReloadCompleted()
 	{
 		bool preState = playerAnimator.GetCurrentAnimatorStateInfo(1).IsTag("reload");
 		bool currState = playerAnimator.GetCurrentAnimatorStateInfo(1).IsTag("reload");
+		float timeout = 0;
 
-		while (!(preState && !currState))
+		while ((preState || currState) || !_reloadRecv)
 		{
 			preState = currState;
 			currState = playerAnimator.GetCurrentAnimatorStateInfo(1).IsTag("reload");
+			timeout += Time.deltaTime;
+			if(timeout > 5) StopCoroutine(this._reloadCompleted);
 			yield return 0;
 		}
 		int currBullet = weapon.Reload();
 		SetWeaponBulletText(currBullet);
 		_IsReloading = false;
+	}
+
+	public void ReloadRecv()
+	{
+		_reloadRecv = true;
 	}
 
 	private void SetWeaponBulletText(int currBullet)
