@@ -1,4 +1,13 @@
-import random
+a = {
+    1:1,
+    2:2,
+    3:3,
+    4:4,
+    5:5
+}
 
-a = random.randint(1,9)
+for b in a:
+    if b == 3:
+        del a[b]
+
 print(a)

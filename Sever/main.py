@@ -1,6 +1,7 @@
 import time
 import SocketServerLib.MySocketServer as ss
 import SocketServerLib.FightServer as fs
+import Game.NPCController as npc
 
 # socketServer = ss.socketServer
 # socketServer.StartServer()
@@ -14,3 +15,4 @@ socketServer = fs.fightServer
 socketServer.StartServer()
 while True:
     socketServer.Tick()
+    npc.npcController.Process()

@@ -3,10 +3,8 @@ import os,sys
 sys.path.append(os.path.realpath('./'))
 from SimpleSocketHost import SimpleSocketHost
 from Config import config
-import EntityManager
-import struct
-import uuid
-import json
+from Game import EntityManager
+import struct,uuid,json,time
 
 class FightServer(object):
 
@@ -20,6 +18,8 @@ class FightServer(object):
         self.host.startup(8765)
 
     def HandleNewClient(self, hid):
+        self.entityManager.register(hid)
+
         publicID = uuid.uuid4().hex
         privateID = uuid.uuid4().hex
 
@@ -30,20 +30,27 @@ class FightServer(object):
         }
         self.send(hid, config.COMMAND_NEW_CLIENT, data)
 
+        # create charactor
+        
+
     def HandleClientLeave(self, hid):
         # delete own entity
+        self.entityManager.deleteOwnEntity(hid)
         del self.clientDict[hid]
 
     def HandleData(self, hid, data):
         try:
             command = struct.unpack(config.NET_HEAD_LENGTH_FORMAT, data[0:config.COMMAND_LENGTH_SIZE])[0]
             dataJson = json.loads(data[config.COMMAND_LENGTH_SIZE:])
-            if command < 10:
+            if command < 0xff:
                 self.boardcast(data)
 
             elif command == config.COMMAND_NEW_ENTITY:
                 publicID, privateID = self.clientDict[hid]
-                self.boardcastCommand(command, self.entityManager.RegisterEntity(dataJson, publicID, privateID))
+                self.boardcastCommand(command, self.entityManager.RegisterEntity(hid, dataJson, publicID, privateID))
+            
+            elif command == config.COMMAND_UPDATE_ENTITY:
+                self.entityManager.updateEntityInfo(hid, dataJson)
 
         except:
             print("send return data failed")
@@ -61,6 +68,13 @@ class FightServer(object):
                 return self.HandleClientLeave(hid)
             elif type == config.NET_CONNECTION_DATA:
                 return self.HandleData(hid,data)
+        self.EntityTick()
+
+    def EntityTick(self):
+        datalist = self.entityManager.ProcessEntityInfo()
+        for data in datalist:
+            data["time"] = time.time()
+            self.boardcastCommand(config.COMMAND_UPDATE_ENTITY, data)
 
     def send(self, hid, command, data):
         if isinstance(data,dict):
@@ -80,7 +94,8 @@ class FightServer(object):
         com = struct.pack(config.NET_HEAD_LENGTH_FORMAT, command)
         
         for client in self.host.clients:
-            self.host.sendClient(client.hid, com + sendData)
+            if client is not None:
+                self.host.sendClient(client.hid, com + sendData)
 
     def boardcast(self, allData):
         for client in self.host.clients:

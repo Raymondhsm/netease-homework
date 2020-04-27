@@ -1,3 +1,5 @@
+import os,sys
+sys.path.append(os.path.realpath('./'))
 from Config import config
 import errno
 import socket
