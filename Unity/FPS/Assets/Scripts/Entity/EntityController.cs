@@ -4,12 +4,16 @@ using UnityEngine;
 
 public class EntityController : MonoBehaviour
 {
-    public GameObject player;
+    public GameObject playerPrefab;
     public GameObject playerOther;
+    public GameObject enemyPrefab;
+    public float updateInterval;
 
     private Dictionary<int, Entity> m_entities;
+    private List<int> m_updateEntity;
     private int m_entityIndex;
     private NetworkSocket m_network;
+    private float m_time;
 
 
     // Start is called before the first frame update
@@ -22,7 +26,9 @@ public class EntityController : MonoBehaviour
         Service.Instance().EntityReloadCallback = new Service.RecvHandler(this.EntityReloadCallback);
 
         m_entities = new Dictionary<int, Entity>();
+        m_updateEntity = new List<int>();
         m_entityIndex = 0;
+        m_time = 0;
     }
 
     // Update is called once per frame
@@ -31,6 +37,13 @@ public class EntityController : MonoBehaviour
         if(Input.GetButtonDown("Mode")){
             Vector3[] a = {new Vector3(),new Vector3(),new Vector3()};
             RegisterEntity(Config.ENTITY_PLAYER, a);
+        }
+
+        m_time += Time.deltaTime;
+        if(m_time > updateInterval)
+        {
+            this.UpdateEntityInfo();
+            m_time = 0;
         }
     }
 
@@ -59,7 +72,7 @@ public class EntityController : MonoBehaviour
                 Debug.Log(entity.publicID);
                 Debug.Log(PlayerPrefs.GetString("publicID"));
                 if(entity.publicID == PlayerPrefs.GetString("publicID"))
-                    go = Instantiate(player);
+                    go = Instantiate(playerPrefab);
                 else
                     go = Instantiate(playerOther);
 
@@ -67,16 +80,37 @@ public class EntityController : MonoBehaviour
                 go.GetComponent<Entity>().eid = entity.eid;
 
                 m_entities.Add(entity.eid, go.GetComponent<Entity>());
+                m_updateEntity.Add(entity.eid);
                 break;
 
             case Config.ENTITY_ENEMY:
-                GameObject enemy = Instantiate(playerOther);
+                GameObject enemy = Instantiate(enemyPrefab);
                 enemy.transform.position = entity.pos;
                 enemy.GetComponent<Entity>().eid = entity.eid;
 
                 m_entities.Add(entity.eid, enemy.GetComponent<Entity>());
+                m_updateEntity.Add(entity.eid);
                 break;
         }
+    }
+
+    public void EntityDead(int eid)
+    {
+        if(m_entities.ContainsKey(eid))
+            m_entities.Remove(eid);
+
+        for(int i=0; i<m_updateEntity.Count; i++)
+        {
+            if(m_updateEntity[i] == eid){
+                m_updateEntity.Remove(i);
+                break;
+            }
+        }
+
+        DeadInfo deadInfo;
+        deadInfo.eid = eid;
+        deadInfo.privateID = PlayerPrefs.GetString("privateID");
+        m_network.send(Config.COMMAND_DEAD, JsonUtility.ToJson(deadInfo));
     }
 
     public void EntityMoveCallback(string data)
@@ -95,5 +129,19 @@ public class EntityController : MonoBehaviour
     {
         EntityReload dataRecv = JsonUtility.FromJson<EntityReload>(data);
         m_entities[dataRecv.eid].ProcessReloadRecv(dataRecv);
+    }
+
+    public void UpdateEntityInfo()
+    {
+        for(int i = 0; i<m_updateEntity.Count; i++)
+        {
+            m_entities[m_updateEntity[i]].UpdateInfo();
+        }
+    }
+
+    public void UpdateEntityCallback(string data)
+    {
+        PlayerUpdateInfo playerUpdateInfo = JsonUtility.FromJson<PlayerUpdateInfo>(data);
+        m_entities[playerUpdateInfo.eid].ProcessUpdateInfoRecv(playerUpdateInfo);
     }
 }

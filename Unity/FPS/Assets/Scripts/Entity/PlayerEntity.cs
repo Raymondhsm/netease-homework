@@ -7,6 +7,7 @@ public class PlayerEntity : Entity
     private FpsInput m_fpsInput;
     private MoveController m_moveController;
     private ShootController m_shootController;
+    private LifeController m_lifeController;
 
     // Start is called before the first frame update
     public override void Start()
@@ -15,6 +16,7 @@ public class PlayerEntity : Entity
         m_fpsInput = new FpsInput();
         m_moveController = gameObject.GetComponent<MoveController>();
         m_shootController = gameObject.GetComponent<ShootController>();
+        m_lifeController = gameObject.GetComponent<LifeController>();
     }
 
     // Update is called once per frame
@@ -75,5 +77,30 @@ public class PlayerEntity : Entity
     public override void ProcessReloadRecv(EntityReload er)
     {
         m_shootController.ReloadRecv();
+    }
+
+    public override void UpdateInfo()
+    {
+        PlayerUpdateInfo playerUpdateInfo;
+        playerUpdateInfo.eid = m_eid;
+        // playerUpdateInfo.currBullet = m_shootController.CurrBullet;
+        // playerUpdateInfo.totalBullet = m_shootController.TatolBullet;
+        playerUpdateInfo.life = m_lifeController.CurrLife;
+        playerUpdateInfo.pos = transform.position;
+        playerUpdateInfo.direction = transform.forward;
+
+        Rigidbody rigidbody = gameObject.GetComponent<Rigidbody>();
+        if(rigidbody == null)
+            playerUpdateInfo.velocity = new Vector3(0,0,0);
+        else
+            playerUpdateInfo.velocity = rigidbody.velocity;
+
+        string data = JsonUtility.ToJson(playerUpdateInfo);
+        m_network.send(Config.COMMAND_UPDATE_ENTITY, data);
+    }
+
+    public override void ProcessUpdateInfoRecv(PlayerUpdateInfo pui)
+    {
+        
     }
 }

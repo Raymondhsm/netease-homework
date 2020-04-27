@@ -50,3 +50,18 @@ public struct IDs
     public string publicID;
     public string privateID;
 }
+
+public struct PlayerUpdateInfo
+{
+    public int eid;
+    public int life;
+    public Vector3 pos;
+    public Vector3 direction;
+    public Vector3 velocity;
+}
+
+public struct DeadInfo
+{
+    public int eid;
+    public string privateID;
+}

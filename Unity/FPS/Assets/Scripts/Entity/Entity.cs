@@ -33,6 +33,16 @@ public class Entity : MonoBehaviour
         return;
     }
 
+    public virtual void UpdateInfo()
+    {
+        return;
+    }
+
+    public virtual void ProcessUpdateInfoRecv(PlayerUpdateInfo pui)
+    {
+        return;
+    }
+
     public int eid
     {
         set { m_eid = value; }

@@ -179,6 +179,16 @@ public class ShootController : MonoBehaviour
 		else playerAnimator.SetBool("IsShootBrust", true);
 	}
 
+	public int CurrBullet 
+	{
+		get { return weapon.CurrBullet; }
+	}
+
+	public int TatolBullet
+	{
+		get { return weapon.TotalBullet; }
+	}
+
 	[Serializable]
 	private class ShootingInput
 	{

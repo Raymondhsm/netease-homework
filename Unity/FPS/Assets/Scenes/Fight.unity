@@ -27320,7 +27320,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f9f21d31eab98043aeca82e7d8139e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 6969113796224664386, guid: 40a1683c7c3b2d5428b50ac43e7b81a5, type: 3}
+  playerPrefab: {fileID: 6969113796224664386, guid: 40a1683c7c3b2d5428b50ac43e7b81a5,
+    type: 3}
+  playerOther: {fileID: 3567017970870838139, guid: 944bdb748c4bf6943aa18148e33ad4b4,
+    type: 3}
+  enemyPrefab: {fileID: 7675731299159100738, guid: fc4e73a74e1b78545a24bfd6da600bff,
+    type: 3}
+  updateInterval: 1
 --- !u!114 &1937697750
 MonoBehaviour:
   m_ObjectHideFlags: 0

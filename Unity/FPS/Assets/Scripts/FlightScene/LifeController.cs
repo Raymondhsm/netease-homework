@@ -10,11 +10,18 @@ public class LifeController : MonoBehaviour
 	public Text lifeText;
 
 	private int _currLifeValue;
+	private bool _clientDead;
+	private Animator _playerAnimator;
+	private EntityController _entityController;
+
 
     // Start is called before the first frame update
     void Start()
     {
 		_currLifeValue = lifeMaxValue;
+		_clientDead = false;
+		_playerAnimator = gameObject.GetComponent<Animator>();
+		_entityController = GameObject.Find("GameController").GetComponent<EntityController>();
 
 		// 初始化UI
 		SetUI();
@@ -42,14 +49,21 @@ public class LifeController : MonoBehaviour
 			else
 			{
 				_currLifeValue = 0;
-				Dead();
+				_clientDead = true;
 			}
-
-			// set UI
-			SetUI();
 
 			Destroy(obj);
 		}
+	}
+
+	public void ProcessLifeRecv(int lifeValue)
+	{
+		_currLifeValue = lifeValue;
+		if(lifeValue == 0)
+		{
+			Dead();
+		}
+		SetUI();
 	}
 
 	private void SetUI()
@@ -62,6 +76,13 @@ public class LifeController : MonoBehaviour
 
 	private void Dead()
 	{
+		_playerAnimator.SetTrigger("Dead");
+		Destroy(gameObject, 5);
+		_entityController.EntityDead(gameObject.GetComponent<Entity>().eid);
+	}
 
+	public int CurrLife
+	{
+		get {return _currLifeValue;}
 	}
 }

@@ -10,6 +10,7 @@ class Service
     public RecvHandler EntityMoveCallback;
     public RecvHandler EntityShootCallback;
     public RecvHandler EntityReloadCallback;
+    public RecvHandler EntityUpdateCallback;
 
     private static Service instance;
     public static Service Instance()
@@ -64,6 +65,11 @@ class Service
             case Config.COMMAND_RELOAD:
                 if(EntityReloadCallback != null)
                     EntityReloadCallback(dataStr);
+                break;
+
+            case Config.COMMAND_UPDATE_ENTITY:
+                if(EntityUpdateCallback != null)
+                    EntityUpdateCallback(dataStr);
                 break;
         }
     }
