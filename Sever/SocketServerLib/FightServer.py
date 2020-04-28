@@ -3,7 +3,7 @@ import os,sys
 sys.path.append(os.path.realpath('./'))
 from SimpleSocketHost import SimpleSocketHost
 from Config import config
-from Game import EntityManager
+from Game import EntityManager,NPCController
 import struct,uuid,json,time
 
 class FightServer(object):
@@ -12,6 +12,7 @@ class FightServer(object):
         super(FightServer, self).__init__()
         self.host = SimpleSocketHost()
         self.entityManager = EntityManager.entityManager
+        self.npcController = NPCController.npcController
         self.clientDict = {}
 
     def StartServer(self):
@@ -31,6 +32,8 @@ class FightServer(object):
         self.send(hid, config.COMMAND_NEW_CLIENT, data)
 
         # create charactor
+        for key in self.entityManager.entities:
+            self.send(hid, config.COMMAND_NEW_ENTITY, self.entityManager.entities[key].InfoDict())
         
 
     def HandleClientLeave(self, hid):
@@ -69,12 +72,20 @@ class FightServer(object):
             elif type == config.NET_CONNECTION_DATA:
                 return self.HandleData(hid,data)
         self.EntityTick()
+        self.NPCTick()
 
     def EntityTick(self):
         datalist = self.entityManager.ProcessEntityInfo()
         for data in datalist:
             data["time"] = time.time()
             self.boardcastCommand(config.COMMAND_UPDATE_ENTITY, data)
+
+    def NPCTick(self):
+        datalist = self.npcController.Process()
+        if datalist:
+            for data in datalist:
+                data[1]["time"] = time.time()
+                self.boardcastCommand(data[0], data[1])
 
     def send(self, hid, command, data):
         if isinstance(data,dict):

@@ -18,6 +18,14 @@ class Vector3:
             'z': self.z
         }
 
+    def __sub__(self, vector3):
+        x = self.x - vector3.x
+        y = self.y - vector3.y
+        z = self.z - vector3.z
+        v = Vector3()
+        v.setValue([x,y,z])
+        return v
+
     def likely(self, vector3, offset):
         if abs(self.x - vector3.x) < offset and abs(self.y - vector3.y) < offset and abs(self.z - vector3.z) < offset :
             return True
@@ -33,6 +41,32 @@ class Vector3:
         self.x /= num
         self.y /= num
         self.z /= num
+
+    def distance(self, vector3):
+        x2 = math.pow(self.x - vector3.x, 2)
+        y2 = math.pow(self.y - vector3.y, 2)
+        z2 = math.pow(self.z - vector3.z, 2)
+        return math.sqrt(x2 + y2 + z2)
+
+    def dot(self, vector3):
+        x = self.x * vector3.x
+        y = self.y * vector3.y
+        z = self.z * vector3.z
+        return x + y + z
+
+    def length(self):
+        x2 = math.pow(self.x, 2)
+        y2 = math.pow(self.y, 2)
+        z2 = math.pow(self.z, 2)
+        return math.sqrt(x2 + y2 + z2)
+
+    def angle(self, vector3):
+        len = (self.length() * vector3.length())
+        if len == 0:
+            return 0
+        else:
+            cos = self.dot(vector3) / (self.length() * vector3.length())
+            return math.acos(cos)
 
 def newVector3(x,y,z):
     vector3 = Vector3()

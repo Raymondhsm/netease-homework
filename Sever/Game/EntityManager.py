@@ -1,6 +1,6 @@
 import os,sys
 sys.path.append(os.path.realpath('./'))
-from Entity import Entity
+from Entity import Entity, NPCEntity
 from Config.Struct import Vector3
 from Config import config
 import time
@@ -30,9 +30,10 @@ class EntityManager:
         self.eidIndex += 1
         return self.entities[self.eidIndex-1].InfoDict()
 
-    def RegisterNPC(self, pos):
-        entity = Entity(self.eidIndex)
-        entity.pos = pos
+    def RegisterNPC(self, init):
+        entity = NPCEntity(self.eidIndex, init)
+        entity.pos = init["pos"]
+        entity.direction = init["direction"]
         entity.publicID = -1
         entity.privateID = -1
         entity.eType = config.ENTITY_ENEMY

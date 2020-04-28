@@ -1,13 +1,9 @@
-a = {
-    1:1,
-    2:2,
-    3:3,
-    4:4,
-    5:5
-}
+def a(index):
+    if index:
+        return []
+    else :
+        return
 
-for b in a:
-    if b == 3:
-        del a[b]
-
-print(a)
+b=a(True)
+if b:
+    print(1)

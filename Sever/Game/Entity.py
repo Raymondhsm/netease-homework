@@ -38,6 +38,9 @@ class Entity:
         return len(self.updateInfo) == num
 
     def ProcessUpdateInfo(self):
+        if self.updateInfo == {}:
+            return
+            
         count = [0,0,0,0,0,0]
         value = [0,0,0, Vector3(), Vector3(), Vector3()]
         for key in self.updateInfo:
@@ -85,4 +88,59 @@ class Entity:
         self.updateInfo = {}
 
 
+class NPCEntity(Entity):
+    common = 0
+    attack = 1
+    reset = 2
 
+    def __init__(self, eid, init):
+        Entity.__init__(self,eid)
+        self.mode = NPCEntity.common
+        self.targetPos = init["pos"]
+        self.initPos = init["pos"]
+        self.discoverDistance = init["discoverDistance"]
+        self.discoverAngle = init["discoverAngle"]
+        self.toFar = init["toFar"]
+
+    def CheckIfDiscoverPlayer(self, players):
+        dis = 100000
+        re = 0
+        for key in players:
+            player = players[key]
+            distance = self.pos.distance(player.pos)
+            if distance > self.discoverDistance:
+                continue
+            
+            angle = self.direction.angle(player.pos - self.pos)
+            if angle > self.discoverAngle:
+                continue
+
+            if distance < dis:
+                re = player.pos
+                dis = distance
+
+        if re:
+            self.targetPos = re
+            return True
+        else:
+            return False
+
+    def CheckToFar(self):
+        tofar = self.pos.distance(self.initPos) > self.toFar 
+        if tofar:
+            self.targetPos = self.initPos
+            return True
+        else:
+            return False 
+
+    def UpdateTarget(self, players):
+        dis = 100000
+        for key in players:
+            player = players[key]
+            distance = self.pos.distance(player.pos)
+            if distance < dis:
+                re = player.pos
+                dis = distance
+
+        if re:
+            self.targetPos = re
