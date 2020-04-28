@@ -24,6 +24,7 @@ public class EntityController : MonoBehaviour
         Service.Instance().EntityMoveCallback = new Service.RecvHandler(this.EntityMoveCallback);
         Service.Instance().EntityShootCallback = new Service.RecvHandler(this.EntityShootCallback);
         Service.Instance().EntityReloadCallback = new Service.RecvHandler(this.EntityReloadCallback);
+        Service.Instance().EnemyBehaviorCallback = new Service.ComRecvHandler(this.EnemyBehaviorCallback);
 
         m_entities = new Dictionary<int, Entity>();
         m_updateEntity = new List<int>();
@@ -143,5 +144,11 @@ public class EntityController : MonoBehaviour
     {
         PlayerUpdateInfo playerUpdateInfo = JsonUtility.FromJson<PlayerUpdateInfo>(data);
         m_entities[playerUpdateInfo.eid].ProcessUpdateInfoRecv(playerUpdateInfo);
+    }
+
+    public void EnemyBehaviorCallback(int command, string data)
+    {
+        EnemyBehavior enemyBehavior = JsonUtility.FromJson<EnemyBehavior>(data);
+        m_entities[enemyBehavior.eid].EnemyBehavior(command, enemyBehavior);
     }
 }

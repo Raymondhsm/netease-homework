@@ -5,6 +5,7 @@ using UnityEngine;
 public class EnemyEntity : Entity
 {
     private LifeController m_lifeController;
+    private BehaviorController m_behaviorController;
 
     // Start is called before the first frame update
     public override void Start()
@@ -12,20 +13,11 @@ public class EnemyEntity : Entity
         base.Start();
 
         m_lifeController = gameObject.GetComponent<LifeController>();
+        m_behaviorController = gameObject.GetComponent<BehaviorController>();
     }
 
     // Update is called once per frame
     void Update()
-    {
-        
-    }
-
-    public override void ProcessMoveRecv(EntityMoveInfo entity)
-    {
-
-    }
-
-    public override void ProcessShootRecv(EntityShootInfo esi)
     {
         
     }
@@ -46,5 +38,23 @@ public class EnemyEntity : Entity
 
         string data = JsonUtility.ToJson(playerUpdateInfo);
         m_network.send(Config.COMMAND_UPDATE_ENTITY, data);
+    }
+
+    public override void EnemyBehavior(int command, EnemyBehavior eh)
+    {
+        switch(command)
+        {
+            case Config.COMMAND_NPC_COMMON:
+                m_behaviorController.CommonBehavior(eh);
+                break;
+            
+            case Config.COMMAND_NPC_ATTACK:
+                m_behaviorController.AttackBehavior(eh);
+                break;
+
+            case Config.COMMAND_NPC_RESET:
+                m_behaviorController.ResetBehavior(eh);
+                break;
+        }
     }
 }

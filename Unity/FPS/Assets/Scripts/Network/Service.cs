@@ -3,6 +3,7 @@ using UnityEngine;
 class Service
 {
     public delegate void RecvHandler(string str);
+    public delegate void ComRecvHandler(int command, string str);
 
     public RecvHandler loginRecvCallback;
     public RecvHandler registerRecvCallback;
@@ -11,6 +12,8 @@ class Service
     public RecvHandler EntityShootCallback;
     public RecvHandler EntityReloadCallback;
     public RecvHandler EntityUpdateCallback;
+
+    public ComRecvHandler EnemyBehaviorCallback;
 
     private static Service instance;
     public static Service Instance()
@@ -48,6 +51,7 @@ class Service
                 break;
 
             case Config.COMMAND_NEW_ENTITY:
+                Debug.Log(dataStr);
                 if(EntityNewRecvCallback != null)
                     EntityNewRecvCallback(dataStr);
                 break;
@@ -70,6 +74,13 @@ class Service
             case Config.COMMAND_UPDATE_ENTITY:
                 if(EntityUpdateCallback != null)
                     EntityUpdateCallback(dataStr);
+                break;
+
+            case Config.COMMAND_NPC_COMMON:
+            case Config.COMMAND_NPC_ATTACK:
+            case Config.COMMAND_NPC_RESET:
+                if(EnemyBehaviorCallback != null)
+                    EnemyBehaviorCallback(command, dataStr);
                 break;
         }
     }

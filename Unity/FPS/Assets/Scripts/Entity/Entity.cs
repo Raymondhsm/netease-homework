@@ -38,6 +38,11 @@ public class Entity : MonoBehaviour
         return;
     }
 
+    public virtual void EnemyBehavior(int command, EnemyBehavior eh)
+    {
+        return;
+    }
+
     public virtual void ProcessUpdateInfoRecv(PlayerUpdateInfo pui)
     {
         return;

@@ -13,7 +13,6 @@ public class BehaviorController : MonoBehaviour
 	[Header("Move Atrribute")]
 	public float moveSpeed;
 	public float rotateSpeed;
-	public GameObject OriginPos;
 
 	[Header("Weapon Attribute")]
 	public GameObject bulletPos;
@@ -28,13 +27,11 @@ public class BehaviorController : MonoBehaviour
 	public AudioClip moveClip;
 	public ParticleSystem shootEffect;
 
-	[Header("Other")]
-	public GameObject Player;
-
 	private bool _attackMode;
 	private float _nextFireTime;
 	private bool _reset;
 	private bool _IsReloading;
+	private Vector3 _targetPos;
 
 	private Animator _animator;
 	private Coroutine _moveCoroutine;
@@ -48,11 +45,11 @@ public class BehaviorController : MonoBehaviour
 		_attackMode = false;
 		_reset = false;
 		_IsReloading = false;
+		_targetPos = new Vector3();
 		_animator = GetComponent<Animator>();
 		_collider = GetComponent<CapsuleCollider>();
 
 		moveAudio.clip = moveClip;
-		//MoveToPoint(new Vector3(0.3f, 0.0f, 1.6f));
 	}
 
     // Update is called once per frame
@@ -60,37 +57,43 @@ public class BehaviorController : MonoBehaviour
     {
 		_animator.SetBool("IsGround", CheckIfOnGround());
 
-		Behavior();
+		// Behavior();
 	}
 
-	private void Behavior()
+	public void CommonBehavior(EnemyBehavior eh)
 	{
-		if(!_attackMode)
-		{
-			if(_reset)
-			{
-				_reset = Vector3.Distance(transform.position, OriginPos.transform.position) > 1;
-			}
-			else if (CheckIfDiscoverPlayer())
-			{
-				_attackMode = true;
-				if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
-				if (_rotateCoroutine != null) StopCoroutine(_rotateCoroutine);
-			}
-			else
-			{
+		Debug.Log("common");
+		_targetPos = eh.pos;
+		_reset = false;	
+		_attackMode = false;
+		if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
+		if (_rotateCoroutine != null) StopCoroutine(_rotateCoroutine);
+	}
 
-			}
-		}
-		else if(_attackMode && !CheckToFar())
+	public void AttackBehavior(EnemyBehavior eh)
+	{
+		Debug.Log("attack");
+		_targetPos = eh.pos;
+		if(_reset)
 		{
-			Attack();
+			_attackMode = true;
+			_reset = false;
+			if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
+			if (_rotateCoroutine != null) StopCoroutine(_rotateCoroutine);
 		}
-		else if(_attackMode && CheckToFar())
+		else 
+			Attack();
+	}
+
+	public void ResetBehavior(EnemyBehavior eh)
+	{
+		Debug.Log("reset");
+		_targetPos = eh.pos;
+		if(!_reset)
 		{
 			_attackMode = false;
 			_reset = true;
-			MoveToPoint(OriginPos.transform.position);
+			MoveToPoint(_targetPos);
 		}
 	}
 
@@ -137,35 +140,12 @@ public class BehaviorController : MonoBehaviour
 		_moveCoroutine = StartCoroutine(SmoothMoveToPoint(point));
 	}
 
-	public bool CheckIfDiscoverPlayer()
-	{
-		// 检测距离
-		float distance = Vector3.Distance(transform.position, Player.transform.position);
-		if (distance > discoverDistance)
-			return false;
-
-		// 检测角度
-		var direction = Player.transform.position - transform.position;
-		float angle = Vector3.Angle(transform.forward, direction);
-		if (angle > discoverAngle)
-			return false;
-
-		// 检测有无障碍物
-		RaycastHit hit;
-		var point = transform.position + _collider.center;
-		var layerMask = LayerMask.GetMask("Ground");
-		if (Physics.CapsuleCast(point, point, _collider.radius, direction, out hit, distance, layerMask))
-		{
-			return false;
-		}
-		else return true;
-	}
 
 	public void Attack()
 	{
 		var point = transform.position + _collider.center;
-		var direction = Player.transform.position - transform.position;
-		var distance = Vector3.Distance(transform.position, Player.transform.position);
+		var direction = _targetPos - transform.position;
+		var distance = Vector3.Distance(transform.position, _targetPos);
 		var layerMask = LayerMask.GetMask("Ground");
 		var hasObstacle = Physics.CapsuleCast(point, point, _collider.radius, direction, distance, layerMask);
 
@@ -218,7 +198,7 @@ public class BehaviorController : MonoBehaviour
 
 		// 计算方向
 		var startPoint = bulletPos.transform.position;
-		var endPoint = Player.transform.position + Player.GetComponent<CapsuleCollider>().center / 2;
+		var endPoint = _targetPos + new Vector3(0, 0.5f, 0);
 		var direction = endPoint - startPoint;
 
 		GameObject bulletPrefab = (GameObject)Resources.Load("Prefabs/bullet");
@@ -279,12 +259,6 @@ public class BehaviorController : MonoBehaviour
 		{
 			moveAudio.Stop();
 		}
-	}
-
-	public bool CheckToFar()
-	{
-		var distance = Vector3.Distance(transform.position, OriginPos.transform.position);
-		return distance > removeAttackDistance;
 	}
 
 	public void Dead()

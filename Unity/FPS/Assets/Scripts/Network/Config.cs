@@ -11,6 +11,10 @@ class Config
     public const int COMMAND_RELOAD = 0x05;
     public const int COMMAND_DEAD = 0x06;
 
+    public const int COMMAND_NPC_COMMON = 0x80;
+    public const int COMMAND_NPC_ATTACK = 0x81;
+    public const int COMMAND_NPC_RESET = 0x82;
+
     public const int COMMAND_NEW_ENTITY = 0x0100;
     public const int COMMAND_DEL_ENTITY = 0x0200;
     public const int COMMAND_REGISTER_WITHOUT_EID = 0x0300;

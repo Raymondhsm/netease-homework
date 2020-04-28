@@ -65,3 +65,9 @@ public struct DeadInfo
     public int eid;
     public string privateID;
 }
+
+public struct EnemyBehavior
+{
+    public int eid;
+    public Vector3 pos;
+}
