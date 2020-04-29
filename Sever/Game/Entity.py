@@ -12,9 +12,10 @@ class Entity:
         self.pos = Vector3()
         self.direction = Vector3()
         self.velocity = Vector3()
-        self.life = 0.0
+        self.life = 100
 
         self.updateInfo = {}
+        self.damageInfo = {}
 
     def process(self, command, data):
         pass
@@ -40,53 +41,55 @@ class Entity:
     def ProcessUpdateInfo(self):
         if self.updateInfo == {}:
             return
-            
-        count = [0,0,0,0,0,0]
-        value = [0,0,0, Vector3(), Vector3(), Vector3()]
+
+        count = [0,0,0]
+        value = [Vector3(), Vector3(), Vector3()]
         for key in self.updateInfo:
-            life = self.updateInfo[key]["life"]
-            if life == value[0]:
-                count[0]+=1
+            pos = Vector3(self.updateInfo[key]["pos"])
+            if value[0].likely(pos, 0.1):
+                count[0] += 1
             elif count[0] > 0:
                 count[0] -= 1
             else:
                 count[0] = 1
-                value[0] = life
-            
-            pos = Vector3(self.updateInfo[key]["pos"])
-            if value[3].likely(pos, 0.1):
-                count[3] += 1
-            elif count[3] > 0:
-                count[3] -= 1
-            else:
-                count[3] = 1
-                value[3] = pos
+                value[0] = pos
 
             dir = Vector3(self.updateInfo[key]["direction"])
-            if value[4].likely(dir, 0.1):
-                count[4] += 1
-            elif count[4] > 0:
-                count[4] -= 1
+            if value[1].likely(dir, 0.1):
+                count[1] += 1
+            elif count[1] > 0:
+                count[1] -= 1
             else:
-                count[4] = 1
-                value[4] = dir
+                count[1] = 1
+                value[1] = dir
 
             vel = Vector3(self.updateInfo[key]["velocity"])
-            if value[5].likely(vel, 0.1):
-                count[5] += 1
-            elif count[5] > 0:
-                count[5] -= 1
+            if value[2].likely(vel, 0.1):
+                count[2] += 1
+            elif count[2] > 0:
+                count[2] -= 1
             else:
-                count[5] = 1
-                value[5] = vel
+                count[2] = 1
+                value[2] = vel
 
-        self.life = value[0]
-        self.pos = value[3]
-        self.direction = value[4]
-        self.velocity = value[5]
+        self.pos = value[0]
+        self.direction = value[1]
+        self.velocity = value[2]
 
         self.updateInfo = {}
 
+    def UpdateDamageInfo(self, data, num):
+        beid = data["bulletEid"]
+        if num == 1:
+            self.life -= data["bulletDamage"]
+        elif beid in self.damageInfo:
+            if self.damageInfo[beid] + 1 >= num:
+                self.life -= data["bulletDamage"]
+                del self.damageInfo[beid]
+            else:
+                self.damageInfo[beid] += 1
+        else:
+            self.damageInfo[beid] = 1
 
 class NPCEntity(Entity):
     common = 0

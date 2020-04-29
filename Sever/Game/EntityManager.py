@@ -49,6 +49,10 @@ class EntityManager:
     def register(self, hid):
         self.clientOwnEntities[hid] = []
 
+    def registerEid(self):
+        self.eidIndex += 1
+        return self.eidIndex
+
     def deleteOwnEntity(self, hid):
         if hid in self.entityPlayers:
             del self.entityPlayers[hid]
@@ -70,6 +74,12 @@ class EntityManager:
                     data.append(entity.InfoDict())
                     self.updateTime = time.time()
         return data
+
+    def ProcessEntityHit(self, data):
+        eid = data["eid"]
+        entity = self.entities[eid]
+        if entity.eType == config.ENTITY_PLAYER or entity.eType == config.ENTITY_ENEMY:
+            entity.UpdateDamageInfo(data, len(self.entityPlayers))
                 
 
 

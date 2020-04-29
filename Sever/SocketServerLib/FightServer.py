@@ -42,22 +42,25 @@ class FightServer(object):
         del self.clientDict[hid]
 
     def HandleData(self, hid, data):
-        try:
-            command = struct.unpack(config.NET_HEAD_LENGTH_FORMAT, data[0:config.COMMAND_LENGTH_SIZE])[0]
-            dataJson = json.loads(data[config.COMMAND_LENGTH_SIZE:])
-            if command < 0xff:
-                self.boardcast(data)
+        command = struct.unpack(config.NET_HEAD_LENGTH_FORMAT, data[0:config.COMMAND_LENGTH_SIZE])[0]
+        dataJson = json.loads(data[config.COMMAND_LENGTH_SIZE:])
+        if command == config.COMMAND_SHOOT:
+            eid = self.entityManager.registerEid()
+            dataJson["bulletEid"] = eid
+            self.boardcastCommand(command, dataJson)
 
-            elif command == config.COMMAND_NEW_ENTITY:
-                publicID, privateID = self.clientDict[hid]
-                self.boardcastCommand(command, self.entityManager.RegisterEntity(hid, dataJson, publicID, privateID))
-            
-            elif command == config.COMMAND_UPDATE_ENTITY:
-                self.entityManager.updateEntityInfo(hid, dataJson)
+        elif command == config.COMMAND_HIT:
+            self.entityManager.ProcessEntityHit(dataJson)
 
-        except:
-            print("send return data failed")
+        elif command < 0xff:
+            self.boardcast(data)
 
+        elif command == config.COMMAND_NEW_ENTITY:
+            publicID, privateID = self.clientDict[hid]
+            self.boardcastCommand(command, self.entityManager.RegisterEntity(hid, dataJson, publicID, privateID))
+        
+        elif command == config.COMMAND_UPDATE_ENTITY:
+            self.entityManager.updateEntityInfo(hid, dataJson)
 
     def Tick(self):
         self.host.process()
@@ -75,12 +78,14 @@ class FightServer(object):
         self.NPCTick()
 
     def EntityTick(self):
+        if len(self.clientDict) == 0: return
         datalist = self.entityManager.ProcessEntityInfo()
         for data in datalist:
             data["time"] = time.time()
             self.boardcastCommand(config.COMMAND_UPDATE_ENTITY, data)
 
     def NPCTick(self):
+        if len(self.clientDict) == 0: return
         datalist = self.npcController.Process()
         if datalist:
             for data in datalist:
