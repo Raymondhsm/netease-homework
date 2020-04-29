@@ -8,6 +8,8 @@ public class GameController : MonoBehaviour
     [Header("UI Component")]
 	public Text textBullet;
 	public Text textWeaponMode;
+	public Slider lifeSlider;
+	public Text lifeText;
 
     // Start is called before the first frame update
     void Start()

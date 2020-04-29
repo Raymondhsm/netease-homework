@@ -15,7 +15,6 @@ public class PlayerOtherEntity : Entity
 
     private FpsInput m_fpsInput;
     private MoveController m_moveController;
-    private LifeController m_lifeController;
 
     // Start is called before the first frame update
     public override void Start()
@@ -23,7 +22,6 @@ public class PlayerOtherEntity : Entity
         base.Start();
         m_fpsInput = new FpsInput();
         m_moveController = gameObject.GetComponent<MoveController>();
-        m_lifeController = gameObject.GetComponent<LifeController>();
     }
     public override void ProcessMoveRecv(EntityMoveInfo entity)
     {
@@ -43,6 +41,7 @@ public class PlayerOtherEntity : Entity
 		_bulletPrefab.transform.position = startPoint;
 		GameObject bullet= Instantiate(_bulletPrefab);
 		bullet.GetComponent<BulletController>().StaticHitPos = endPoint;
+        bullet.GetComponent<BulletController>().eid = esi.bulletEid;
 		bullet.GetComponent<BulletController>().AddForce(direction.normalized);
 
 		// 播放声音
@@ -68,9 +67,6 @@ public class PlayerOtherEntity : Entity
     {
         PlayerUpdateInfo playerUpdateInfo;
         playerUpdateInfo.eid = m_eid;
-        // playerUpdateInfo.currBullet = -1;
-        // playerUpdateInfo.totalBullet = -1;
-        playerUpdateInfo.life = m_lifeController.CurrLife;
         playerUpdateInfo.pos = transform.position;
         playerUpdateInfo.direction = transform.forward;
 
@@ -83,4 +79,5 @@ public class PlayerOtherEntity : Entity
         string data = JsonUtility.ToJson(playerUpdateInfo);
         m_network.send(Config.COMMAND_UPDATE_ENTITY, data);
     }
+
 }

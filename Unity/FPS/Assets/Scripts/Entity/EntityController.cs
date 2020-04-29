@@ -24,6 +24,7 @@ public class EntityController : MonoBehaviour
         Service.Instance().EntityMoveCallback = new Service.RecvHandler(this.EntityMoveCallback);
         Service.Instance().EntityShootCallback = new Service.RecvHandler(this.EntityShootCallback);
         Service.Instance().EntityReloadCallback = new Service.RecvHandler(this.EntityReloadCallback);
+        Service.Instance().EntityUpdateCallback = new Service.RecvHandler(this.UpdateEntityCallback);
         Service.Instance().EnemyBehaviorCallback = new Service.ComRecvHandler(this.EnemyBehaviorCallback);
 
         m_entities = new Dictionary<int, Entity>();
@@ -48,7 +49,7 @@ public class EntityController : MonoBehaviour
         }
     }
 
-    public void RegisterEntity(int entity, Vector3[] pdv, int life = 0)
+    public void RegisterEntity(int entity, Vector3[] pdv, int life = 100)
     {
         EntityInfo entityInfo;
         entityInfo.privateID = PlayerPrefs.GetString("privateID");
@@ -142,8 +143,8 @@ public class EntityController : MonoBehaviour
 
     public void UpdateEntityCallback(string data)
     {
-        PlayerUpdateInfo playerUpdateInfo = JsonUtility.FromJson<PlayerUpdateInfo>(data);
-        m_entities[playerUpdateInfo.eid].ProcessUpdateInfoRecv(playerUpdateInfo);
+        PlayerUpdateRecv playerUpdateRecv = JsonUtility.FromJson<PlayerUpdateRecv>(data);
+        m_entities[playerUpdateRecv.eid].ProcessUpdateInfoRecv(playerUpdateRecv);
     }
 
     public void EnemyBehaviorCallback(int command, string data)

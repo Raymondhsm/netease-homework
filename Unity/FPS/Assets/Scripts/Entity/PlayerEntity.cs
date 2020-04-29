@@ -7,7 +7,6 @@ public class PlayerEntity : Entity
     private FpsInput m_fpsInput;
     private MoveController m_moveController;
     private ShootController m_shootController;
-    private LifeController m_lifeController;
 
     // Start is called before the first frame update
     public override void Start()
@@ -16,7 +15,6 @@ public class PlayerEntity : Entity
         m_fpsInput = new FpsInput();
         m_moveController = gameObject.GetComponent<MoveController>();
         m_shootController = gameObject.GetComponent<ShootController>();
-        m_lifeController = gameObject.GetComponent<LifeController>();
     }
 
     // Update is called once per frame
@@ -53,6 +51,7 @@ public class PlayerEntity : Entity
     {
         EntityShootInfo esi;
         esi.eid = m_eid;
+        esi.bulletEid = -1;
         esi.endPointX = endPoint.x;
         esi.endPointY = endPoint.y;
         esi.endPointZ = endPoint.z;
@@ -64,7 +63,7 @@ public class PlayerEntity : Entity
     public override void ProcessShootRecv(EntityShootInfo esi)
     {
         Vector3 endPoint = new Vector3(esi.endPointX, esi.endPointY, esi.endPointZ);
-        m_shootController.ShootRecv(endPoint);
+        m_shootController.ShootRecv(esi.bulletEid, endPoint);
     }
 
     public void ReloadUpload()
@@ -83,9 +82,6 @@ public class PlayerEntity : Entity
     {
         PlayerUpdateInfo playerUpdateInfo;
         playerUpdateInfo.eid = m_eid;
-        // playerUpdateInfo.currBullet = m_shootController.CurrBullet;
-        // playerUpdateInfo.totalBullet = m_shootController.TatolBullet;
-        playerUpdateInfo.life = m_lifeController.CurrLife;
         playerUpdateInfo.pos = transform.position;
         playerUpdateInfo.direction = transform.forward;
 
@@ -97,10 +93,5 @@ public class PlayerEntity : Entity
 
         string data = JsonUtility.ToJson(playerUpdateInfo);
         m_network.send(Config.COMMAND_UPDATE_ENTITY, data);
-    }
-
-    public override void ProcessUpdateInfoRecv(PlayerUpdateInfo pui)
-    {
-        
     }
 }

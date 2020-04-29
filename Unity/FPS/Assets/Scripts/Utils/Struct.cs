@@ -35,6 +35,7 @@ public struct EntityMoveInfo
 public struct EntityShootInfo
 {
     public int eid;
+    public int bulletEid;
     public float endPointX;
     public float endPointY;
     public float endPointZ;
@@ -54,6 +55,14 @@ public struct IDs
 public struct PlayerUpdateInfo
 {
     public int eid;
+    public Vector3 pos;
+    public Vector3 direction;
+    public Vector3 velocity;
+}
+
+public struct PlayerUpdateRecv
+{
+    public int eid;
     public int life;
     public Vector3 pos;
     public Vector3 direction;
@@ -70,4 +79,11 @@ public struct EnemyBehavior
 {
     public int eid;
     public Vector3 pos;
+}
+
+public struct EntityHit
+{
+    public int eid;
+    public int bulletEid;
+    public int bulletDamage;
 }

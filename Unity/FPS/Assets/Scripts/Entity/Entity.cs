@@ -6,11 +6,13 @@ public class Entity : MonoBehaviour
 {
     public int m_eid;
     protected NetworkSocket m_network;
+    protected LifeController m_lifeController;
 
     // Start is called before the first frame update
     public virtual void Start()
     {
         m_network = GameObject.Find("NetworkController").GetComponent<NetworkSocket>();
+        m_lifeController = gameObject.GetComponent<LifeController>();
     }
 
     // Update is called once per frame
@@ -43,9 +45,17 @@ public class Entity : MonoBehaviour
         return;
     }
 
-    public virtual void ProcessUpdateInfoRecv(PlayerUpdateInfo pui)
+    public virtual void ProcessUpdateInfoRecv(PlayerUpdateRecv pur)
     {
-        return;
+        // if(Vector3.Distance(pur.pos, transform.position) > 10f)
+        // {
+        //     transform.position = pur.pos;
+        // }
+        // if(Vector3.Angle(pui.direction, transform.forward) > Mathf.PI / 2)
+        // {
+        //     transform.forward = pui.direction;
+        // }
+        m_lifeController.ProcessLifeRecv(pur.life);
     }
 
     public int eid

@@ -11,6 +11,7 @@ public class BulletController : MonoBehaviour
 	private float time;
 	private GameObject _canvas;
 	private Vector3 _staticHitPos;
+	private int _eid;
 
 	private GameObject _bulletHole;
 	private GameObject _bulletDamageObj;
@@ -19,6 +20,7 @@ public class BulletController : MonoBehaviour
     void Start()
     {
 		time = 0f;
+		_eid = 0;
 		direction = transform.forward;
 		_canvas = GameObject.Find("Canvas");
 
@@ -43,6 +45,7 @@ public class BulletController : MonoBehaviour
 			BulletDamageController bdc = go.GetComponent<BulletDamageController>();
 			bdc.Parent = _canvas;
 			bdc.Position = transform.position;
+			Destroy(go, 5);
 		}
 		else if(obj.CompareTag("Terrain"))
 		{
@@ -76,5 +79,11 @@ public class BulletController : MonoBehaviour
 	public Vector3 StaticHitPos
 	{
 		set { _staticHitPos = value; }
+	}
+
+	public int eid
+	{
+		set { _eid = value; }
+		get { return _eid; }
 	}
 }

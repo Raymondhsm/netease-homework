@@ -154,7 +154,7 @@ public class ShootController : MonoBehaviour
 
 	}
 
-	public void ShootRecv(Vector3 endPoint)
+	public void ShootRecv(int bulletEid, Vector3 endPoint)
 	{
 		weapon.Shoot();
 		SetWeaponBulletText(weapon.CurrBullet);
@@ -165,6 +165,7 @@ public class ShootController : MonoBehaviour
 		_bulletPrefab.transform.position = startPoint;
 		GameObject bullet= Instantiate(_bulletPrefab);
 		bullet.GetComponent<BulletController>().StaticHitPos = endPoint;
+		bullet.GetComponent<BulletController>().eid = bulletEid;
 		bullet.GetComponent<BulletController>().AddForce(direction.normalized);
 
 		// 播放声音

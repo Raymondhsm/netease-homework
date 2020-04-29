@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class EnemyEntity : Entity
 {
-    private LifeController m_lifeController;
     private BehaviorController m_behaviorController;
 
     // Start is called before the first frame update
@@ -12,7 +11,6 @@ public class EnemyEntity : Entity
     {
         base.Start();
 
-        m_lifeController = gameObject.GetComponent<LifeController>();
         m_behaviorController = gameObject.GetComponent<BehaviorController>();
     }
 
@@ -26,7 +24,6 @@ public class EnemyEntity : Entity
     {
         PlayerUpdateInfo playerUpdateInfo;
         playerUpdateInfo.eid = m_eid;
-        playerUpdateInfo.life = m_lifeController.CurrLife;
         playerUpdateInfo.pos = transform.position;
         playerUpdateInfo.direction = transform.forward;
 
@@ -57,4 +54,5 @@ public class EnemyEntity : Entity
                 break;
         }
     }
+
 }

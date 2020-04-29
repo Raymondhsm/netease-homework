@@ -13,6 +13,7 @@ public class LifeController : MonoBehaviour
 	private bool _clientDead;
 	private Animator _playerAnimator;
 	private EntityController _entityController;
+	private NetworkSocket _network;
 
 
     // Start is called before the first frame update
@@ -22,6 +23,13 @@ public class LifeController : MonoBehaviour
 		_clientDead = false;
 		_playerAnimator = gameObject.GetComponent<Animator>();
 		_entityController = GameObject.Find("GameController").GetComponent<EntityController>();
+		_network = GameObject.Find("NetworkController").GetComponent<NetworkSocket>();
+
+		if(gameObject.CompareTag("Player"))
+		{
+			lifeSlider = GameObject.Find("GameController").GetComponent<GameController>().lifeSlider;
+			lifeText = GameObject.Find("GameController").GetComponent<GameController>().lifeText;
+		}
 
 		// 初始化UI
 		SetUI();
@@ -30,7 +38,9 @@ public class LifeController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(Input.GetButtonDown("Reload")){
+            _playerAnimator.SetTrigger("Dead");
+        }
     }
 
 	private void OnTriggerEnter(Collider other)
@@ -44,13 +54,18 @@ public class LifeController : MonoBehaviour
 			{
 				damage = controller.BulletDamage;
 			}
-			if (_currLifeValue > damage)
-				_currLifeValue -= damage;
-			else
+
+			_currLifeValue -= damage;
+			if(_currLifeValue <= 0)
 			{
-				_currLifeValue = 0;
 				_clientDead = true;
 			}
+
+			EntityHit entityHit;
+			entityHit.eid = gameObject.GetComponent<Entity>().eid;
+			entityHit.bulletEid = obj.GetComponent<BulletController>().eid;
+			entityHit.bulletDamage = damage;
+			_network.send(Config.COMMAND_HIT, JsonUtility.ToJson(entityHit));
 
 			Destroy(obj);
 		}
@@ -59,9 +74,9 @@ public class LifeController : MonoBehaviour
 	public void ProcessLifeRecv(int lifeValue)
 	{
 		_currLifeValue = lifeValue;
-		if(lifeValue == 0)
+		if(lifeValue > 0)
 		{
-			Dead();
+			_clientDead = false;
 		}
 		SetUI();
 	}
@@ -77,12 +92,13 @@ public class LifeController : MonoBehaviour
 	private void Dead()
 	{
 		_playerAnimator.SetTrigger("Dead");
-		Destroy(gameObject, 5);
 		_entityController.EntityDead(gameObject.GetComponent<Entity>().eid);
 	}
 
 	public int CurrLife
 	{
-		get {return _currLifeValue;}
+		get {
+			return _currLifeValue;
+			}
 	}
 }

@@ -1239,7 +1239,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!136 &7674229120024317870
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1250,10 +1250,10 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.33098507
-  m_Height: 2.4944296
+  m_Radius: 0.4459981
+  m_Height: 2.3314939
   m_Direction: 1
-  m_Center: {x: 0.0065050125, y: 1.3463159, z: 0}
+  m_Center: {x: 0.002077967, y: 1.264848, z: 0}
 --- !u!82 &7674229120024317866
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1414,7 +1414,6 @@ MonoBehaviour:
   groundOffset: 0.01
   moveSpeed: 4
   rotateSpeed: 60
-  OriginPos: {fileID: 0}
   bulletPos: {fileID: 7674229120945680994}
   fireInterval: 1
   weapon:
@@ -1429,7 +1428,6 @@ MonoBehaviour:
   reloadClip: {fileID: 8300000, guid: 40e7321f2722c4f4b8aff06e40eab901, type: 3}
   moveClip: {fileID: 8300000, guid: fbb5b779d12ae9742b798ac52e859096, type: 3}
   shootEffect: {fileID: 7674229120162021832}
-  Player: {fileID: 0}
 --- !u!114 &7674229120024317867
 MonoBehaviour:
   m_ObjectHideFlags: 0
