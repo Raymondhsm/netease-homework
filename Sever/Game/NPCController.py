@@ -67,7 +67,7 @@ class NPCController:
 npcInit = {
     0: [
         {
-            "pos": newVector3(-7.04,2.71,-16.96),
+            "pos": newVector3(-7.04,1.6,-16.96),
             "direction": newVector3(0,0,1),
             "discoverDistance": 10,
             "discoverAngle": 90,

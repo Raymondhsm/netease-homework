@@ -62,7 +62,6 @@ public class BehaviorController : MonoBehaviour
 
 	public void CommonBehavior(EnemyBehavior eh)
 	{
-		Debug.Log("common");
 		_targetPos = eh.pos;
 		_reset = false;	
 		_attackMode = false;
@@ -72,7 +71,6 @@ public class BehaviorController : MonoBehaviour
 
 	public void AttackBehavior(EnemyBehavior eh)
 	{
-		Debug.Log("attack");
 		_targetPos = eh.pos;
 		if(_reset)
 		{
@@ -87,10 +85,10 @@ public class BehaviorController : MonoBehaviour
 
 	public void ResetBehavior(EnemyBehavior eh)
 	{
-		Debug.Log("reset");
 		_targetPos = eh.pos;
 		if(!_reset)
 		{
+			Debug.Log("abc");
 			_attackMode = false;
 			_reset = true;
 			MoveToPoint(_targetPos);
