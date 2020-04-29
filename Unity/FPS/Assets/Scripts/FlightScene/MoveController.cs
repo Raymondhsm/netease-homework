@@ -115,7 +115,7 @@ public class MoveController : MonoBehaviour
 	public void Jump()
 	{
 		_isJump = !(_rigidbody.velocity.y <= 0);
-		if (_isGround && input.Jump && !_isJump) 
+		if (_isGround && !_isJump) 
 		{
 			_rigidbody.AddForce(jumpSpeed * Vector3.up, ForceMode.Impulse);
 			playerAnimator.SetTrigger("Jump");

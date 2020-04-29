@@ -45,7 +45,7 @@ public class PlayerEntity : Entity
     public override void ProcessMoveRecv(EntityMoveInfo entity)
     {
         m_moveController.moveCharactor(entity.strafe, entity.move, entity.run);
-        m_moveController.Jump();
+        if(entity.jump) m_moveController.Jump();
         m_moveController.RotateCharactor(entity.rotateX, entity.rotateY);
     }
 
