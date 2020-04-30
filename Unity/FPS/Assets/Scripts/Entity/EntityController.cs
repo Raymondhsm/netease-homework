@@ -26,6 +26,7 @@ public class EntityController : MonoBehaviour
         Service.Instance().EntityReloadCallback = new Service.RecvHandler(this.EntityReloadCallback);
         Service.Instance().EntityUpdateCallback = new Service.RecvHandler(this.UpdateEntityCallback);
         Service.Instance().EnemyBehaviorCallback = new Service.ComRecvHandler(this.EnemyBehaviorCallback);
+        Service.Instance().EntityDeadCallback = new Service.RecvHandler(this.EntityDead);
 
         m_entities = new Dictionary<int, Entity>();
         m_updateEntity = new List<int>();
@@ -96,60 +97,54 @@ public class EntityController : MonoBehaviour
         }
     }
 
-    public void EntityDead(int eid)
+    public void EntityDead(string dataStr)
     {
-        if(m_entities.ContainsKey(eid))
-            m_entities.Remove(eid);
-
-        for(int i=0; i<m_updateEntity.Count; i++)
-        {
-            if(m_updateEntity[i] == eid){
-                m_updateEntity.Remove(i);
-                break;
-            }
-        }
-
-        DeadInfo deadInfo;
-        deadInfo.eid = eid;
-        deadInfo.privateID = PlayerPrefs.GetString("privateID");
-        m_network.send(Config.COMMAND_DEAD, JsonUtility.ToJson(deadInfo));
+        EntityEid data = JsonUtility.FromJson<EntityEid>(dataStr);
+        if(m_entities[data.eid].Status == 0)
+            m_entities[data.eid].ProcessEntityDead();
     }
 
     public void EntityMoveCallback(string data)
     {
         EntityMoveInfo dataRecv = JsonUtility.FromJson<EntityMoveInfo>(data);
-        m_entities[dataRecv.eid].ProcessMoveRecv(dataRecv);
+        if(m_entities[dataRecv.eid].Status == 0)
+            m_entities[dataRecv.eid].ProcessMoveRecv(dataRecv);
     }
 
     public void EntityShootCallback(string data)
     {
         EntityShootInfo dataRecv = JsonUtility.FromJson<EntityShootInfo>(data);
-        m_entities[dataRecv.eid].ProcessShootRecv(dataRecv);
+        if(m_entities[dataRecv.eid].Status == 0)
+            m_entities[dataRecv.eid].ProcessShootRecv(dataRecv);
     }
 
     public void EntityReloadCallback(string data)
     {
-        EntityReload dataRecv = JsonUtility.FromJson<EntityReload>(data);
-        m_entities[dataRecv.eid].ProcessReloadRecv(dataRecv);
+        EntityEid dataRecv = JsonUtility.FromJson<EntityEid>(data);
+        if(m_entities[dataRecv.eid].Status == 0)
+            m_entities[dataRecv.eid].ProcessReloadRecv(dataRecv);
     }
 
     public void UpdateEntityInfo()
     {
         for(int i = 0; i<m_updateEntity.Count; i++)
         {
-            m_entities[m_updateEntity[i]].UpdateInfo();
+            if(m_entities[m_updateEntity[i]].Status == 0)
+                m_entities[m_updateEntity[i]].UpdateInfo();
         }
     }
 
     public void UpdateEntityCallback(string data)
     {
         PlayerUpdateRecv playerUpdateRecv = JsonUtility.FromJson<PlayerUpdateRecv>(data);
-        m_entities[playerUpdateRecv.eid].ProcessUpdateInfoRecv(playerUpdateRecv);
+        if(m_entities[playerUpdateRecv.eid].Status == 0)
+            m_entities[playerUpdateRecv.eid].ProcessUpdateInfoRecv(playerUpdateRecv);
     }
 
     public void EnemyBehaviorCallback(int command, string data)
     {
         EnemyBehavior enemyBehavior = JsonUtility.FromJson<EnemyBehavior>(data);
-        m_entities[enemyBehavior.eid].EnemyBehavior(command, enemyBehavior);
+        if(m_entities[enemyBehavior.eid].Status == 0)
+            m_entities[enemyBehavior.eid].EnemyBehavior(command, enemyBehavior);
     }
 }

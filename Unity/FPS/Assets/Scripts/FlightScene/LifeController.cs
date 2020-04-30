@@ -89,10 +89,12 @@ public class LifeController : MonoBehaviour
 			lifeText.text = _currLifeValue.ToString();
 	}
 
-	private void Dead()
+	public void Dead()
 	{
 		_playerAnimator.SetTrigger("Dead");
-		_entityController.EntityDead(gameObject.GetComponent<Entity>().eid);
+		_currLifeValue = 0;
+		_clientDead = true;
+		SetUI();
 	}
 
 	public int CurrLife

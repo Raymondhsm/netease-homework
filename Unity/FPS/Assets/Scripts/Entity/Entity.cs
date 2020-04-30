@@ -5,12 +5,15 @@ using UnityEngine;
 public class Entity : MonoBehaviour
 {
     public int m_eid;
+    protected int m_status;
     protected NetworkSocket m_network;
     protected LifeController m_lifeController;
 
     // Start is called before the first frame update
     public virtual void Start()
     {
+        m_status = 0;
+
         m_network = GameObject.Find("NetworkController").GetComponent<NetworkSocket>();
         m_lifeController = gameObject.GetComponent<LifeController>();
     }
@@ -30,7 +33,7 @@ public class Entity : MonoBehaviour
         return;
     }
 
-    public virtual void ProcessReloadRecv(EntityReload er)
+    public virtual void ProcessReloadRecv(EntityEid ee)
     {
         return;
     }
@@ -58,11 +61,21 @@ public class Entity : MonoBehaviour
         m_lifeController.ProcessLifeRecv(pur.life);
     }
 
+    public virtual void ProcessEntityDead()
+    {
+        m_status = 1;
+        m_lifeController.Dead();
+    }
+
     public int eid
     {
         set { m_eid = value; }
         get { return m_eid; }
     }
 
-
+    public int Status
+    {
+        set { m_status = value; }
+        get { return m_status; }
+    }
 }

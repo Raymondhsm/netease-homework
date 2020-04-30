@@ -41,7 +41,7 @@ public struct EntityShootInfo
     public float endPointZ;
 }
 
-public struct EntityReload
+public struct EntityEid
 {
     public int eid;
 }

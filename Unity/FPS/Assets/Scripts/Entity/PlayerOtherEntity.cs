@@ -53,7 +53,7 @@ public class PlayerOtherEntity : Entity
 		shootEffect.Play();
     }
 
-    public override void ProcessReloadRecv(EntityReload er)
+    public override void ProcessReloadRecv(EntityEid er)
     {
         gameObject.GetComponent<Animator>().SetTrigger("Reload");
         if(shootAudio)

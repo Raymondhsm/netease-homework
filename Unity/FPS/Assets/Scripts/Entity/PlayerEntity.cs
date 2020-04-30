@@ -25,6 +25,7 @@ public class PlayerEntity : Entity
 
     public void StatusUpload()
     {
+        if(m_status == 1) return;
         if(!m_fpsInput.isChange) return;
 
         EntityMoveInfo en;
@@ -49,6 +50,8 @@ public class PlayerEntity : Entity
 
     public void ShootUpload(Vector3 endPoint)
     {
+        if(m_status == 1) return;
+
         EntityShootInfo esi;
         esi.eid = m_eid;
         esi.bulletEid = -1;
@@ -68,12 +71,14 @@ public class PlayerEntity : Entity
 
     public void ReloadUpload()
     {
-        EntityReload er;
+        if(m_status == 1) return;
+
+        EntityEid er;
         er.eid = m_eid;
         m_network.send(Config.COMMAND_RELOAD, JsonUtility.ToJson(er));
     }
 
-    public override void ProcessReloadRecv(EntityReload er)
+    public override void ProcessReloadRecv(EntityEid er)
     {
         m_shootController.ReloadRecv();
     }

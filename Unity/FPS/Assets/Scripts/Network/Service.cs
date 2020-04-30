@@ -12,6 +12,7 @@ class Service
     public RecvHandler EntityShootCallback;
     public RecvHandler EntityReloadCallback;
     public RecvHandler EntityUpdateCallback;
+    public RecvHandler EntityDeadCallback;
 
     public ComRecvHandler EnemyBehaviorCallback;
 
@@ -81,6 +82,11 @@ class Service
             case Config.COMMAND_NPC_RESET:
                 if(EnemyBehaviorCallback != null)
                     EnemyBehaviorCallback(command, dataStr);
+                break;
+
+            case Config.COMMAND_DEAD:
+                if(EntityDeadCallback != null)
+                    EntityDeadCallback(dataStr);
                 break;
         }
     }
