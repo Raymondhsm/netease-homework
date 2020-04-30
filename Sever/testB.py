@@ -1,5 +1,9 @@
-import test
+class c:
+    def __init__(self):
+        self.a = []
 
-@route
-def register():
-    return 1
+    def insert(self,c):
+        self.a.append(c)
+
+    def mod(self):
+        self.a[0].aa=1

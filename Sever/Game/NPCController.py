@@ -30,12 +30,21 @@ class NPCController:
             self.frameSendData = []
             if self.entityManager.getPlayerNum() == 0:
                 return []
-            if len(self.currEnemies) == 0:
+            if len(self.currEnemies) == 0 and self.currLevel < len(self.npcInit)-1:
                 self.currLevel += 1
                 self.Start(self.currLevel)
 
+            deadEnemy = []
             for enemy in self.currEnemies:
+                if enemy.status == 2:
+                    deadEnemy.append(enemy)
+                    continue
                 self.Behavior(enemy)
+
+            # del dead enemy
+            for enemy in deadEnemy:
+                self.currEnemies.remove(enemy)
+            
             self.lastFrame = time.time()
             return self.frameSendData
         else:
@@ -54,7 +63,12 @@ class NPCController:
                 enemy.mode = NPCEntity.attack
                 self.frameSendData.append((config.COMMAND_NPC_ATTACK, {"eid": enemy.eid, "pos": enemy.targetPos.toDict()}))
             else:
-                self.frameSendData.append((config.COMMAND_NPC_COMMON, {"eid": enemy.eid, "pos": enemy.targetPos.toDict()}))
+                reset = enemy.pos.distance(enemy.initPos) > 1
+                if reset:
+                    self.frameSendData.append((config.COMMAND_NPC_RESET, {"eid": enemy.eid, "pos": enemy.targetPos.toDict()}))
+                else:
+                    enemy.mode = NPCEntity.common
+                    self.frameSendData.append((config.COMMAND_NPC_COMMON, {"eid": enemy.eid, "pos": enemy.targetPos.toDict()}))
         elif enemy.CheckToFar():
             enemy.mode = NPCEntity.reset
             self.frameSendData.append((config.COMMAND_NPC_RESET, {"eid": enemy.eid, "pos": enemy.targetPos.toDict()}))

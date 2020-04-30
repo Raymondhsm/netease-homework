@@ -69,9 +69,14 @@ class EntityManager:
         for key in self.entities:
             entity = self.entities[key]
             if entity.eType == config.ENTITY_PLAYER or entity.eType == config.ENTITY_ENEMY:
+                if entity.status == 1:
+                    entity.status = 2
+                    data.append((config.COMMAND_DEAD, {"eid": entity.eid}))
+                if entity.status == 2:
+                    continue
                 if entity.prepareInfo(hnum) or time.time() - self.updateTime > 0.5:
                     entity.ProcessUpdateInfo()
-                    data.append(entity.InfoDict())
+                    data.append((config.COMMAND_UPDATE_ENTITY,entity.InfoDict()))
                     self.updateTime = time.time()
         return data
 

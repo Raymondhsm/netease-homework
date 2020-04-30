@@ -1,21 +1,31 @@
-import sqlite3
+# import testA
+# import testB
 
-conn = sqlite3.connect('test.db')
-print "Opened database successfully"
-c = conn.cursor()
-c.execute('''CREATE TABLE `user` (
-            `id` INTEGER NOT NULL,
-            `account` varchar(15) NOT NULL UNIQUE,
-            `password` varchar(20) NOT NULL,
-            `sessionId` varchar(45) DEFAULT NULL,
-            `idTime` datetime DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (`id`)
-            );''')
-print "Table created successfully"
+# class a:
+#     def __init__(self):
+#         self.aa = 0
 
-# data = c.execute("select * from user;")
-# for row in data:
-#     print(row)
-# c.execute("insert into user (account,password) values ('netease','password');")
-conn.commit()
-conn.close()
+# bb= testA.b()
+# cc = testB.c()
+
+# aa = a()
+
+# bb.insert(aa)
+# cc.insert(aa)
+
+# bb.mod()
+
+# print(bb.a[0].aa)
+# print(cc.a[0].aa)
+
+a = [1,2,3,4]
+c = []
+for b in a:
+    if b==2:
+        c.append(b)
+    if b==3:
+        c.append(b)
+
+for d in c:
+    a.remove(d)
+print(a)

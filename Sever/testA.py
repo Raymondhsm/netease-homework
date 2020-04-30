@@ -1,9 +1,9 @@
-def a(index):
-    if index:
-        return []
-    else :
-        return
+class b:
+    def __init__(self):
+        self.a = []
 
-b=a(True)
-if b:
-    print(1)
+    def insert(self,c):
+        self.a.append(c)
+
+    def mod(self):
+        self.a[0].aa=1

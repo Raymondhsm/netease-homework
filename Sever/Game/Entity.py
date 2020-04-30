@@ -13,6 +13,7 @@ class Entity:
         self.direction = Vector3()
         self.velocity = Vector3()
         self.life = 100
+        self.status = 0
 
         self.updateInfo = {}
         self.damageInfo = {}
@@ -79,6 +80,9 @@ class Entity:
         self.updateInfo = {}
 
     def UpdateDamageInfo(self, data, num):
+        if self.status > 0:
+            return
+
         beid = data["bulletEid"]
         if num == 1:
             self.life -= data["bulletDamage"]
@@ -90,6 +94,9 @@ class Entity:
                 self.damageInfo[beid] += 1
         else:
             self.damageInfo[beid] = 1
+
+        if self.life <= 0:
+            self.status = 1
 
 class NPCEntity(Entity):
     common = 0
@@ -126,6 +133,7 @@ class NPCEntity(Entity):
             self.targetPos = re
             return True
         else:
+            self.targetPos = self.initPos
             return False
 
     def CheckToFar(self):

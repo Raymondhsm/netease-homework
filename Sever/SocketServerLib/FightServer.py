@@ -81,8 +81,8 @@ class FightServer(object):
         if len(self.clientDict) == 0: return
         datalist = self.entityManager.ProcessEntityInfo()
         for data in datalist:
-            data["time"] = time.time()
-            self.boardcastCommand(config.COMMAND_UPDATE_ENTITY, data)
+            data[1]["time"] = time.time()
+            self.boardcastCommand(data[0], data[1])
 
     def NPCTick(self):
         if len(self.clientDict) == 0: return
