@@ -38,6 +38,9 @@ public class BehaviorController : MonoBehaviour
 	private Coroutine _rotateCoroutine;
 	private CapsuleCollider _collider;
 	private Coroutine _reloadCompleted;
+	private GameObject _bulletPrefab;
+
+	private NetworkSocket _network;
 
     // Start is called before the first frame update
     void Start()
@@ -48,6 +51,8 @@ public class BehaviorController : MonoBehaviour
 		_targetPos = new Vector3();
 		_animator = GetComponent<Animator>();
 		_collider = GetComponent<CapsuleCollider>();
+		_network = GameObject.Find("NetworkController").GetComponent<NetworkSocket>();
+		_bulletPrefab = (GameObject)Resources.Load("Prefabs/bullet");
 
 		moveAudio.clip = moveClip;
 	}
@@ -150,14 +155,10 @@ public class BehaviorController : MonoBehaviour
 		// 在攻击范围 前方无障碍物
 		if (distance <= attackDistance && !hasObstacle)
 		{
-			direction.y = 0;
-			float angle = Vector3.Angle(transform.forward, direction);
-			Vector3 cross = Vector3.Cross(transform.forward, direction);
-			angle = cross.y > 0 ? angle : -angle;
-			transform.Rotate(0.0f, angle, 0.0f);
-			ShootPlayer();
-			_animator.SetBool("IsForward", false);
-			PlayMoveAudio(false);
+			int eid = gameObject.GetComponent<EnemyEntity>().eid;
+			EntityEid ee;
+			ee.eid = eid;
+			_network.send(Config.COMMAND_NPC_SHOOT, JsonUtility.ToJson(ee));
 		}
 
 		// 不在攻击范围 前方无障碍物 移动
@@ -182,7 +183,21 @@ public class BehaviorController : MonoBehaviour
 		}
 	}
 
-	public void ShootPlayer()
+	public void Shoot(NPCShoot ns)
+	{
+		_targetPos = ns.pos;
+		var direction = _targetPos - transform.position;
+		direction.y = 0;
+		float angle = Vector3.Angle(transform.forward, direction);
+		Vector3 cross = Vector3.Cross(transform.forward, direction);
+		angle = cross.y > 0 ? angle : -angle;
+		transform.Rotate(0.0f, angle, 0.0f);
+		ShootPlayer(ns.eid, ns.bulletEid);
+		_animator.SetBool("IsForward", false);
+		PlayMoveAudio(false);
+	}
+
+	public void ShootPlayer(int eid, int bulletEid)
 	{
 		if (_nextFireTime > Time.time) return;
 		if (weapon.CurrBullet == 0 && !_IsReloading)
@@ -199,10 +214,13 @@ public class BehaviorController : MonoBehaviour
 		var endPoint = _targetPos + new Vector3(0, 0.5f, 0);
 		var direction = endPoint - startPoint;
 
-		GameObject bulletPrefab = (GameObject)Resources.Load("Prefabs/bullet");
-		bulletPrefab.transform.position = startPoint;
-		GameObject bullet = Instantiate(bulletPrefab);
-		bullet.GetComponent<BulletController>().AddForce(direction.normalized);
+		
+		_bulletPrefab.transform.position = startPoint;
+		GameObject bullet = Instantiate(_bulletPrefab);
+		BulletController bc = bullet.GetComponent<BulletController>();
+		bc.eid = bulletEid;
+		bc.owner = eid;
+		bc.AddForce(direction.normalized);
 
 		// 播放声音
 		if (shootAudio)

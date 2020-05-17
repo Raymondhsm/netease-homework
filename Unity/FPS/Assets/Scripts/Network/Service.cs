@@ -13,6 +13,7 @@ class Service
     public RecvHandler EntityReloadCallback;
     public RecvHandler EntityUpdateCallback;
     public RecvHandler EntityDeadCallback;
+    public RecvHandler PlayerPickUp;
 
     public ComRecvHandler EnemyBehaviorCallback;
 
@@ -52,7 +53,6 @@ class Service
                 break;
 
             case Config.COMMAND_NEW_ENTITY:
-                Debug.Log(dataStr);
                 if(EntityNewRecvCallback != null)
                     EntityNewRecvCallback(dataStr);
                 break;
@@ -80,6 +80,7 @@ class Service
             case Config.COMMAND_NPC_COMMON:
             case Config.COMMAND_NPC_ATTACK:
             case Config.COMMAND_NPC_RESET:
+            case Config.COMMAND_NPC_SHOOT:
                 if(EnemyBehaviorCallback != null)
                     EnemyBehaviorCallback(command, dataStr);
                 break;
@@ -87,6 +88,11 @@ class Service
             case Config.COMMAND_DEAD:
                 if(EntityDeadCallback != null)
                     EntityDeadCallback(dataStr);
+                break;
+
+            case Config.COMMAND_PICK_UP:
+                if(PlayerPickUp != null)
+                    PlayerPickUp(dataStr);
                 break;
         }
     }

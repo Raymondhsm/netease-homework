@@ -10,7 +10,7 @@ public class EnemyEntity : Entity
     public override void Start()
     {
         base.Start();
-
+        Type = Config.ENTITY_ENEMY;
         m_behaviorController = gameObject.GetComponent<BehaviorController>();
     }
 
@@ -39,20 +39,28 @@ public class EnemyEntity : Entity
 
     public override void EnemyBehavior(int command, EnemyBehavior eh)
     {
-        switch(command)
+        if(m_behaviorController)
         {
-            case Config.COMMAND_NPC_COMMON:
-                m_behaviorController.CommonBehavior(eh);
-                break;
-            
-            case Config.COMMAND_NPC_ATTACK:
-                m_behaviorController.AttackBehavior(eh);
-                break;
+            switch(command)
+            {
+                case Config.COMMAND_NPC_COMMON:
+                    m_behaviorController.CommonBehavior(eh);
+                    break;
+                
+                case Config.COMMAND_NPC_ATTACK:
+                    m_behaviorController.AttackBehavior(eh);
+                    break;
 
-            case Config.COMMAND_NPC_RESET:
-                m_behaviorController.ResetBehavior(eh);
-                break;
+                case Config.COMMAND_NPC_RESET:
+                    m_behaviorController.ResetBehavior(eh);
+                    break;
+            }
         }
+    }
+
+    public override void EnemyBehavior(NPCShoot ns)
+    {
+        m_behaviorController.Shoot(ns);
     }
 
 }

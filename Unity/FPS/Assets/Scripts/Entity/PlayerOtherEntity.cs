@@ -20,6 +20,7 @@ public class PlayerOtherEntity : Entity
     public override void Start()
     {
         base.Start();
+        Type = Config.ENTITY_PLAYER_OTHER;
         m_fpsInput = new FpsInput();
         m_moveController = gameObject.GetComponent<MoveController>();
     }
@@ -40,9 +41,11 @@ public class PlayerOtherEntity : Entity
 
 		_bulletPrefab.transform.position = startPoint;
 		GameObject bullet= Instantiate(_bulletPrefab);
-		bullet.GetComponent<BulletController>().StaticHitPos = endPoint;
-        bullet.GetComponent<BulletController>().eid = esi.bulletEid;
-		bullet.GetComponent<BulletController>().AddForce(direction.normalized);
+		BulletController bc = bullet.GetComponent<BulletController>();
+		bc.StaticHitPos = endPoint;
+		bc.eid = esi.bulletEid;
+		bc.owner = 0;
+		bc.AddForce(direction.normalized);
 
 		// 播放声音
 		if (shootAudio)

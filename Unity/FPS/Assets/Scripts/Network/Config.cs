@@ -10,10 +10,12 @@ class Config
     public const int COMMAND_HIT = 0x04;
     public const int COMMAND_RELOAD = 0x05;
     public const int COMMAND_DEAD = 0x06;
+    public const int COMMAND_PICK_UP = 0x07;
 
     public const int COMMAND_NPC_COMMON = 0x80;
     public const int COMMAND_NPC_ATTACK = 0x81;
     public const int COMMAND_NPC_RESET = 0x82;
+    public const int COMMAND_NPC_SHOOT = 0x83;
 
     public const int COMMAND_NEW_ENTITY = 0x0100;
     public const int COMMAND_DEL_ENTITY = 0x0200;
@@ -28,5 +30,8 @@ class Config
     public const int ENTITY_PLAYER_OTHER = 0x02000000;
     public const int ENTITY_ENEMY = 0x03000000;
     public const int ENTITY_BULLET = 0x04000000;
+    public const int ENTITY_REWARD_MEDICINE = 0x05000000;
+    public const int ENTITY_REWARD_BULLET = 0x06000000;
+    public const int ENTITY_REWARD = 0x07000000;
 
 }

@@ -38,9 +38,7 @@ public class LifeController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetButtonDown("Reload")){
-            _playerAnimator.SetTrigger("Dead");
-        }
+
     }
 
 	private void OnTriggerEnter(Collider other)
@@ -91,6 +89,8 @@ public class LifeController : MonoBehaviour
 
 	public void Dead()
 	{
+		CapsuleCollider cc = gameObject.GetComponent<CapsuleCollider>();
+		cc.enabled = false;
 		_playerAnimator.SetTrigger("Dead");
 		_currLifeValue = 0;
 		_clientDead = true;

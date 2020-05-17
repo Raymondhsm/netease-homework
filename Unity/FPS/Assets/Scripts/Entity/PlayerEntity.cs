@@ -12,6 +12,7 @@ public class PlayerEntity : Entity
     public override void Start()
     {
         base.Start();
+        Type = Config.ENTITY_PLAYER;
         m_fpsInput = new FpsInput();
         m_moveController = gameObject.GetComponent<MoveController>();
         m_shootController = gameObject.GetComponent<ShootController>();
@@ -21,6 +22,19 @@ public class PlayerEntity : Entity
     void Update()
     {
         StatusUpload();
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        GameObject obj = other.gameObject;
+        Debug.Log(obj.tag);
+        if(obj.CompareTag("Reward"))
+        {
+            PickUpReward pickUpReward;
+            pickUpReward.eid = m_eid;
+            pickUpReward.rewardEid = obj.GetComponent<Entity>().eid;
+            m_network.send(Config.COMMAND_PICK_UP, JsonUtility.ToJson(pickUpReward));
+        }
     }
 
     public void StatusUpload()

@@ -27326,6 +27326,10 @@ MonoBehaviour:
     type: 3}
   enemyPrefab: {fileID: 7675731299159100738, guid: fc4e73a74e1b78545a24bfd6da600bff,
     type: 3}
+  medicinePrefab: {fileID: 1360907432332560884, guid: 903a3229d71970240a982f2d3083f056,
+    type: 3}
+  bulletPrefab: {fileID: 4123837639132664927, guid: b941eb2c4667d94499d56b1fb0ff5d60,
+    type: 3}
   updateInterval: 1
 --- !u!114 &1937697750
 MonoBehaviour:
@@ -27341,6 +27345,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textBullet: {fileID: 934494172}
   textWeaponMode: {fileID: 384824254}
+  lifeSlider: {fileID: 1618134061}
+  lifeText: {fileID: 1553553983}
 --- !u!1001 &1939682529
 PrefabInstance:
   m_ObjectHideFlags: 0

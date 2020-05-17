@@ -7,6 +7,8 @@ public class EntityController : MonoBehaviour
     public GameObject playerPrefab;
     public GameObject playerOther;
     public GameObject enemyPrefab;
+    public GameObject medicinePrefab;
+    public GameObject bulletPrefab;
     public float updateInterval;
 
     private Dictionary<int, Entity> m_entities;
@@ -27,6 +29,7 @@ public class EntityController : MonoBehaviour
         Service.Instance().EntityUpdateCallback = new Service.RecvHandler(this.UpdateEntityCallback);
         Service.Instance().EnemyBehaviorCallback = new Service.ComRecvHandler(this.EnemyBehaviorCallback);
         Service.Instance().EntityDeadCallback = new Service.RecvHandler(this.EntityDead);
+        Service.Instance().PlayerPickUp = new Service.RecvHandler(this.PlayerPickUp);
 
         m_entities = new Dictionary<int, Entity>();
         m_updateEntity = new List<int>();
@@ -72,8 +75,6 @@ public class EntityController : MonoBehaviour
         {       
             case Config.ENTITY_PLAYER:
                 GameObject go;
-                Debug.Log(entity.publicID);
-                Debug.Log(PlayerPrefs.GetString("publicID"));
                 if(entity.publicID == PlayerPrefs.GetString("publicID"))
                     go = Instantiate(playerPrefab);
                 else
@@ -93,6 +94,26 @@ public class EntityController : MonoBehaviour
 
                 m_entities.Add(entity.eid, enemy.GetComponent<Entity>());
                 m_updateEntity.Add(entity.eid);
+                break;
+
+            case Config.ENTITY_REWARD_MEDICINE:
+                GameObject me = Instantiate(medicinePrefab);
+                entity.pos.y += 1f;
+                entity.pos.x += 0.5f;
+                me.transform.position = entity.pos;
+                me.GetComponent<Entity>().eid = entity.eid;
+
+                m_entities.Add(entity.eid, me.GetComponent<Entity>());
+                break;
+
+            case Config.ENTITY_REWARD_BULLET:
+                GameObject bu = Instantiate(bulletPrefab);
+                entity.pos.y += 1f;
+                entity.pos.x += 0.5f;
+                bu.transform.position = entity.pos;
+                bu.GetComponent<Entity>().eid = entity.eid;
+
+                m_entities.Add(entity.eid, bu.GetComponent<Entity>());
                 break;
         }
     }
@@ -143,8 +164,25 @@ public class EntityController : MonoBehaviour
 
     public void EnemyBehaviorCallback(int command, string data)
     {
-        EnemyBehavior enemyBehavior = JsonUtility.FromJson<EnemyBehavior>(data);
-        if(m_entities[enemyBehavior.eid].Status == 0)
-            m_entities[enemyBehavior.eid].EnemyBehavior(command, enemyBehavior);
+        if(command == Config.COMMAND_NPC_SHOOT)
+        {
+            NPCShoot npcShoot = JsonUtility.FromJson<NPCShoot>(data);
+            if(m_entities[npcShoot.eid].Status == 0)
+                m_entities[npcShoot.eid].EnemyBehavior(npcShoot);
+        }
+        else
+        {
+            EnemyBehavior enemyBehavior = JsonUtility.FromJson<EnemyBehavior>(data);
+            if(m_entities[enemyBehavior.eid].Status == 0)
+                m_entities[enemyBehavior.eid].EnemyBehavior(command, enemyBehavior);
+        }
+    }
+
+    public void PlayerPickUp(string data)
+    {
+        PickUpRecv pickUpRecv = JsonUtility.FromJson<PickUpRecv>(data);
+
+        if(m_entities[pickUpRecv.eid].Type == Config.ENTITY_REWARD)
+            m_entities[pickUpRecv.eid].PickedUp(pickUpRecv);
     }
 }

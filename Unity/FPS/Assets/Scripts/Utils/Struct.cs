@@ -87,3 +87,22 @@ public struct EntityHit
     public int bulletEid;
     public int bulletDamage;
 }
+
+public struct NPCShoot
+{
+    public int eid;
+    public int bulletEid;
+    public Vector3 pos;
+}
+
+public struct PickUpReward
+{
+    public int eid;
+    public int rewardEid;
+}
+
+public struct PickUpRecv
+{
+    public int eid;
+    public string publicID;
+}

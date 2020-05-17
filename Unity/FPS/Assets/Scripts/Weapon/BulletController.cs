@@ -12,6 +12,7 @@ public class BulletController : MonoBehaviour
 	private GameObject _canvas;
 	private Vector3 _staticHitPos;
 	private int _eid;
+	private int _owner;
 
 	private GameObject _bulletHole;
 	private GameObject _bulletDamageObj;
@@ -39,7 +40,7 @@ public class BulletController : MonoBehaviour
 	private void OnTriggerEnter(Collider other)
 	{
 		var obj = other.gameObject;
-		if(obj.CompareTag("Enemy"))
+		if(obj.CompareTag("Enemy") && _owner == 0)
 		{
 			GameObject go = Instantiate(_bulletDamageObj);
 			BulletDamageController bdc = go.GetComponent<BulletDamageController>();
@@ -85,5 +86,11 @@ public class BulletController : MonoBehaviour
 	{
 		set { _eid = value; }
 		get { return _eid; }
+	}
+
+	public int owner
+	{
+		set { _owner = value; }
+		get { return _owner; }
 	}
 }

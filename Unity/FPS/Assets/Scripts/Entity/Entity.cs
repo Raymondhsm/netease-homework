@@ -5,6 +5,7 @@ using UnityEngine;
 public class Entity : MonoBehaviour
 {
     public int m_eid;
+    public int Type;
     protected int m_status;
     protected NetworkSocket m_network;
     protected LifeController m_lifeController;
@@ -48,6 +49,13 @@ public class Entity : MonoBehaviour
         return;
     }
 
+    public virtual void EnemyBehavior(NPCShoot ns)
+    {
+        return;
+    }
+
+    public virtual void PickedUp(PickUpRecv pickUpRecv){}
+
     public virtual void ProcessUpdateInfoRecv(PlayerUpdateRecv pur)
     {
         // if(Vector3.Distance(pur.pos, transform.position) > 10f)
@@ -58,7 +66,8 @@ public class Entity : MonoBehaviour
         // {
         //     transform.forward = pui.direction;
         // }
-        m_lifeController.ProcessLifeRecv(pur.life);
+        if(m_lifeController)
+            m_lifeController.ProcessLifeRecv(pur.life);
     }
 
     public virtual void ProcessEntityDead()
