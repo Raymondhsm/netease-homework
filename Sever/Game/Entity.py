@@ -98,6 +98,17 @@ class Entity:
         if self.life <= 0:
             self.status = 1
 
+class PlayerEntity(Entity):
+    def __init__(self, eid):
+        Entity.__init__(self, eid)
+        self.reward = {
+            config.ENTITY_REWARD_MEDICINE : 0,
+            config.ENTITY_REWARD_BULLET : 0
+        }
+
+    def PickUpReward(self, eType):
+        self.reward[eType] += 1
+
 class NPCEntity(Entity):
     common = 0
     attack = 1
@@ -111,6 +122,9 @@ class NPCEntity(Entity):
         self.discoverDistance = init["discoverDistance"]
         self.discoverAngle = init["discoverAngle"]
         self.toFar = init["toFar"]
+        self.reward = init["reward"]
+        self.shootDict = {}
+        self.shoot = False
 
     def CheckIfDiscoverPlayer(self, players):
         dis = 100000
@@ -155,3 +169,15 @@ class NPCEntity(Entity):
 
         if re:
             self.targetPos = re
+
+    def ProcessShoot(self, hid, num):
+        self.shootDict[hid] = True
+        if len(self.shootDict) == num:
+            self.shoot = True
+            self.shootDict.clear()
+
+    def CanShoot(self):
+        status = self.shoot
+        self.shoot = False
+        return status
+

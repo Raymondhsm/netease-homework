@@ -52,12 +52,24 @@ class FightServer(object):
         elif command == config.COMMAND_HIT:
             self.entityManager.ProcessEntityHit(dataJson)
 
+        elif command == config.COMMAND_NPC_SHOOT:
+            self.entityManager.ProcessNPCShoot(hid, dataJson)
+
+        elif command == config.COMMAND_PICK_UP:
+            if self.entityManager.ProcessPickUp(dataJson):
+                publicID, privateID = self.clientDict[hid]
+                data = {
+                    "publicID": publicID,
+                    "eid": dataJson["rewardEid"],
+                }
+                self.boardcastCommand(config.COMMAND_PICK_UP, data)
+
         elif command < 0xff:
             self.boardcast(data)
 
         elif command == config.COMMAND_NEW_ENTITY:
             publicID, privateID = self.clientDict[hid]
-            self.boardcastCommand(command, self.entityManager.RegisterEntity(hid, dataJson, publicID, privateID))
+            self.boardcastCommand(command, self.entityManager.RegisterPlayer(hid, dataJson, publicID, privateID))
         
         elif command == config.COMMAND_UPDATE_ENTITY:
             self.entityManager.updateEntityInfo(hid, dataJson)

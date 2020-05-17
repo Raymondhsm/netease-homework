@@ -1,6 +1,6 @@
 import os,sys
 sys.path.append(os.path.realpath('./'))
-from Entity import Entity, NPCEntity
+from Entity import Entity, NPCEntity, PlayerEntity
 from Config.Struct import Vector3
 from Config import config
 import time
@@ -13,8 +13,8 @@ class EntityManager:
         self.eidIndex = 0
         self.updateTime = time.time()
 
-    def RegisterEntity(self, hid, entityInfo, publicID, privateID):
-        entity = Entity(self.eidIndex)
+    def RegisterPlayer(self, hid, entityInfo, publicID, privateID):
+        entity = PlayerEntity(self.eidIndex)
         entity.publicID = publicID
         entity.privateID = privateID
         entity.eType = entityInfo['entityCommand']
@@ -29,6 +29,14 @@ class EntityManager:
         self.clientOwnEntities[hid].append(self.eidIndex)
         self.eidIndex += 1
         return self.entities[self.eidIndex-1].InfoDict()
+
+    def RegisterReward(self, eType, pos):
+        entity = Entity(self.eidIndex)
+        entity.eType = eType
+        entity.pos = pos
+        self.entities[self.eidIndex] = entity
+        self.eidIndex += 1
+        return self.eidIndex-1
 
     def RegisterNPC(self, init):
         entity = NPCEntity(self.eidIndex, init)
@@ -51,7 +59,7 @@ class EntityManager:
 
     def registerEid(self):
         self.eidIndex += 1
-        return self.eidIndex
+        return self.eidIndex-1
 
     def deleteOwnEntity(self, hid):
         if hid in self.entityPlayers:
@@ -85,6 +93,22 @@ class EntityManager:
         entity = self.entities[eid]
         if entity.eType == config.ENTITY_PLAYER or entity.eType == config.ENTITY_ENEMY:
             entity.UpdateDamageInfo(data, len(self.entityPlayers))
+
+    def ProcessNPCShoot(self, hid, data):
+        eid = data["eid"]
+        entity = self.entities[eid]
+        if entity and entity.eType == config.ENTITY_ENEMY:
+            entity.ProcessShoot(hid, len(self.entityPlayers))
+
+    def ProcessPickUp(self, data):
+        eid = data["eid"]
+        Reid = data["rewardEid"]
+        if eid in self.entities:
+            self.entities[eid].PickUpReward(self.entities[Reid].eType)
+            del self.entities[Reid]
+            return True
+        else:
+            return False
                 
 
 
