@@ -22,6 +22,7 @@ public class PlayerEntity : Entity
     void Update()
     {
         StatusUpload();
+        UseProp();
     }
 
     private void OnCollisionEnter(Collision other)
@@ -53,6 +54,15 @@ public class PlayerEntity : Entity
 
         string data = JsonUtility.ToJson(en);
         m_network.send(Config.COMMAND_MOVE, data);
+    }
+
+    public override void ProcessUpdateInfoRecv(PlayerUpdateRecv pur)
+    {
+        Debug.Log("child" + pur.totalBullet);
+        if(m_lifeController)
+            m_lifeController.ProcessLifeRecv(pur.life);
+        if(m_shootController)
+            m_shootController.UpdateTotalBullet(pur.totalBullet);
     }
 
     public override void ProcessMoveRecv(EntityMoveInfo entity)
@@ -112,5 +122,17 @@ public class PlayerEntity : Entity
 
         string data = JsonUtility.ToJson(playerUpdateInfo);
         m_network.send(Config.COMMAND_UPDATE_ENTITY, data);
+    }
+
+    
+    void UseProp()
+    {
+        if(m_fpsInput.P1 || m_fpsInput.P2)
+        {
+            UsePropStruct usePropStruct;
+            usePropStruct.eid = m_eid;
+            usePropStruct.type = m_fpsInput.P1 ? Config.ENTITY_REWARD_MEDICINE : Config.ENTITY_REWARD_BULLET;
+            m_network.send(Config.COMMAND_USE_PROP, JsonUtility.ToJson(usePropStruct));
+        }
     }
 }

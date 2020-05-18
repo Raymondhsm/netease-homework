@@ -67,6 +67,7 @@ public struct PlayerUpdateRecv
     public Vector3 pos;
     public Vector3 direction;
     public Vector3 velocity;
+    public int totalBullet;
 }
 
 public struct DeadInfo
@@ -105,4 +106,10 @@ public struct PickUpRecv
 {
     public int eid;
     public string publicID;
+}
+
+public struct UsePropStruct
+{
+    public int eid;
+    public int type;
 }

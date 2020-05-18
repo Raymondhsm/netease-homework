@@ -66,6 +66,7 @@ public class Entity : MonoBehaviour
         // {
         //     transform.forward = pui.direction;
         // }
+        Debug.Log("base" + pur.totalBullet + Type);
         if(m_lifeController)
             m_lifeController.ProcessLifeRecv(pur.life);
     }

@@ -83,7 +83,7 @@ public class EntityController : MonoBehaviour
                 go.transform.position = entity.pos;
                 go.GetComponent<Entity>().eid = entity.eid;
 
-                m_entities.Add(entity.eid, go.GetComponent<Entity>());
+                m_entities.Add(entity.eid, go.GetComponent<PlayerEntity>());
                 m_updateEntity.Add(entity.eid);
                 break;
 
@@ -92,7 +92,7 @@ public class EntityController : MonoBehaviour
                 enemy.transform.position = entity.pos;
                 enemy.GetComponent<Entity>().eid = entity.eid;
 
-                m_entities.Add(entity.eid, enemy.GetComponent<Entity>());
+                m_entities.Add(entity.eid, enemy.GetComponent<EnemyEntity>());
                 m_updateEntity.Add(entity.eid);
                 break;
 
@@ -103,7 +103,7 @@ public class EntityController : MonoBehaviour
                 me.transform.position = entity.pos;
                 me.GetComponent<Entity>().eid = entity.eid;
 
-                m_entities.Add(entity.eid, me.GetComponent<Entity>());
+                m_entities.Add(entity.eid, me.GetComponent<RewardEntity>());
                 break;
 
             case Config.ENTITY_REWARD_BULLET:
@@ -113,7 +113,7 @@ public class EntityController : MonoBehaviour
                 bu.transform.position = entity.pos;
                 bu.GetComponent<Entity>().eid = entity.eid;
 
-                m_entities.Add(entity.eid, bu.GetComponent<Entity>());
+                m_entities.Add(entity.eid, bu.GetComponent<RewardEntity>());
                 break;
         }
     }
@@ -158,6 +158,7 @@ public class EntityController : MonoBehaviour
     public void UpdateEntityCallback(string data)
     {
         PlayerUpdateRecv playerUpdateRecv = JsonUtility.FromJson<PlayerUpdateRecv>(data);
+        if(playerUpdateRecv.eid != 1) print(data);
         if(m_entities[playerUpdateRecv.eid].Status == 0)
             m_entities[playerUpdateRecv.eid].ProcessUpdateInfoRecv(playerUpdateRecv);
     }

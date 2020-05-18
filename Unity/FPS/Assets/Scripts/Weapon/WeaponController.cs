@@ -80,6 +80,7 @@ public class WeaponController
 
 	public int TotalBullet
 	{
+		set { _weaponTotalBullet[_weaponIndex] = value; }
 		get { return _weaponTotalBullet[_weaponIndex]; }
 	}
 

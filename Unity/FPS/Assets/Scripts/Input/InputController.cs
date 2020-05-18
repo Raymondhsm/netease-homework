@@ -24,6 +24,10 @@ class FpsInput
 
     [Tooltip("reload bullet."), SerializeField]
     private string reload = "Reload";
+    [SerializeField]
+    private string p1 = "p1";
+    [SerializeField]
+    private string p2 = "p2";
 
 
     /// Returns the value of the virtual axis mapped to rotate the camera around the y axis.
@@ -65,6 +69,16 @@ class FpsInput
     public bool Reload
     {
         get { return Input.GetButtonDown(reload); }
+    }
+
+    public bool P1
+    {
+        get { return Input.GetButtonDown(p1); }
+    }
+
+    public bool P2
+    {
+        get { return Input.GetButtonDown(p1); }
     }
 
     public bool isChange

@@ -11,6 +11,7 @@ class Config
     public const int COMMAND_RELOAD = 0x05;
     public const int COMMAND_DEAD = 0x06;
     public const int COMMAND_PICK_UP = 0x07;
+    public const int COMMAND_USE_PROP = 0x08;
 
     public const int COMMAND_NPC_COMMON = 0x80;
     public const int COMMAND_NPC_ATTACK = 0x81;

@@ -182,6 +182,12 @@ public class ShootController : MonoBehaviour
 		else playerAnimator.SetBool("IsShootBrust", true);
 	}
 
+	public void UpdateTotalBullet(int total)
+	{
+		weapon.TotalBullet = total;
+		SetWeaponBulletText(weapon.CurrBullet);
+	}
+
 	public int CurrBullet 
 	{
 		get { return weapon.CurrBullet; }
