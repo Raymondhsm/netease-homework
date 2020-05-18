@@ -68,6 +68,8 @@ public struct PlayerUpdateRecv
     public Vector3 direction;
     public Vector3 velocity;
     public int totalBullet;
+    public int propMedicine;
+    public int propBullet;
 }
 
 public struct DeadInfo

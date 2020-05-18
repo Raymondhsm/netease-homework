@@ -158,7 +158,6 @@ public class EntityController : MonoBehaviour
     public void UpdateEntityCallback(string data)
     {
         PlayerUpdateRecv playerUpdateRecv = JsonUtility.FromJson<PlayerUpdateRecv>(data);
-        if(playerUpdateRecv.eid != 1) print(data);
         if(m_entities[playerUpdateRecv.eid].Status == 0)
             m_entities[playerUpdateRecv.eid].ProcessUpdateInfoRecv(playerUpdateRecv);
     }

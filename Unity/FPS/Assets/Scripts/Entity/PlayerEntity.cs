@@ -7,6 +7,7 @@ public class PlayerEntity : Entity
     private FpsInput m_fpsInput;
     private MoveController m_moveController;
     private ShootController m_shootController;
+    private GameController m_gameController;
 
     // Start is called before the first frame update
     public override void Start()
@@ -16,6 +17,7 @@ public class PlayerEntity : Entity
         m_fpsInput = new FpsInput();
         m_moveController = gameObject.GetComponent<MoveController>();
         m_shootController = gameObject.GetComponent<ShootController>();
+        m_gameController = GameObject.Find("GameController").GetComponent<GameController>();
     }
 
     // Update is called once per frame
@@ -28,7 +30,6 @@ public class PlayerEntity : Entity
     private void OnCollisionEnter(Collision other)
     {
         GameObject obj = other.gameObject;
-        Debug.Log(obj.tag);
         if(obj.CompareTag("Reward"))
         {
             PickUpReward pickUpReward;
@@ -58,11 +59,12 @@ public class PlayerEntity : Entity
 
     public override void ProcessUpdateInfoRecv(PlayerUpdateRecv pur)
     {
-        Debug.Log("child" + pur.totalBullet);
         if(m_lifeController)
             m_lifeController.ProcessLifeRecv(pur.life);
         if(m_shootController)
             m_shootController.UpdateTotalBullet(pur.totalBullet);
+        if(m_gameController)
+            m_gameController.UpdateProp(pur.propMedicine, pur.propBullet);
     }
 
     public override void ProcessMoveRecv(EntityMoveInfo entity)

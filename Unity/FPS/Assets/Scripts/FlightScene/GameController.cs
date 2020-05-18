@@ -11,6 +11,11 @@ public class GameController : MonoBehaviour
 	public Slider lifeSlider;
 	public Text lifeText;
 
+    public Text RewardMtext;
+    public Text RewardBtext;
+
+    private FpsInput m_input;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -20,6 +25,11 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+    }
+
+    public void UpdateProp(int m, int b)
+    {
+        RewardMtext.text = m.ToString();
+        RewardBtext.text = b.ToString();
     }
 }
