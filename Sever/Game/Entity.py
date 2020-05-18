@@ -105,9 +105,33 @@ class PlayerEntity(Entity):
             config.ENTITY_REWARD_MEDICINE : 0,
             config.ENTITY_REWARD_BULLET : 0
         }
+        self.onceBullet = 35
+        self.currBullet = 35
+        self.totalBullet = 105
 
     def PickUpReward(self, eType):
         self.reward[eType] += 1
+
+    def Shoot(self):
+        if self.currBullet > 0:
+            self.currBullet -= 1
+            return True
+        else:
+            return False
+
+    def Reload(self):
+        use = self.onceBullet - self.currBullet
+        if use > self.totalBullet:
+            self.currBullet = self.currBullet + self.totalBullet
+            self.totalBullet = 0
+        else:
+            self.currBullet += use
+            self.totalBullet -= use 
+
+    def InfoDict(self):
+        data = Entity.InfoDict(self)
+        data['totalBullet'] = self.totalBullet
+        return data
 
 class NPCEntity(Entity):
     common = 0

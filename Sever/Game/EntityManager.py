@@ -85,7 +85,8 @@ class EntityManager:
                 if entity.prepareInfo(hnum) or time.time() - self.updateTime > 0.5:
                     entity.ProcessUpdateInfo()
                     data.append((config.COMMAND_UPDATE_ENTITY,entity.InfoDict()))
-                    self.updateTime = time.time()
+        if data != [] and time.time() - self.updateTime > 0.5:
+            self.updateTime = time.time()
         return data
 
     def ProcessEntityHit(self, data):
@@ -109,6 +110,16 @@ class EntityManager:
             return True
         else:
             return False
+
+    def ProcessShoot(self, hid):
+        if hid in self.entityPlayers:
+            return self.entityPlayers[hid].Shoot()
+        else:
+            return False
+
+    def ProcessReload(self, hid):
+        if hid in self.entityPlayers:
+            self.entityPlayers[hid].Reload()
                 
 
 

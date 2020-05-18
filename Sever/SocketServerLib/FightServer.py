@@ -45,9 +45,14 @@ class FightServer(object):
         command = struct.unpack(config.NET_HEAD_LENGTH_FORMAT, data[0:config.COMMAND_LENGTH_SIZE])[0]
         dataJson = json.loads(data[config.COMMAND_LENGTH_SIZE:])
         if command == config.COMMAND_SHOOT:
-            eid = self.entityManager.registerEid()
-            dataJson["bulletEid"] = eid
-            self.boardcastCommand(command, dataJson)
+            if self.entityManager.ProcessShoot(hid):
+                eid = self.entityManager.registerEid()
+                dataJson["bulletEid"] = eid
+                self.boardcastCommand(command, dataJson)
+
+        elif command == config.COMMAND_RELOAD:
+            self.entityManager.ProcessReload(hid)
+            self.boardcast(data)
 
         elif command == config.COMMAND_HIT:
             self.entityManager.ProcessEntityHit(dataJson)
