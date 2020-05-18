@@ -131,7 +131,18 @@ class PlayerEntity(Entity):
     def InfoDict(self):
         data = Entity.InfoDict(self)
         data['totalBullet'] = self.totalBullet
+        data['propMedicine'] = self.reward[config.ENTITY_REWARD_MEDICINE]
+        data['propBullet'] = self.reward[config.ENTITY_REWARD_BULLET]
         return data
+    
+    def UseProp(self, data):
+        type = data['type']
+        if self.reward[type] > 0:
+            if type == config.ENTITY_REWARD_MEDICINE:
+                self.life = 100 if self.life >80 else self.life + 20
+            elif type == config.ENTITY_REWARD_BULLET:
+                self.totalBullet += 35
+            self.reward[type] -= 1
 
 class NPCEntity(Entity):
     common = 0

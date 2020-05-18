@@ -120,6 +120,10 @@ class EntityManager:
     def ProcessReload(self, hid):
         if hid in self.entityPlayers:
             self.entityPlayers[hid].Reload()
+
+    def ProcessUseProp(self, hid, data):
+        if hid in self.entityPlayers:
+            self.entityPlayers[hid].UseProp(data)
                 
 
 

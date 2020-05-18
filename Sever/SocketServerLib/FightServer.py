@@ -68,6 +68,9 @@ class FightServer(object):
                     "eid": dataJson["rewardEid"],
                 }
                 self.boardcastCommand(config.COMMAND_PICK_UP, data)
+        
+        elif command == config.COMMAND_USE_PROP:
+            self.entityManager.ProcessUseProp(hid, dataJson)
 
         elif command < 0xff:
             self.boardcast(data)
