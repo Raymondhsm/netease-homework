@@ -78,7 +78,7 @@ class FpsInput
 
     public bool P2
     {
-        get { return Input.GetButtonDown(p1); }
+        get { return Input.GetButtonDown(p2); }
     }
 
     public bool isChange

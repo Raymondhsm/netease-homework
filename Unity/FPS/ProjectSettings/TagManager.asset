@@ -21,6 +21,7 @@ TagManager:
   - Bullet
   - Enemy
   - Terrain
+  - Reward
   layers:
   - Default
   - TransparentFX

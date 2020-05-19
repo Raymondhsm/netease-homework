@@ -47,6 +47,7 @@ public class BulletController : MonoBehaviour
 			bdc.Parent = _canvas;
 			bdc.Position = transform.position;
 			Destroy(go, 5);
+			Destroy(gameObject);
 		}
 		else if(obj.CompareTag("Terrain"))
 		{
@@ -55,9 +56,12 @@ public class BulletController : MonoBehaviour
 			bulletHole.transform.LookAt(transform);
 			bulletHole.transform.Translate(Vector3.back * 0.01f);
 			Destroy(bulletHole, 5);
+			Destroy(gameObject);
 		}
-
-		Destroy(gameObject);
+		else if(obj.CompareTag("Player") && _owner == 1)
+		{
+			Destroy(gameObject);
+		}
 	}
 
 	public void AddForce(Vector3 dir)

@@ -1459,7 +1459,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 2
+  m_CollisionDetection: 3
 --- !u!136 &6967413586614046621
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1604,6 +1604,8 @@ MonoBehaviour:
     run: Fire3
     jump: Jump
     reload: Reload
+    p1: p1
+    p2: p2
 --- !u!114 &6967413586614046623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1625,8 +1627,6 @@ MonoBehaviour:
   shootEffect: {fileID: 3462907078859049695}
   weaponRange: 500
   fireInterval: 0.1
-  textBullet: {fileID: 0}
-  textWeaponMode: {fileID: 0}
   input:
     shoot: Fire1
     reload: Reload
@@ -1665,6 +1665,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_eid: 0
+  Type: 0
 --- !u!1 &6969125027609119920
 GameObject:
   m_ObjectHideFlags: 0
