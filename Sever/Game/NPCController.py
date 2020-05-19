@@ -43,12 +43,13 @@ class NPCController:
 
             # del dead enemy
             for enemy in deadEnemy:
-                data = {
-                    "eid": self.entityManager.RegisterReward(enemy.reward, enemy.pos),
-                    "Type": enemy.reward,
-                    "pos": enemy.pos.toDict()
-                }
-                self.frameSendData.append((config.COMMAND_NEW_ENTITY, data))
+                if enemy.reward != -1:
+                    data = {
+                        "eid": self.entityManager.RegisterReward(enemy.reward, enemy.pos),
+                        "Type": enemy.reward,
+                        "pos": enemy.pos.toDict()
+                    }
+                    self.frameSendData.append((config.COMMAND_NEW_ENTITY, data))
                 self.currEnemies.remove(enemy)
             
             self.lastFrame = time.time()
@@ -101,6 +102,22 @@ npcInit = {
             "discoverAngle": 90,
             "toFar": 5,
             "reward": config.ENTITY_REWARD_MEDICINE
+        },
+        {
+            "pos": newVector3(-8.74, 1.6, -14.59),
+            "direction": newVector3(0,0,1),
+            "discoverDistance": 10,
+            "discoverAngle": 90,
+            "toFar": 5,
+            "reward": config.ENTITY_REWARD_BULLET 
+        },
+        {
+            "pos": newVector3(-5.79, 1.6, -13.7),
+            "direction": newVector3(0,0,1),
+            "discoverDistance": 10,
+            "discoverAngle": 90,
+            "toFar": 5,
+            "reward": -1
         }
     ],
 
