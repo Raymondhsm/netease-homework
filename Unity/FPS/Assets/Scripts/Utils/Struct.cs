@@ -18,6 +18,7 @@ public struct EntityRecv
     public Vector3 direction;
     public Vector3 velocity;
     public float life;
+    public int totalBullet;
 }
 
 

@@ -33,7 +33,8 @@ class FightServer(object):
 
         # create charactor
         for key in self.entityManager.entities:
-            self.send(hid, config.COMMAND_NEW_ENTITY, self.entityManager.entities[key].InfoDict())
+            if self.entityManager.entities[key].status == 0:
+                self.send(hid, config.COMMAND_NEW_ENTITY, self.entityManager.entities[key].InfoDict())
         
 
     def HandleClientLeave(self, hid):

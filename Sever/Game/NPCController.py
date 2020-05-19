@@ -122,11 +122,30 @@ npcInit = {
     ],
 
     1: [
-
-    ],
-
-    2: [
-
+        {
+            "pos": newVector3(39.3,1.6,-13.6),
+            "direction": newVector3(0,0,1),
+            "discoverDistance": 10,
+            "discoverAngle": 90,
+            "toFar": 5,
+            "reward": config.ENTITY_REWARD_MEDICINE
+        },
+        {
+            "pos": newVector3(44.02, 1.6, -13.6),
+            "direction": newVector3(0,0,1),
+            "discoverDistance": 10,
+            "discoverAngle": 90,
+            "toFar": 5,
+            "reward": config.ENTITY_REWARD_BULLET 
+        },
+        {
+            "pos": newVector3(40.51, 1.6, -17.04),
+            "direction": newVector3(0,0,1),
+            "discoverDistance": 10,
+            "discoverAngle": 90,
+            "toFar": 5,
+            "reward": -1
+        }
     ]
 }
 
