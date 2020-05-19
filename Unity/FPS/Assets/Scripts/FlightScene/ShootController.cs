@@ -86,11 +86,13 @@ public class ShootController : MonoBehaviour
 		bool preState = playerAnimator.GetCurrentAnimatorStateInfo(1).IsTag("reload");
 		bool currState = playerAnimator.GetCurrentAnimatorStateInfo(1).IsTag("reload");
 		float timeout = 0;
+		bool outReloadState = false;
 
-		while ((preState || currState) || !_reloadRecv)
+		while (!outReloadState || !_reloadRecv)
 		{
 			preState = currState;
 			currState = playerAnimator.GetCurrentAnimatorStateInfo(1).IsTag("reload");
+			if(!outReloadState) outReloadState = preState && !currState;
 			timeout += Time.deltaTime;
 			if(timeout > 5) StopCoroutine(this._reloadCompleted);
 			yield return 0;
