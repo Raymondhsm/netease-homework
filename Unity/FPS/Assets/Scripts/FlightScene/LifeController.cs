@@ -46,6 +46,11 @@ public class LifeController : MonoBehaviour
 		var obj = other.gameObject;
 		if (obj.tag.Equals("Bullet"))
 		{
+			if(gameObject.CompareTag("Player") && obj.GetComponent<BulletController>().owner == 0)
+				return;
+			if(gameObject.CompareTag("Enemy") && obj.GetComponent<BulletController>().owner == 1)
+				return;
+
 			var controller = obj.GetComponent<BulletController>();
 			int damage = 0;
 			if (controller)

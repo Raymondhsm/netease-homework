@@ -216,3 +216,8 @@ class NPCEntity(Entity):
         self.shoot = False
         return status
 
+    def UpdateDamageInfo(self, data, num):
+        if self.mode == NPCEntity.reset:
+            return 
+        Entity.UpdateDamageInfo(self,data,num)
+

@@ -32,6 +32,7 @@ public class BehaviorController : MonoBehaviour
 	private bool _reset;
 	private bool _IsReloading;
 	private Vector3 _targetPos;
+	private bool _invincible;
 
 	private Animator _animator;
 	private Coroutine _moveCoroutine;
@@ -68,6 +69,7 @@ public class BehaviorController : MonoBehaviour
 	public void CommonBehavior(EnemyBehavior eh)
 	{
 		_targetPos = eh.pos;
+		_invincible = true;
 		_reset = false;	
 		_attackMode = false;
 		if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
@@ -77,6 +79,7 @@ public class BehaviorController : MonoBehaviour
 	public void AttackBehavior(EnemyBehavior eh)
 	{
 		_targetPos = eh.pos;
+		_invincible = false;
 		if(_reset)
 		{
 			_attackMode = true;
@@ -93,9 +96,9 @@ public class BehaviorController : MonoBehaviour
 		_targetPos = eh.pos;
 		if(!_reset)
 		{
-			Debug.Log("abc");
 			_attackMode = false;
 			_reset = true;
+			_invincible = true;
 			MoveToPoint(_targetPos);
 		}
 	}
@@ -280,16 +283,17 @@ public class BehaviorController : MonoBehaviour
 		}
 	}
 
-	public void Dead()
-	{
-
-	}
-
 	bool CheckIfOnGround()
 	{
 		var point = transform.position + _collider.center;
 		var layerMask = LayerMask.GetMask("Ground");
 		return Physics.CapsuleCast(point, point, _collider.radius, Vector3.down, _collider.height / 2 + groundOffset, layerMask);
+	}
+
+	public bool Invincible
+	{
+		set { _invincible = value; }
+		get { return _invincible; }
 	}
 
 }

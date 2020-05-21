@@ -42,6 +42,8 @@ public class BulletController : MonoBehaviour
 		var obj = other.gameObject;
 		if(obj.CompareTag("Enemy") && _owner == 0)
 		{
+			if(obj.GetComponent<BehaviorController>().Invincible)
+				return;
 			GameObject go = Instantiate(_bulletDamageObj);
 			BulletDamageController bdc = go.GetComponent<BulletDamageController>();
 			bdc.Parent = _canvas;
