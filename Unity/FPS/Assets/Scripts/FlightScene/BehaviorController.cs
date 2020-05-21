@@ -173,7 +173,7 @@ public class BehaviorController : MonoBehaviour
 			Vector3 cross = Vector3.Cross(transform.forward, direction);
 			angle = cross.y > 0 ? angle : -angle;
 			transform.Rotate(0.0f, angle, 0.0f);
-			transform.Translate(transform.forward * moveSpeed * Time.deltaTime);
+			transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
 			_animator.SetFloat("Speed", 1.0f);
 			_animator.SetFloat("Direction", 0.0f);
 			PlayMoveAudio(true);
