@@ -92,11 +92,24 @@ public class MoveController : MonoBehaviour
 	private void AnimatorChange()
 	{
 		// change animation
-		playerAnimator.SetBool("IsForward", input.Move > 0);
-		playerAnimator.SetBool("IsBack", input.Move < 0);
-		playerAnimator.SetBool("IsLeft", input.Strafe < 0);
-		playerAnimator.SetBool("IsRight", input.Strafe > 0);
-		playerAnimator.SetBool("IsRun", input.Run);
+		float speed = (input.Move != 0 || input.Strafe != 0) ? 1 : 0;
+		speed += (speed != 0 && input.Run) ? 1 : 0;
+
+		float Vertical = input.Move == 1 ? 0 : (input.Move == -1 ? 2 : -1);
+		float Horizonal = input.Strafe == 1 ? 3 : (input.Strafe == -1 ? 1 : -1);
+		float direction = 0;
+		if (Vertical != -1 && Horizonal != -1)
+		{
+			if(Vertical == 0)
+				direction = Horizonal == 3 ? 3.5f : 0.5f;
+			else
+				direction = Horizonal == 3 ? 1.5f : 2.5f;
+		}
+		else 
+			direction = (Vertical != -1) ? Vertical : (Horizonal != -1 ? Horizonal : 0);
+
+		playerAnimator.SetFloat("Speed", speed);
+		playerAnimator.SetFloat("Direction", direction);
 
 		// 播放声音
 		bool isMove = input.Move != 0 || input.Strafe != 0;

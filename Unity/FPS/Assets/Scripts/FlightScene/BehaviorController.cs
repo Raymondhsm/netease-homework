@@ -110,14 +110,15 @@ public class BehaviorController : MonoBehaviour
 	{
 		var stand = transform.position;
 
-		_animator.SetBool("IsForward", true);
+		_animator.SetFloat("Speed", 1.0f);
+		_animator.SetFloat("Direction", 0.0f);
 		PlayMoveAudio(true);
 		while (Vector3.Distance(transform.position, point) > 0.5f) 
 		{
 			transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
 			yield return 0;
 		}
-		_animator.SetBool("IsForward", false);
+		_animator.SetFloat("Speed", 0.0f);
 		PlayMoveAudio(false);
 	}
 
@@ -170,7 +171,8 @@ public class BehaviorController : MonoBehaviour
 			angle = cross.y > 0 ? angle : -angle;
 			transform.Rotate(0.0f, angle, 0.0f);
 			transform.Translate(transform.forward * moveSpeed * Time.deltaTime);
-			_animator.SetBool("IsForward", true);
+			_animator.SetFloat("Speed", 1.0f);
+			_animator.SetFloat("Direction", 0.0f);
 			PlayMoveAudio(true);
 		}
 		
@@ -178,7 +180,8 @@ public class BehaviorController : MonoBehaviour
 		else if(hasObstacle)
 		{
 			transform.Translate(transform.forward * moveSpeed * Time.deltaTime);
-			_animator.SetBool("IsForward", true);
+			_animator.SetFloat("Speed", 1.0f);
+			_animator.SetFloat("Direction", 0.0f);
 			PlayMoveAudio(true);
 		}
 	}
@@ -193,7 +196,7 @@ public class BehaviorController : MonoBehaviour
 		angle = cross.y > 0 ? angle : -angle;
 		transform.Rotate(0.0f, angle, 0.0f);
 		ShootPlayer(ns.eid, ns.bulletEid);
-		_animator.SetBool("IsForward", false);
+		_animator.SetFloat("Speed", 0.0f);
 		PlayMoveAudio(false);
 	}
 
