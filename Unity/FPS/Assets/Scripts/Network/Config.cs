@@ -17,6 +17,7 @@ class Config
     public const int COMMAND_NPC_ATTACK = 0x81;
     public const int COMMAND_NPC_RESET = 0x82;
     public const int COMMAND_NPC_SHOOT = 0x83;
+    public const int COMMAND_NPC_PRICK = 0x84;
 
     public const int COMMAND_NEW_ENTITY = 0x0100;
     public const int COMMAND_DEL_ENTITY = 0x0200;
@@ -34,5 +35,7 @@ class Config
     public const int ENTITY_REWARD_MEDICINE = 0x05000000;
     public const int ENTITY_REWARD_BULLET = 0x06000000;
     public const int ENTITY_REWARD = 0x07000000;
+    public const int ENTITY_KNIFE_ENEMY = 0x08000000;
+    public const int ENTITY_GUN_ENEMY = 0x09000000;
 
 }

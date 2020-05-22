@@ -158,6 +158,7 @@ class NPCEntity(Entity):
         self.discoverAngle = init["discoverAngle"]
         self.toFar = init["toFar"]
         self.reward = init["reward"]
+        self.EnemyType = init["type"]
         self.shootDict = {}
         self.shoot = False
 
@@ -221,3 +222,7 @@ class NPCEntity(Entity):
             return 
         Entity.UpdateDamageInfo(self,data,num)
 
+    def InfoDict(self):
+        data = Entity.InfoDict(self)
+        data['EnemyType'] = self.EnemyType
+        return data

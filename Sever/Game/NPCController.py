@@ -101,7 +101,8 @@ npcInit = {
             "discoverDistance": 10,
             "discoverAngle": 90,
             "toFar": 5,
-            "reward": config.ENTITY_REWARD_MEDICINE
+            "reward": config.ENTITY_REWARD_MEDICINE,
+            "type": config.ENTITY_GUN_ENEMY
         },
         {
             "pos": newVector3(-8.74, 1.6, -14.59),
@@ -109,7 +110,8 @@ npcInit = {
             "discoverDistance": 10,
             "discoverAngle": 90,
             "toFar": 5,
-            "reward": config.ENTITY_REWARD_BULLET 
+            "reward": config.ENTITY_REWARD_BULLET,
+            "type": config.ENTITY_GUN_ENEMY 
         },
         {
             "pos": newVector3(-5.79, 1.6, -13.7),
@@ -117,7 +119,8 @@ npcInit = {
             "discoverDistance": 10,
             "discoverAngle": 90,
             "toFar": 5,
-            "reward": -1
+            "reward": -1,
+            "type": config.ENTITY_KNIFE_ENEMY
         }
     ],
 
@@ -128,7 +131,8 @@ npcInit = {
             "discoverDistance": 10,
             "discoverAngle": 90,
             "toFar": 5,
-            "reward": config.ENTITY_REWARD_MEDICINE
+            "reward": config.ENTITY_REWARD_MEDICINE,
+            "type": config.ENTITY_GUN_ENEMY
         },
         {
             "pos": newVector3(44.02, 1.6, -13.6),
@@ -136,7 +140,8 @@ npcInit = {
             "discoverDistance": 10,
             "discoverAngle": 90,
             "toFar": 5,
-            "reward": config.ENTITY_REWARD_BULLET 
+            "reward": config.ENTITY_REWARD_BULLET,
+            "type": config.ENTITY_GUN_ENEMY 
         },
         {
             "pos": newVector3(40.51, 1.6, -17.04),
@@ -144,7 +149,8 @@ npcInit = {
             "discoverDistance": 10,
             "discoverAngle": 90,
             "toFar": 5,
-            "reward": -1
+            "reward": -1,
+            "type": config.ENTITY_KNIFE_ENEMY
         }
     ]
 }

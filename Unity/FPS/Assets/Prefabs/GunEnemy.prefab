@@ -1178,7 +1178,7 @@ GameObject:
   - component: {fileID: 7674229120024317867}
   - component: {fileID: 1294478271}
   m_Layer: 0
-  m_Name: enemy_01
+  m_Name: GunEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1215,7 +1215,7 @@ Animator:
   m_GameObject: {fileID: 7675731299159100738}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 60e3152f06c30ab4b97fa503f8639b68, type: 3}
-  m_Controller: {fileID: 9100000, guid: e94d5ba63fcc0c14ab71fac58e11cf5d, type: 2}
+  m_Controller: {fileID: 9100000, guid: 6d8b238d9421e774cae5a24e652ece0b, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1264,7 +1264,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: fbb5b779d12ae9742b798ac52e859096, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -1414,8 +1414,9 @@ MonoBehaviour:
   groundOffset: 0.01
   moveSpeed: 4
   rotateSpeed: 60
-  bulletPos: {fileID: 7674229120945680994}
   fireInterval: 1
+  moveAudio: {fileID: 7674229120024317866}
+  bulletPos: {fileID: 7674229120945680994}
   weapon:
     _weaponNum: 1
     _weaponMaxBullet: 05000000
@@ -1423,10 +1424,8 @@ MonoBehaviour:
     _weaponCurrBullet: 05000000
     _weaponMode: 00000000
   shootAudio: {fileID: 7674229120945681052}
-  moveAudio: {fileID: 7674229120024317866}
   shootClip: {fileID: 8300000, guid: c0b970c59533ccc49b4d1e6ed7d86f8f, type: 3}
   reloadClip: {fileID: 8300000, guid: 40e7321f2722c4f4b8aff06e40eab901, type: 3}
-  moveClip: {fileID: 8300000, guid: fbb5b779d12ae9742b798ac52e859096, type: 3}
   shootEffect: {fileID: 7674229120162021832}
 --- !u!114 &7674229120024317867
 MonoBehaviour:

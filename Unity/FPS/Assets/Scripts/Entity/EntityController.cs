@@ -6,7 +6,8 @@ public class EntityController : MonoBehaviour
 {
     public GameObject playerPrefab;
     public GameObject playerOther;
-    public GameObject enemyPrefab;
+    public GameObject gunEnemyPrefab;
+    public GameObject knifeEnemyPrefab;
     public GameObject medicinePrefab;
     public GameObject bulletPrefab;
     public float updateInterval;
@@ -88,7 +89,11 @@ public class EntityController : MonoBehaviour
                 break;
 
             case Config.ENTITY_ENEMY:
-                GameObject enemy = Instantiate(enemyPrefab);
+                GameObject enemy;
+                if(entity.EnemyType == Config.ENTITY_GUN_ENEMY)
+                    enemy = Instantiate(gunEnemyPrefab);
+                else
+                    enemy = Instantiate(knifeEnemyPrefab);
                 enemy.transform.position = entity.pos;
                 enemy.GetComponent<Entity>().eid = entity.eid;
 

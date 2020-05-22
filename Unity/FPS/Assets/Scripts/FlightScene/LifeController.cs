@@ -72,6 +72,17 @@ public class LifeController : MonoBehaviour
 
 			Destroy(obj);
 		}
+		else if(obj.CompareTag("Knife"))
+		{
+			if(gameObject.CompareTag("Enemy"))
+				return;
+
+			EntityHit entityHit;
+			entityHit.eid = gameObject.GetComponent<Entity>().eid;
+			entityHit.bulletEid = obj.GetComponentInParent<Entity>().eid;
+			entityHit.bulletDamage = 3;
+			_network.send(Config.COMMAND_HIT, JsonUtility.ToJson(entityHit));
+		}
 	}
 
 	public void ProcessLifeRecv(int lifeValue)
@@ -95,7 +106,11 @@ public class LifeController : MonoBehaviour
 	public void Dead()
 	{
 		CapsuleCollider cc = gameObject.GetComponent<CapsuleCollider>();
-		cc.enabled = false;
+		if(cc)
+			cc.enabled = false;
+		Rigidbody gb = gameObject.GetComponent<Rigidbody>();
+		if(gb)
+			gb.useGravity = false;
 		_playerAnimator.SetTrigger("Dead");
 		_currLifeValue = 0;
 		_clientDead = true;
