@@ -155,7 +155,6 @@ class EntityManager:
             elif len(magic.explosePosDict) != 0 and magic.endReceiptTime < time.time():
                 magic.ProcessExplosePos()
             elif magic.bornTime + magic.lifeTime < time.time():
-                print(magic.exploseTime + magic.exploseEffectTime < time.time())
                 deleteMagic.append(key)
         
         for key in deleteMagic:
