@@ -2,6 +2,7 @@ import os,sys
 sys.path.append(os.path.realpath('./'))
 from Config.Struct import Vector3, newVector3
 from Config import config
+import time
 
 class Entity:
     def __init__(self, eid):
@@ -108,6 +109,14 @@ class PlayerEntity(Entity):
         self.onceBullet = 35
         self.currBullet = 35
         self.totalBullet = 105
+        self.nextMagicTime = time.time()
+        self.magicInterval = 30
+
+    def ProcessMagic(self):
+        if self.nextMagicTime <= time.time():
+            self.nextMagicTime += self.magicInterval
+            return True
+        return False
 
     def PickUpReward(self, eType):
         self.reward[eType] += 1
@@ -161,6 +170,7 @@ class NPCEntity(Entity):
         self.EnemyType = init["type"]
         self.shootDict = {}
         self.shoot = False
+        self.dizzy = False
 
     def CheckIfDiscoverPlayer(self, players):
         dis = 100000
@@ -226,3 +236,42 @@ class NPCEntity(Entity):
         data = Entity.InfoDict(self)
         data['EnemyType'] = self.EnemyType
         return data
+
+class MagicEntity(Entity):
+    def __init__(self, eid):
+        Entity.__init__(self, eid)
+        self.explosed = False
+        self.explosePos = newVector3(0,0,0)
+        self.explosePosDict = {}
+        self.bornTime = time.time()
+        self.exploseTime = time.time()
+        self.endReceiptTime = time.time()
+        self.lifeTime = 20
+        self.exploseEffectTime = 3
+        self.exploseDistance = 3
+
+    def ProcessExplose(self, hid, pos, num):
+        if len(self.explosePosDict) == 0 and num != 1:
+            self.explosePosDict[hid] = pos
+            self.endReceiptTime = time.time() + 1
+        elif len(self.explosePosDict) == 0 and num == 1:
+            self.explosed = True
+            self.explosePos = pos
+            self.exploseTime = time.time()
+        else:
+            if time.time() > self.endReceiptTime or self.explosed:
+                return
+            self.explosePosDict[hid] = pos
+            if len(self.explosePosDict) == num:
+                self.ProcessExplosePos()
+                
+    
+    def ProcessExplosePos(self):
+        if len(self.explosePosDict) == 0:
+            return
+        self.explosed = True
+        self.exploseTime = time.time()
+        for key in self.explosePosDict:
+            self.explosePos.add(self.explosePosDict[key])
+        self.explosePos.division(len(self.explosePosDict))
+

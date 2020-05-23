@@ -35,6 +35,7 @@ class NPCController:
                 self.Start(self.currLevel)
 
             deadEnemy = []
+            self.entityManager.UpdateMagic()
             for enemy in self.currEnemies:
                 if enemy.status == 2:
                     deadEnemy.append(enemy)
@@ -58,6 +59,13 @@ class NPCController:
             return []
 
     def Behavior(self, enemy):
+        for key in self.entityManager.entityMagic:
+            magic = self.entityManager.entityMagic[key]
+            if magic.explosed:
+                if magic.explosePos.distance(enemy.pos) < magic.exploseDistance:
+                    self.frameSendData.append((config.COMMAND_NPC_DIZZY, {"eid": enemy.eid}))
+                    return
+
         if enemy.mode != NPCEntity.attack:
             if enemy.mode == NPCEntity.reset:
                 reset = enemy.pos.distance(enemy.initPos) > 1

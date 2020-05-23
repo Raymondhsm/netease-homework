@@ -1,6 +1,6 @@
 import os,sys
 sys.path.append(os.path.realpath('./'))
-from Entity import Entity, NPCEntity, PlayerEntity
+from Entity import Entity, NPCEntity, PlayerEntity, MagicEntity
 from Config.Struct import Vector3
 from Config import config
 import time
@@ -10,6 +10,7 @@ class EntityManager:
         self.entities = {}
         self.entityPlayers = {}
         self.clientOwnEntities = {}
+        self.entityMagic = {}
         self.eidIndex = 0
         self.updateTime = time.time()
 
@@ -50,6 +51,13 @@ class EntityManager:
         self.entities[self.eidIndex] = entity
         self.eidIndex += 1
         return self.entities[self.eidIndex-1]
+
+    def RegisterMagic(self):
+        entity = MagicEntity(self.eidIndex)
+        self.entities[self.eidIndex] = entity
+        self.entityMagic[self.eidIndex] = entity
+        self.eidIndex += 1
+        return self.eidIndex-1
 
     def getPlayerNum(self):
         return len(self.entityPlayers)
@@ -124,6 +132,36 @@ class EntityManager:
     def ProcessUseProp(self, hid, data):
         if hid in self.entityPlayers:
             self.entityPlayers[hid].UseProp(data)
+
+    def ProcessMagicArrow(self):
+        eid = self.RegisterMagic()
+        return eid
+
+    def ProcessMagicExplose(self, hid, data):
+        eid = data['eid']
+        if eid in self.entityMagic:
+            pos = Vector3(data['pos'])
+            self.entityMagic[eid].ProcessExplose(hid, pos, len(self.entityPlayers))
+
+    def UpdateMagic(self):
+        deleteMagic = []
+        for key in self.entityMagic:
+            magic = self.entityMagic[key]
+            if magic.explosed:
+                if magic.exploseTime + magic.exploseEffectTime < time.time():
+                    deleteMagic.append(key)
+                else:
+                    continue
+            elif len(magic.explosePosDict) != 0 and magic.endReceiptTime < time.time():
+                magic.ProcessExplosePos()
+            elif magic.bornTime + magic.lifeTime < time.time():
+                print(magic.exploseTime + magic.exploseEffectTime < time.time())
+                deleteMagic.append(key)
+        
+        for key in deleteMagic:
+            del self.entityMagic[key]
+            del self.entities[key]
+
                 
 
 

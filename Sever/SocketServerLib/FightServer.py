@@ -73,6 +73,13 @@ class FightServer(object):
         elif command == config.COMMAND_USE_PROP:
             self.entityManager.ProcessUseProp(hid, dataJson)
 
+        elif command == config.COMMAND_MAGIC_ARROW:
+            dataJson['bulletEid'] = self.entityManager.ProcessMagicArrow()
+            self.boardcastCommand(config.COMMAND_MAGIC_ARROW, dataJson)
+
+        elif command == config.COMMAND_MAGIC_EXPLOSE:
+            self.entityManager.ProcessMagicExplose(hid, dataJson)
+
         elif command < 0xff:
             self.boardcast(data)
 

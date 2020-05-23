@@ -1,9 +1,3 @@
-class b:
-    def __init__(self):
-        self.a = []
+import time
 
-    def insert(self,c):
-        self.a.append(c)
-
-    def mod(self):
-        self.a[0].aa=1
+print(time.time())
