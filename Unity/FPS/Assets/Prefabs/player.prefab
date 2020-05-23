@@ -1,5 +1,35 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4389354636862996485
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6687091509963216534}
+  m_Layer: 0
+  m_Name: MagicPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6687091509963216534
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4389354636862996485}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.23, y: 2.09, z: -0.04}
+  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_Children: []
+  m_Father: {fileID: 6962571225507129108}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6967413586230411572
 GameObject:
   m_ObjectHideFlags: 0
@@ -1422,6 +1452,7 @@ Transform:
   - {fileID: 6971111686913295148}
   - {fileID: 6971152371146411820}
   - {fileID: 6967413586230411573}
+  - {fileID: 6687091509963216534}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1621,16 +1652,19 @@ MonoBehaviour:
   playerAnimator: {fileID: 7054214733246237244}
   camera: {fileID: 6967413586230411575}
   bulletPos: {fileID: 6967413586592285052}
+  magicPos: {fileID: 4389354636862996485}
   shootAudio: {fileID: 6967413586592285054}
   shootClip: {fileID: 8300000, guid: c0b970c59533ccc49b4d1e6ed7d86f8f, type: 3}
   reloadClip: {fileID: 8300000, guid: 40e7321f2722c4f4b8aff06e40eab901, type: 3}
   shootEffect: {fileID: 3462907078859049695}
   weaponRange: 500
   fireInterval: 0.1
+  MagicInterval: 30000
   input:
     shoot: Fire1
     reload: Reload
     mode: Mode
+    magic: Magic
   weapon:
     _weaponNum: 1
     _weaponMaxBullet: 23000000
@@ -1931,15 +1965,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 92faecfda384520468e43cd77206af01, type: 3}
---- !u!198 &3462907078859049695 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 5818525485540969205, guid: 92faecfda384520468e43cd77206af01,
-    type: 3}
-  m_PrefabInstance: {fileID: 6967413586720079914}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3462907078859049689 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5818525485540969203, guid: 92faecfda384520468e43cd77206af01,
+    type: 3}
+  m_PrefabInstance: {fileID: 6967413586720079914}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &3462907078859049695 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 5818525485540969205, guid: 92faecfda384520468e43cd77206af01,
     type: 3}
   m_PrefabInstance: {fileID: 6967413586720079914}
   m_PrefabAsset: {fileID: 0}

@@ -126,6 +126,27 @@ public class PlayerEntity : Entity
         m_network.send(Config.COMMAND_UPDATE_ENTITY, data);
     }
 
+    public void UploadMagic(Vector3 endPoint)
+    {
+        if(m_status == 1) return;
+
+        EntityShootInfo esi;
+        esi.eid = m_eid;
+        esi.bulletEid = -1;
+        esi.endPointX = endPoint.x;
+        esi.endPointY = endPoint.y;
+        esi.endPointZ = endPoint.z;
+
+        string data = JsonUtility.ToJson(esi);
+        m_network.send(Config.COMMAND_MAGIC_ARROW, data);
+    }
+
+    public override void ProcessMagicRecv(EntityShootInfo esi)
+    {
+        Vector3 endPoint = new Vector3(esi.endPointX, esi.endPointY, esi.endPointZ);
+        m_shootController.ProcessMagicRecv(esi.bulletEid, endPoint);
+    }
+
     
     void UseProp()
     {

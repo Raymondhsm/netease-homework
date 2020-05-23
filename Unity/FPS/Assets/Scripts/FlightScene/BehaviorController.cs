@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BehaviorController : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class BehaviorController : MonoBehaviour
 
 	[Header("Audio Attribute")]
 	public AudioSource moveAudio; 
+	public Text dizzyText;
 
 	protected bool _attackMode;
 	protected float _nextFireTime;
@@ -34,15 +36,19 @@ public class BehaviorController : MonoBehaviour
 
 	protected NetworkSocket _network;
 
+	protected bool _isDazzy;
+
     // Start is called before the first frame update
     public virtual void Start()
     {
 		_attackMode = false;
 		_reset = false;
 		_targetPos = new Vector3();
+		_isDazzy = false;
 		_animator = GetComponent<Animator>();
 		_collider = GetComponent<CapsuleCollider>();
 		_network = GameObject.Find("NetworkController").GetComponent<NetworkSocket>();
+
 	}
 
     // Update is called once per frame
@@ -57,6 +63,7 @@ public class BehaviorController : MonoBehaviour
 		_invincible = true;
 		_reset = false;	
 		_attackMode = false;
+		dizzyText.text = "";
 		if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
 		if (_rotateCoroutine != null) StopCoroutine(_rotateCoroutine);
 	}
@@ -65,6 +72,7 @@ public class BehaviorController : MonoBehaviour
 	{
 		_targetPos = eh.pos;
 		_invincible = false;
+		dizzyText.text = "";
 		if(_reset)
 		{
 			_attackMode = true;
@@ -74,6 +82,25 @@ public class BehaviorController : MonoBehaviour
 		}
 		else 
 			Attack();
+	}
+	
+	public void ResetBehavior(EnemyBehavior eh)
+	{
+		_targetPos = eh.pos;
+		dizzyText.text = "";
+		if(!_reset)
+		{
+			_attackMode = false;
+			_reset = true;
+			_invincible = true;
+			MoveToPoint(_targetPos);
+		}
+	}
+
+	public void Dizzy()
+	{
+		_isDazzy = true;
+		dizzyText.text = "眩晕";
 	}
 
 	protected virtual void Attack()
@@ -90,19 +117,6 @@ public class BehaviorController : MonoBehaviour
 	{
 		return;
 	}
-
-	public void ResetBehavior(EnemyBehavior eh)
-	{
-		_targetPos = eh.pos;
-		if(!_reset)
-		{
-			_attackMode = false;
-			_reset = true;
-			_invincible = true;
-			MoveToPoint(_targetPos);
-		}
-	}
-
 	
 	public void MoveToPoint(Vector3 point)
 	{
@@ -118,6 +132,9 @@ public class BehaviorController : MonoBehaviour
 		PlayMoveAudio(true);
 		while (Vector3.Distance(transform.position, point) > 0.5f) 
 		{
+			if(_isDazzy)
+				yield return 0;
+
 			transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
 			yield return 0;
 		}
@@ -139,6 +156,8 @@ public class BehaviorController : MonoBehaviour
 		float currAngle = 0;
 		while(Mathf.Abs(currAngle) < Mathf.Abs(angle))
 		{
+			if(_isDazzy)
+				yield return 0;
 			float rotateAngle = Mathf.Abs(angle - currAngle) > rotateSpeed * Time.deltaTime ? rotateSpeed * Time.deltaTime : angle - currAngle;
 			transform.Rotate(0.0f, angle > 0 ? rotateAngle : -rotateAngle, 0.0f);
 			currAngle += rotateAngle;

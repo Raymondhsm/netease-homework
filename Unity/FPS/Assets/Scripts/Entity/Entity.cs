@@ -56,6 +56,8 @@ public class Entity : MonoBehaviour
 
     public virtual void PickedUp(PickUpRecv pickUpRecv){}
 
+    public virtual void ProcessMagicRecv(EntityShootInfo esi){}
+
     public virtual void ProcessUpdateInfoRecv(PlayerUpdateRecv pur)
     {
         // if(Vector3.Distance(pur.pos, transform.position) > 10f)
@@ -66,7 +68,6 @@ public class Entity : MonoBehaviour
         // {
         //     transform.forward = pui.direction;
         // }
-        Debug.Log("base" + pur.totalBullet + Type);
         if(m_lifeController)
             m_lifeController.ProcessLifeRecv(pur.life);
     }

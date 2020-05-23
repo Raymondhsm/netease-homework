@@ -14,6 +14,7 @@ class Service
     public RecvHandler EntityUpdateCallback;
     public RecvHandler EntityDeadCallback;
     public RecvHandler PlayerPickUp;
+    public RecvHandler EntityMagicCallback;
 
     public ComRecvHandler EnemyBehaviorCallback;
 
@@ -81,6 +82,7 @@ class Service
             case Config.COMMAND_NPC_ATTACK:
             case Config.COMMAND_NPC_RESET:
             case Config.COMMAND_NPC_SHOOT:
+            case Config.COMMAND_NPC_DIZZY:
                 if(EnemyBehaviorCallback != null)
                     EnemyBehaviorCallback(command, dataStr);
                 break;
@@ -93,6 +95,11 @@ class Service
             case Config.COMMAND_PICK_UP:
                 if(PlayerPickUp != null)
                     PlayerPickUp(dataStr);
+                break;
+
+            case Config.COMMAND_MAGIC_ARROW:
+                if(EntityMagicCallback != null)
+                    EntityMagicCallback(dataStr);
                 break;
         }
     }

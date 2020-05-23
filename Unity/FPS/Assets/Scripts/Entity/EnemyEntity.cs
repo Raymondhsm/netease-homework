@@ -54,6 +54,10 @@ public class EnemyEntity : Entity
                 case Config.COMMAND_NPC_RESET:
                     m_behaviorController.ResetBehavior(eh);
                     break;
+
+                case Config.COMMAND_NPC_DIZZY:
+                    m_behaviorController.Dizzy();
+                    break;
             }
         }
     }

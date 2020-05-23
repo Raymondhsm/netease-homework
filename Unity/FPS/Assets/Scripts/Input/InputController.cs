@@ -86,3 +86,49 @@ class FpsInput
         get { return Move != 0 || Strafe != 0 || Run || Jump || RotateX != 0 || RotateY != 0; }
     }
 }
+
+[Serializable]
+class ShootingInput
+{
+    [Tooltip("shoot"), SerializeField]
+    private string shoot = "Fire1";
+
+    [Tooltip("reload"), SerializeField]
+    private string reload = "Reload";
+
+    [Tooltip("Mode"), SerializeField]
+    private string mode = "Mode";
+
+    [Tooltip("Magic"), SerializeField]
+    private string magic = "Magic";
+
+    public bool Shoot
+    {
+        get { return LeftButtonDown || LeftButtonHold; }
+    }
+
+    public bool LeftButtonDown
+    {
+        get { return Input.GetButtonDown(shoot); }
+    }
+
+    public bool LeftButtonHold
+    {
+        get { return Input.GetButton(shoot); }
+    }
+
+    public bool Mode
+    {
+        get { return Input.GetButtonDown(mode); }
+    }
+
+    public bool Reload
+    {
+        get { return Input.GetButtonDown(reload); }
+    }
+
+    public bool Magic
+    {
+        get { return Input.GetButtonDown(magic); }
+    }
+}

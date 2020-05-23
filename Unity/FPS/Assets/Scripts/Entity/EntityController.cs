@@ -31,6 +31,7 @@ public class EntityController : MonoBehaviour
         Service.Instance().EnemyBehaviorCallback = new Service.ComRecvHandler(this.EnemyBehaviorCallback);
         Service.Instance().EntityDeadCallback = new Service.RecvHandler(this.EntityDead);
         Service.Instance().PlayerPickUp = new Service.RecvHandler(this.PlayerPickUp);
+        Service.Instance().EntityMagicCallback = new Service.RecvHandler(this.EntityMagicCallback);
 
         m_entities = new Dictionary<int, Entity>();
         m_updateEntity = new List<int>();
@@ -142,6 +143,13 @@ public class EntityController : MonoBehaviour
         EntityShootInfo dataRecv = JsonUtility.FromJson<EntityShootInfo>(data);
         if(m_entities[dataRecv.eid].Status == 0)
             m_entities[dataRecv.eid].ProcessShootRecv(dataRecv);
+    }
+
+    public void EntityMagicCallback(string data)
+    {
+       EntityShootInfo dataRecv = JsonUtility.FromJson<EntityShootInfo>(data);
+        if(m_entities[dataRecv.eid].Status == 0)
+            m_entities[dataRecv.eid].ProcessMagicRecv(dataRecv);
     }
 
     public void EntityReloadCallback(string data)

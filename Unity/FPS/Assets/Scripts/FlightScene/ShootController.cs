@@ -9,6 +9,7 @@ public class ShootController : MonoBehaviour
 	public Animator playerAnimator;
 	public Camera camera;
 	public GameObject bulletPos;
+	public GameObject magicPos;
 
 	[Header("Shoot Effect")]
 	public AudioSource shootAudio;
@@ -20,6 +21,8 @@ public class ShootController : MonoBehaviour
 	public float weaponRange = 500f;
 	public float fireInterval = 100f;
 
+	public float MagicInterval = 30000f;
+
 	[Header("UI Component")]
 	private Text textBullet;
 	private Text textWeaponMode;
@@ -30,9 +33,11 @@ public class ShootController : MonoBehaviour
 	[SerializeField]
 	private WeaponController weapon;
 
-	private GameObject _bulletPrefab;	
+	private GameObject _bulletPrefab;
+	private GameObject _magicPrefab;	
 	private bool _singleShooting;
 	private float _nextFireTime;
+	private float _nextMagicTime;
 	private Coroutine _reloadCompleted;
 	private bool _IsReloading;
 	private bool _reloadRecv;
@@ -42,6 +47,7 @@ public class ShootController : MonoBehaviour
     {
 		_singleShooting = true;
 		_nextFireTime = Time.time;
+		_nextMagicTime = Time.time;
 		_IsReloading = false;
 		_reloadRecv = false;
 
@@ -49,6 +55,7 @@ public class ShootController : MonoBehaviour
 		textWeaponMode = GameObject.Find("GameController").GetComponent<GameController>().textWeaponMode;
 
 		_bulletPrefab = (GameObject)Resources.Load("Prefabs/bullet");
+		_magicPrefab = (GameObject)Resources.Load("Prefabs/MagicArrow");
 		// 初始化UI
 		SetWeaponBulletText(weapon.CurrBullet);
     }
@@ -60,6 +67,7 @@ public class ShootController : MonoBehaviour
 		if (input.Mode) ChangeMode();
 
 		Shooting();
+		MagicArrow();
 	}
 
 	private void Reload()
@@ -184,6 +192,44 @@ public class ShootController : MonoBehaviour
 		else playerAnimator.SetBool("IsShootBrust", true);
 	}
 
+	private void MagicArrow()
+	{
+		if(!input.Magic || _nextMagicTime > Time.time)
+			return;
+
+		// _nextMagicTime = Time.time + MagicInterval;
+		_nextMagicTime = Time.time + 1;
+
+		Vector3 rayOrigin = camera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0.0f));
+		RaycastHit hit;
+		Vector3 endPoint;
+
+		// 检测射线是否碰撞到对象
+		if (Physics.Raycast(rayOrigin, camera.transform.forward, out hit, weaponRange))
+		{
+			endPoint = hit.point;
+		}
+		else
+		{
+			endPoint = rayOrigin + (camera.transform.forward * weaponRange);
+		}
+
+		gameObject.GetComponent<PlayerEntity>().UploadMagic(endPoint);
+	}
+
+	public void ProcessMagicRecv(int magicEid, Vector3 endPoint)
+	{
+		// 计算方向
+		var startPoint = magicPos.transform.position;
+		var direction = endPoint - startPoint;
+
+		GameObject magic = Instantiate(_magicPrefab);
+		magic.transform.position = startPoint;
+		MagicArrowController ma = magic.GetComponent<MagicArrowController>();
+		ma.Direction = direction;
+		ma.Eid = magicEid;
+	}
+
 	public void UpdateTotalBullet(int total)
 	{
 		weapon.TotalBullet = total;
@@ -200,41 +246,4 @@ public class ShootController : MonoBehaviour
 		get { return weapon.TotalBullet; }
 	}
 
-	[Serializable]
-	private class ShootingInput
-	{
-		[Tooltip("shoot"), SerializeField]
-		private string shoot = "Fire1";
-
-		[Tooltip("reload"), SerializeField]
-		private string reload = "Reload";
-
-		[Tooltip("Mode"), SerializeField]
-		private string mode = "Mode";
-
-		public bool Shoot
-		{
-			get { return LeftButtonDown || LeftButtonHold; }
-		}
-
-		public bool LeftButtonDown
-		{
-			get { return Input.GetButtonDown(shoot); }
-		}
-
-		public bool LeftButtonHold
-		{
-			get { return Input.GetButton(shoot); }
-		}
-
-		public bool Mode
-		{
-			get { return Input.GetButtonDown(mode); }
-		}
-
-		public bool Reload
-		{
-			get { return Input.GetButtonDown(reload); }
-		}
-	}
 }

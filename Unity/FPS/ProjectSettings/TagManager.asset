@@ -22,6 +22,7 @@ TagManager:
   - Enemy
   - Terrain
   - Reward
+  - Knife
   layers:
   - Default
   - TransparentFX
