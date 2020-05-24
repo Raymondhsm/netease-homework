@@ -32,7 +32,7 @@ def login(data):
 
     sendDict = {
         "loginStatus": loginStatus,
-        "sessionId": sessionId
+        "sessionID": sessionId
         }
     return sendDict
 

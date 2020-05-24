@@ -127,7 +127,7 @@ public struct LoginInfo
 public struct LoginRecv
 {
     public bool loginStatus;
-    public string sessionId;
+    public string sessionID;
 }
 
 public struct UserInfo
@@ -136,4 +136,9 @@ public struct UserInfo
     public int bullet;
     public int level;
     public int experience;
+}
+
+public struct StatusStruct
+{
+    public bool status;
 }

@@ -19,3 +19,13 @@ def updateUserInfo(dataJson):
     }
 
     return data
+
+def attendGame(dataJson):
+    sID = dataJson['sessionID']
+    db = DB.database
+    (status, result) = db.select("user, userInfo", "blood, bullet","sessionID = '%s'"%sID)
+
+    if status and result != []:
+        return (True, result[0][0], result[0][1])
+    else:
+        return False

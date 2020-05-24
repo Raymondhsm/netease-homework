@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class StartGameController : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class StartGameController : MonoBehaviour
         Service.Instance().loginRecvCallback = new Service.RecvHandler(this.LoginCallback);
         Service.Instance().registerRecvCallback = new Service.RecvHandler(this.RegisterCallback);
         Service.Instance().updateInfoCallback = new Service.RecvHandler(this.updateInfoCallback);
+        Service.Instance().beginGameCallback = new Service.RecvHandler(this.BeginGameCallback);
     }
 
     // Update is called once per frame
@@ -48,12 +50,12 @@ public class StartGameController : MonoBehaviour
         if(loginRecv.loginStatus)
         {
             loginPlane.SetActive(false);
-            PlayerPrefs.SetString("sessionId", loginRecv.sessionId);
-            m_network.send(Config.COMMAND_UPDATE_INFO, "{\"sessionID\":\""+loginRecv.sessionId+"\"}");
+            PlayerPrefs.SetString("sessionID", loginRecv.sessionID);
+            m_network.send(Config.COMMAND_UPDATE_INFO, "{\"sessionID\":\""+loginRecv.sessionID+"\"}");
         }
         else
         {
-            txtTips.text = loginRecv.sessionId;
+            txtTips.text = loginRecv.sessionID;
         }
     }
 
@@ -83,7 +85,15 @@ public class StartGameController : MonoBehaviour
 
     public void BeginGame()
     {
+        string sessionId = PlayerPrefs.GetString("sessionID");
+        m_network.send(Config.COMMAND_ATTEND_GAME, "{\"sessionID\":\""+sessionId+"\"}");
+    }
 
+    public void BeginGameCallback(string RecvStr)
+    {
+        StatusStruct ss = JsonUtility.FromJson<StatusStruct>(RecvStr);
+        if(ss.status)
+            SceneManager.LoadSceneAsync(1);
     }
 
 }

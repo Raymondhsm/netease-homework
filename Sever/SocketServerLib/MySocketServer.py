@@ -12,9 +12,11 @@ class SimpleSocketServer(object):
     def __init__(self):
         super(SimpleSocketServer, self).__init__()
         self.host = SimpleSocketHost()
+        self.sendQueue = []
+        self.receiptQueue = []
 
     def StartServer(self):
-        self.host.startup(8765)
+        self.host.startup(8766)
 
     def HandleNewClient(self, hid):
         # sid = self.GenerateSid(hid)
@@ -31,8 +33,15 @@ class SimpleSocketServer(object):
         try:
             command = struct.unpack(config.NET_HEAD_LENGTH_FORMAT, data[0:config.COMMAND_LENGTH_SIZE])[0]
             dataJson = json.loads(data[config.COMMAND_LENGTH_SIZE:])
-            returnData = Service.service_dict[command](dataJson)
-            self.send(hid, data[0:config.COMMAND_LENGTH_SIZE], returnData)
+
+            if command == config.COMMAND_ATTEND_GAME:
+                (status, blood, bullet) = Service.service_dict[command](dataJson)
+                if status:
+                    self.sendQueue.append((dataJson['sessionID'], blood, bullet))
+                self.send(hid, data[0:config.COMMAND_LENGTH_SIZE], {"status": status})
+            else:
+                returnData = Service.service_dict[command](dataJson)
+                self.send(hid, data[0:config.COMMAND_LENGTH_SIZE], returnData)
         except:
             print("send return data failed")
 
