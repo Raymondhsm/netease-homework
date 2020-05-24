@@ -7,6 +7,7 @@ class Service
 
     public RecvHandler loginRecvCallback;
     public RecvHandler registerRecvCallback;
+    public RecvHandler updateInfoCallback;
     public RecvHandler EntityNewRecvCallback;
     public RecvHandler EntityMoveCallback;
     public RecvHandler EntityShootCallback;
@@ -45,6 +46,11 @@ class Service
             case Config.COMMAND_REGISTER:
                 if(registerRecvCallback != null)
                     registerRecvCallback(dataStr);
+                break;
+
+            case Config.COMMAND_UPDATE_INFO:
+                if(updateInfoCallback != null)
+                    updateInfoCallback(dataStr);
                 break;
 
             case Config.COMMAND_NEW_CLIENT:

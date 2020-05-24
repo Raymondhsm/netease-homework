@@ -1,6 +1,8 @@
 # -*- coding: GBK -*-
 from SimpleSocketHost import SimpleSocketHost
-import config
+import os,sys
+sys.path.append(os.path.realpath('./'))
+from Config import config
 import Service
 import struct
 import json
@@ -53,7 +55,6 @@ class SimpleSocketServer(object):
             sendData = json.dumps(data)
         else:
             sendData = data
-        print(sendData)
         self.host.sendClient(hid, command + sendData)
 
     def boardcast(self, command, data):

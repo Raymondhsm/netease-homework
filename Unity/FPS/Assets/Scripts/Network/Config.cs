@@ -33,6 +33,7 @@ class Config
     public const int COMMAND_REGISTER = 0x010000;
     public const int COMMAND_LOGIN = 0x020000;
     public const int COMMAND_NEW_CLIENT = 0x030000;
+    public const int COMMAND_UPDATE_INFO = 0x040000;
 
     // 实体种类
     public const int ENTITY_PLAYER = 0x01000000;

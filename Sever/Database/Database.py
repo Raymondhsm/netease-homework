@@ -1,3 +1,4 @@
+# -*- coding: GBK -*-
 import sqlite3
 
 class Database:
@@ -13,7 +14,7 @@ class Database:
         valueStr= ""
         for key in data:
             keyStr += (key + ',')
-            value = ('"%s"' % data[key]) if isinstance(data[key],str) else str(data[key])
+            value = ('"%s"' % data[key]) if isinstance(data[key],str) or isinstance(data[key], unicode) else str(data[key])
             valueStr += (value + ',')
 
         keyStr = keyStr[:-1]
@@ -43,7 +44,7 @@ class Database:
     def update(self, table, data, condition):
         cols = ""
         for key in data:
-            value = ('"%s"' % data[key]) if isinstance(data[key],str) else str(data[key])
+            value = ('"%s"' % data[key]) if isinstance(data[key],str) or isinstance(data[key], unicode) else str(data[key])
             cols += "%s = %s," % (key, value)
         cols = cols[:-1]
 

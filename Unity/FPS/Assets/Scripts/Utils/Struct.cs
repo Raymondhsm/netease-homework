@@ -117,3 +117,23 @@ public struct UsePropStruct
     public int eid;
     public int type;
 }
+
+public struct LoginInfo
+{
+    public string account;
+    public string password;
+}
+
+public struct LoginRecv
+{
+    public bool loginStatus;
+    public string sessionId;
+}
+
+public struct UserInfo
+{
+    public int blood;
+    public int bullet;
+    public int level;
+    public int experience;
+}

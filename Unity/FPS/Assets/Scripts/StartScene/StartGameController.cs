@@ -9,6 +9,7 @@ public class StartGameController : MonoBehaviour
     public InputField inpAccount;
     public InputField inpPassword;
     public Text txtTips;
+    public Text txtInfo;
 
     private NetworkSocket m_network;
 
@@ -18,6 +19,7 @@ public class StartGameController : MonoBehaviour
         m_network = GameObject.Find("NetworkController").GetComponent<NetworkSocket>();
         Service.Instance().loginRecvCallback = new Service.RecvHandler(this.LoginCallback);
         Service.Instance().registerRecvCallback = new Service.RecvHandler(this.RegisterCallback);
+        Service.Instance().updateInfoCallback = new Service.RecvHandler(this.updateInfoCallback);
     }
 
     // Update is called once per frame
@@ -47,6 +49,7 @@ public class StartGameController : MonoBehaviour
         {
             loginPlane.SetActive(false);
             PlayerPrefs.SetString("sessionId", loginRecv.sessionId);
+            m_network.send(Config.COMMAND_UPDATE_INFO, "{\"sessionID\":\""+loginRecv.sessionId+"\"}");
         }
         else
         {
@@ -72,20 +75,15 @@ public class StartGameController : MonoBehaviour
 
     }
 
+    public void updateInfoCallback(string RecvStr)
+    {
+        UserInfo info = JsonUtility.FromJson<UserInfo>(RecvStr);
+        txtInfo.text = "血量：" + info.blood.ToString() + "/100    子弹：" + info.bullet.ToString() + "/140    等级：" + info.level.ToString() + "    经验：" + info.experience.ToString() + "/" + (500 + info.level * 100).ToString();
+    }
+
     public void BeginGame()
     {
 
     }
 
-    public struct LoginInfo
-    {
-        public string account;
-        public string password;
-    }
-
-    public struct LoginRecv
-    {
-        public bool loginStatus;
-        public string sessionId;
-    }
 }

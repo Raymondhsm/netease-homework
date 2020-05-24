@@ -1,31 +1,13 @@
-# import testA
-# import testB
+import sqlite3
 
-# class a:
-#     def __init__(self):
-#         self.aa = 0
+db = sqlite3.connect("./Database/fps.db")
+cursor = db.cursor()
 
-# bb= testA.b()
-# cc = testB.c()
-
-# aa = a()
-
-# bb.insert(aa)
-# cc.insert(aa)
-
-# bb.mod()
-
-# print(bb.a[0].aa)
-# print(cc.a[0].aa)
-
-a = [1,2,3,4]
-c = []
-for b in a:
-    if b==2:
-        c.append(b)
-    if b==3:
-        c.append(b)
-
-for d in c:
-    a.remove(d)
-print(a)
+# sql = "select * from user;"
+# sql = "select * from userInfo;"
+# sql = "delete from user where id = 1;"
+sql = "select blood, bullet, level, experience from user,userInfo where sessionID = 'cb7b5163083f4dff99fe3b3c69fc9f91'"
+data = cursor.execute(sql)
+db.commit()
+for row in data:
+    print(row)

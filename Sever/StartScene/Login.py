@@ -1,3 +1,4 @@
+# -*- coding: GBK -*-
 import os,sys
 sys.path.append(os.path.realpath('./'))
 import Database.Database as DB
@@ -47,6 +48,12 @@ def register(data):
         }
         re = db.insert("user",info)
         if re:
+            (status, result) = db.select("user", "id", "account = '%s'"%data["account"])
+            info = {
+                "id": result[0][0]
+            }
+            re = db.insert("userInfo", info)
+
             registerStatus = True
             registerInfo = "success"
         else:
