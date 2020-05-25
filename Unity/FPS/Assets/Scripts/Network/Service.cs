@@ -9,6 +9,8 @@ class Service
     public RecvHandler registerRecvCallback;
     public RecvHandler updateInfoCallback;
     public RecvHandler beginGameCallback;
+    public RecvHandler endGameCallback;
+    public RecvHandler checkLogin;
     public RecvHandler EntityNewRecvCallback;
     public RecvHandler EntityMoveCallback;
     public RecvHandler EntityShootCallback;
@@ -57,7 +59,17 @@ class Service
             case Config.COMMAND_ATTEND_GAME:
                 if(beginGameCallback != null)
                     beginGameCallback(dataStr);
-                    break;
+                break;
+
+            case Config.COMMAND_END_GAME:
+                if(endGameCallback != null)
+                    endGameCallback(dataStr);
+                break;
+
+            case Config.COMMAND_CHECK_LOGIN:
+                if(checkLogin != null)
+                    checkLogin(dataStr);
+                break;
 
             case Config.COMMAND_NEW_CLIENT:
                 IDs ids = JsonUtility.FromJson<IDs>(dataStr);

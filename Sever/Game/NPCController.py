@@ -20,7 +20,7 @@ class NPCController:
         pass
 
     def Start(self, level = 0):
-        for vector3 in npcInit[level]:
+        for vector3 in npcInit[level % 2]:
             entity = self.entityManager.RegisterNPC(vector3)
             self.frameSendData.append((config.COMMAND_NEW_ENTITY, entity.InfoDict()))
             self.currEnemies.append(entity)
@@ -84,7 +84,7 @@ class NPCController:
                 else:
                     enemy.mode = NPCEntity.common
                     self.frameSendData.append((config.COMMAND_NPC_COMMON, {"eid": enemy.eid, "pos": enemy.targetPos.toDict()}))
-        elif enemy.CheckToFar():
+        elif enemy.CheckToFar(self.entityManager.entityPlayers):
             enemy.mode = NPCEntity.reset
             self.frameSendData.append((config.COMMAND_NPC_RESET, {"eid": enemy.eid, "pos": enemy.targetPos.toDict()}))
         else:

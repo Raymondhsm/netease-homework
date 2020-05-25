@@ -1,3 +1,4 @@
+# -*- coding: GBK -*-
 import time
 import SocketServerLib.MySocketServer as ss
 import SocketServerLib.FightServer as fs
@@ -9,3 +10,9 @@ fightServer.StartServer()
 while True:
     myServer.Tick()
     fightServer.Tick()
+
+    fightServer.receiptQueue.extend(myServer.sendQueue)
+    myServer.sendQueue = []
+
+    myServer.receiptQueue.extend(fightServer.sendQueue)
+    fightServer.sendQueue = []

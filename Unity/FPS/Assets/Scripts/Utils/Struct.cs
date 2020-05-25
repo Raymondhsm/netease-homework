@@ -130,6 +130,12 @@ public struct LoginRecv
     public string sessionID;
 }
 
+public struct RegisterRecv
+{
+    public bool registerStatus;
+    public string registerInfo;
+}
+
 public struct UserInfo
 {
     public int blood;
@@ -141,4 +147,13 @@ public struct UserInfo
 public struct StatusStruct
 {
     public bool status;
+}
+
+public struct endGameInfo
+{
+    public int useBullet;
+    public int leftBullet;
+    public int leftLife;
+    public int damage;
+    public int experience;
 }

@@ -14,33 +14,21 @@ class FightServer(object):
         self.entityManager = EntityManager.entityManager
         self.npcController = NPCController.npcController
         self.clientDict = {}
+        self.sendQueue = []
+        self.receiptQueue = []
 
     def StartServer(self):
         self.host.startup(8765)
 
     def HandleNewClient(self, hid):
-        self.entityManager.register(hid)
-
-        publicID = uuid.uuid4().hex
-        privateID = uuid.uuid4().hex
-
-        self.clientDict[hid] = (publicID, privateID)
-        data = {
-            "publicID" : publicID,
-            "privateID" : privateID
-        }
-        self.send(hid, config.COMMAND_NEW_CLIENT, data)
-
-        # create charactor
-        for key in self.entityManager.entities:
-            if self.entityManager.entities[key].status == 0:
-                self.send(hid, config.COMMAND_NEW_ENTITY, self.entityManager.entities[key].InfoDict())
+        pass
         
 
     def HandleClientLeave(self, hid):
         # delete own entity
         self.entityManager.deleteOwnEntity(hid)
-        del self.clientDict[hid]
+        if hid in self.clientDict:
+            del self.clientDict[hid]
 
     def HandleData(self, hid, data):
         command = struct.unpack(config.NET_HEAD_LENGTH_FORMAT, data[0:config.COMMAND_LENGTH_SIZE])[0]
@@ -49,6 +37,7 @@ class FightServer(object):
             if self.entityManager.ProcessShoot(hid):
                 eid = self.entityManager.registerEid()
                 dataJson["bulletEid"] = eid
+                self.entityManager.setBulletOwner(eid, dataJson['eid'])
                 self.boardcastCommand(command, dataJson)
 
         elif command == config.COMMAND_RELOAD:
@@ -63,7 +52,7 @@ class FightServer(object):
 
         elif command == config.COMMAND_PICK_UP:
             if self.entityManager.ProcessPickUp(dataJson):
-                publicID, privateID = self.clientDict[hid]
+                publicID = self.clientDict[hid][0]
                 data = {
                     "publicID": publicID,
                     "eid": dataJson["rewardEid"],
@@ -83,9 +72,8 @@ class FightServer(object):
         elif command < 0xff:
             self.boardcast(data)
 
-        elif command == config.COMMAND_NEW_ENTITY:
-            publicID, privateID = self.clientDict[hid]
-            self.boardcastCommand(command, self.entityManager.RegisterPlayer(hid, dataJson, publicID, privateID))
+        elif command == config.COMMAND_ATTEND_GAME:
+            self.NewPlayer(hid, dataJson)
         
         elif command == config.COMMAND_UPDATE_ENTITY:
             self.entityManager.updateEntityInfo(hid, dataJson)
@@ -110,7 +98,11 @@ class FightServer(object):
         datalist = self.entityManager.ProcessEntityInfo()
         for data in datalist:
             data[1]["time"] = time.time()
-            self.boardcastCommand(data[0], data[1])
+            if data[0] == config.COMMAND_END_GAME:
+                self.sendQueue.append((self.clientDict[data[2]][2],data[1]["leftBullet"],data[1]["leftLife"],data[1]["experience"]))
+                self.send(data[2], data[0], data[1])
+            else:
+                self.boardcastCommand(data[0], data[1])
 
     def NPCTick(self):
         if len(self.clientDict) == 0: return
@@ -119,6 +111,33 @@ class FightServer(object):
             for data in datalist:
                 data[1]["time"] = time.time()
                 self.boardcastCommand(data[0], data[1])
+
+    def NewPlayer(self, hid, dataJson):
+        sID = dataJson["sessionID"]
+        for value in self.receiptQueue:
+            if value[0] == sID:
+                self.entityManager.register(hid)
+
+                publicID = uuid.uuid4().hex
+                privateID = uuid.uuid4().hex
+
+                self.clientDict[hid] = (publicID, privateID, sID)
+                data = {
+                    "publicID" : publicID,
+                    "privateID" : privateID
+                }
+                self.send(hid, config.COMMAND_NEW_CLIENT, data)
+                
+                self.entityManager.RegisterPlayer(hid, publicID, privateID, value[1], value[2])
+
+                # create charactor
+                for key in self.entityManager.entities:
+                    if self.entityManager.entities[key].status == 0:
+                        self.send(hid, config.COMMAND_NEW_ENTITY, self.entityManager.entities[key].InfoDict())
+                
+                self.receiptQueue.remove(value)
+                break
+
 
     def send(self, hid, command, data):
         if isinstance(data,dict):

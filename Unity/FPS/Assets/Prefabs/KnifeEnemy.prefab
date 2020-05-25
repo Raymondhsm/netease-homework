@@ -1902,6 +1902,7 @@ MonoBehaviour:
   lifeMaxValue: 100
   lifeSlider: {fileID: 5135283954906374017}
   lifeText: {fileID: 0}
+  knifeCollider: {fileID: 8410310832366405246}
 --- !u!114 &3053831231506890905
 MonoBehaviour:
   m_ObjectHideFlags: 0

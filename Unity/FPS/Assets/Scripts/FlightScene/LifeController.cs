@@ -8,6 +8,7 @@ public class LifeController : MonoBehaviour
 	public int lifeMaxValue;
 	public Slider lifeSlider;
 	public Text lifeText;
+	public BoxCollider knifeCollider;
 
 	private int _currLifeValue;
 	private bool _clientDead;
@@ -33,6 +34,8 @@ public class LifeController : MonoBehaviour
 
 		// 初始化UI
 		SetUI();
+
+		knifeCollider = null;
     }
 
     // Update is called once per frame
@@ -82,6 +85,9 @@ public class LifeController : MonoBehaviour
 			entityHit.bulletEid = obj.GetComponentInParent<Entity>().eid;
 			entityHit.bulletDamage = 3;
 			_network.send(Config.COMMAND_HIT, JsonUtility.ToJson(entityHit));
+
+			if(knifeCollider != null)
+				knifeCollider.enabled = false;
 		}
 	}
 

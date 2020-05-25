@@ -85,23 +85,30 @@ class Entity:
             return
 
         beid = data["bulletEid"]
+        re = -1
         if num == 1:
             self.life -= data["bulletDamage"]
+            re = beid
         elif beid in self.damageInfo:
             if self.damageInfo[beid] + 1 >= num:
                 self.life -= data["bulletDamage"]
                 del self.damageInfo[beid]
+                re = beid
             else:
                 self.damageInfo[beid] += 1
         else:
             self.damageInfo[beid] = 1
 
         if self.life <= 0:
+            self.life = 0
             self.status = 1
 
+        return re
+
 class PlayerEntity(Entity):
-    def __init__(self, eid):
+    def __init__(self, eid, hid):
         Entity.__init__(self, eid)
+        self.hid = hid
         self.reward = {
             config.ENTITY_REWARD_MEDICINE : 0,
             config.ENTITY_REWARD_BULLET : 0
@@ -109,8 +116,10 @@ class PlayerEntity(Entity):
         self.onceBullet = 35
         self.currBullet = 35
         self.totalBullet = 105
+        self.useBullet = 0
         self.nextMagicTime = time.time()
         self.magicInterval = 30
+        self.damage = 0
 
     def ProcessMagic(self):
         if self.nextMagicTime <= time.time():
@@ -124,6 +133,7 @@ class PlayerEntity(Entity):
     def Shoot(self):
         if self.currBullet > 0:
             self.currBullet -= 1
+            self.useBullet += 1
             return True
         else:
             return False
@@ -153,6 +163,19 @@ class PlayerEntity(Entity):
                 self.totalBullet += 35
             self.reward[type] -= 1
 
+    def ProcessEndGameData(self):
+        if self.status != 2:
+            return
+        data = {
+            "eid": self.eid,
+            "useBullet": self.useBullet,
+            "leftBullet": self.totalBullet + self.currBullet,
+            "leftLife": self.life,
+            "damage": self.damage,
+            "experience": self.damage * 2
+        }
+        return data
+
 class NPCEntity(Entity):
     common = 0
     attack = 1
@@ -177,6 +200,8 @@ class NPCEntity(Entity):
         re = 0
         for key in players:
             player = players[key]
+            if player.status > 0:
+                continue
             distance = self.pos.distance(player.pos)
             if distance > self.discoverDistance:
                 continue
@@ -196,7 +221,15 @@ class NPCEntity(Entity):
             self.targetPos = self.initPos
             return False
 
-    def CheckToFar(self):
+    def CheckToFar(self, players):
+        re = -1
+        for key in players:
+            if players[key].status == 0:
+                re = 0
+                break
+        if re == -1:
+            return True
+
         tofar = self.pos.distance(self.initPos) > self.toFar 
         if tofar:
             self.targetPos = self.initPos
@@ -208,6 +241,8 @@ class NPCEntity(Entity):
         dis = 100000
         for key in players:
             player = players[key]
+            if player.status > 0:
+                continue
             distance = self.pos.distance(player.pos)
             if distance < dis:
                 re = player.pos
@@ -230,7 +265,7 @@ class NPCEntity(Entity):
     def UpdateDamageInfo(self, data, num):
         if self.mode == NPCEntity.reset:
             return 
-        Entity.UpdateDamageInfo(self,data,num)
+        return Entity.UpdateDamageInfo(self,data,num)
 
     def InfoDict(self):
         data = Entity.InfoDict(self)

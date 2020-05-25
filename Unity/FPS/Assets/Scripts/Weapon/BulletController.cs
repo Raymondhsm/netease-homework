@@ -21,8 +21,6 @@ public class BulletController : MonoBehaviour
     void Start()
     {
 		time = 0f;
-		_eid = 0;
-		direction = transform.forward;
 		_canvas = GameObject.Find("Canvas");
 
 		_bulletHole = (GameObject)Resources.Load("Prefabs/BulletHole");

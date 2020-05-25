@@ -29,3 +29,42 @@ def attendGame(dataJson):
         return (True, result[0][0], result[0][1])
     else:
         return False
+
+def updateFightResult(sID, bullet, blood, experience):
+    db = DB.database
+    (status1, result1) = db.select("user", "id","sessionID = '%s'"%sID)
+    (status2, result2) = db.select("userInfo", "level,experience","id = '%s'"%result1[0][0])
+    if status1 and status2:
+        level = result2[0][0]
+        exp = result2[0][1] + experience
+        while exp > 500 + level * 100:
+            exp -= 500 + level * 100
+            level += 1
+        col = {
+            "blood": blood,
+            "bullet": bullet,
+            "level": level,
+            "experience": exp
+        }
+        db.update("userInfo", col, "id = %s"%result1[0][0])
+
+def addData(id):
+    db = DB.database
+    (status, result) = db.select("userInfo", "blood, bullet","id = %s"%id)
+    if status:
+        blood = result[0][0]
+        bullet = result[0][1]
+
+        blood = blood + 10 if blood <= 90 else 100
+        bullet = bullet + 35 if bullet <= 175 else 210
+
+        col = {
+            "blood": blood,
+            "bullet": bullet
+        }
+        db.update("userInfo", col, "id = %s"%id)
+
+def findID(sID):
+    db = DB.database
+    (status, result) = db.select("user", "id","sessionID = '%s'"%sID)
+    return result[0][0]

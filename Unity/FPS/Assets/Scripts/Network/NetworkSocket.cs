@@ -12,6 +12,7 @@ public class NetworkSocket : MonoBehaviour
 
     public String host = "localhost";
     public Int32 port = 8765;
+    public bool fightServer = false;
 
     internal Boolean socket_ready = false;
     TcpClient tcp_socket;
@@ -31,6 +32,10 @@ public class NetworkSocket : MonoBehaviour
     void Start()
     {
         recv_buff = new Queue<Recv_data>();
+        if(fightServer){
+            string sID = PlayerPrefs.GetString("sessionID");
+            send(Config.COMMAND_ATTEND_GAME, "{\"sessionID\":\""+sID+"\"}");
+        }
     }
 
     void Update()

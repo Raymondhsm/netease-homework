@@ -32,7 +32,7 @@ public class MagicArrowController : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         GameObject obj = other.gameObject;
-        if(obj.CompareTag("Player"))
+        if(obj.CompareTag("Player") || m_explosed)
             return;
 
         Explosion();

@@ -13,6 +13,8 @@ public class StartGameController : MonoBehaviour
     public Text txtInfo;
 
     private NetworkSocket m_network;
+    private bool isLogin;
+    private float _nextUpdateTime;
 
     // Start is called before the first frame update
     void Start()
@@ -22,12 +24,32 @@ public class StartGameController : MonoBehaviour
         Service.Instance().registerRecvCallback = new Service.RecvHandler(this.RegisterCallback);
         Service.Instance().updateInfoCallback = new Service.RecvHandler(this.updateInfoCallback);
         Service.Instance().beginGameCallback = new Service.RecvHandler(this.BeginGameCallback);
+        Service.Instance().checkLogin = new Service.RecvHandler(this.CheckLogin);
+
+        if(PlayerPrefs.HasKey("sessionID") && PlayerPrefs.HasKey("fightEnd"))
+        {
+            string sID = PlayerPrefs.GetString("sessionID");
+            m_network.send(Config.COMMAND_CHECK_LOGIN, "{\"sessionID\":\""+sID+"\"}");
+            PlayerPrefs.DeleteKey("fightEnd");
+        }
+        else
+        {
+            loginPlane.SetActive(true);
+        }
+
+        isLogin = false;
+        _nextUpdateTime = 0;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        _nextUpdateTime += Time.deltaTime;
+        if(_nextUpdateTime >= 5)
+        {
+            string sID = PlayerPrefs.GetString("sessionID");
+            m_network.send(Config.COMMAND_UPDATE_INFO, "{\"sessionID\":\""+sID+"\"}");
+            _nextUpdateTime = 0;
+        }
     }
 
     public void Login()
@@ -52,10 +74,27 @@ public class StartGameController : MonoBehaviour
             loginPlane.SetActive(false);
             PlayerPrefs.SetString("sessionID", loginRecv.sessionID);
             m_network.send(Config.COMMAND_UPDATE_INFO, "{\"sessionID\":\""+loginRecv.sessionID+"\"}");
+            isLogin = true;
         }
         else
         {
             txtTips.text = loginRecv.sessionID;
+        }
+    }
+
+    public void CheckLogin(string recv)
+    {
+        StatusStruct ss = JsonUtility.FromJson<StatusStruct>(recv);
+        if(ss.status)
+        {
+            loginPlane.SetActive(false);
+            string sID = PlayerPrefs.GetString("sessionID");
+            m_network.send(Config.COMMAND_UPDATE_INFO, "{\"sessionID\":\""+sID+"\"}");
+            isLogin = true;
+        }
+        else
+        {
+            loginPlane.SetActive(true);
         }
     }
 
@@ -74,17 +113,26 @@ public class StartGameController : MonoBehaviour
 
     public void RegisterCallback(string registerRecvStr)
     {
-
+        RegisterRecv rr = JsonUtility.FromJson<RegisterRecv>(registerRecvStr);
+        if(rr.registerStatus)
+        {
+            txtTips.text = "注册成功";
+        }
+        else
+        {
+            txtTips.text = rr.registerInfo;
+        }
     }
 
     public void updateInfoCallback(string RecvStr)
     {
         UserInfo info = JsonUtility.FromJson<UserInfo>(RecvStr);
-        txtInfo.text = "血量：" + info.blood.ToString() + "/100    子弹：" + info.bullet.ToString() + "/140    等级：" + info.level.ToString() + "    经验：" + info.experience.ToString() + "/" + (500 + info.level * 100).ToString();
+        txtInfo.text = "血量：" + info.blood.ToString() + "/100    子弹：" + info.bullet.ToString() + "/210    等级：" + info.level.ToString() + "    经验：" + info.experience.ToString() + "/" + (500 + info.level * 100).ToString();
     }
 
     public void BeginGame()
     {
+        if(!isLogin)return;
         string sessionId = PlayerPrefs.GetString("sessionID");
         m_network.send(Config.COMMAND_ATTEND_GAME, "{\"sessionID\":\""+sessionId+"\"}");
     }

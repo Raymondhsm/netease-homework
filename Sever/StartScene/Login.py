@@ -7,8 +7,8 @@ import time
 
 def login(data):
     db = DB.database
-    (status, result) = db.select("user", "password", "account = '%s'"%data["account"])
-
+    (status, result) = db.select("user", "password, id", "account = '%s'"%data["account"])
+    id = -1
     if status:
         if result == []:
             loginStatus = False
@@ -17,12 +17,14 @@ def login(data):
             pwd = result[0][0]
             if pwd == data["password"]:
                 loginStatus = True
+                id = result[0][1]
                 sessionId = uuid.uuid4().hex
                 idTime = time.strftime('%Y-%m-%d %H:%M:%S',time.gmtime(time.time()))
                 re = db.update("user",{"sessionId":sessionId,"idTime":idTime},"account = '%s'"%data["account"])
                 if not re: 
                     loginStatus = False
                     sessionId = "service wrong"
+                    id = -1
             else:
                 loginStatus = False
                 sessionId = "password wrong"
@@ -32,7 +34,8 @@ def login(data):
 
     sendDict = {
         "loginStatus": loginStatus,
-        "sessionID": sessionId
+        "sessionID": sessionId,
+        "id": id
         }
     return sendDict
 

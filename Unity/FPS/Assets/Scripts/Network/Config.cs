@@ -35,6 +35,9 @@ class Config
     public const int COMMAND_NEW_CLIENT = 0x030000;
     public const int COMMAND_UPDATE_INFO = 0x040000;
     public const int COMMAND_ATTEND_GAME = 0x050000;
+    public const int COMMAND_END_GAME = 0x060000;
+    public const int COMMAND_CHECK_LOGIN = 0x070000;
+
 
     // 实体种类
     public const int ENTITY_PLAYER = 0x01000000;
