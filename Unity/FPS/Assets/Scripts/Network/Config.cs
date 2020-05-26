@@ -37,6 +37,7 @@ class Config
     public const int COMMAND_ATTEND_GAME = 0x050000;
     public const int COMMAND_END_GAME = 0x060000;
     public const int COMMAND_CHECK_LOGIN = 0x070000;
+    public const int COMMAND_PLAYER_QUIT = 0x080000;
 
 
     // 实体种类

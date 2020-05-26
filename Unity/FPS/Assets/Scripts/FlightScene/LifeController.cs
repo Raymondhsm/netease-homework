@@ -121,6 +121,7 @@ public class LifeController : MonoBehaviour
 		_currLifeValue = 0;
 		_clientDead = true;
 		SetUI();
+		Destroy(gameObject, 5);
 	}
 
 	public int CurrLife

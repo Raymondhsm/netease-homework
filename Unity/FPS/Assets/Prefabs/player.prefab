@@ -1658,8 +1658,8 @@ MonoBehaviour:
   reloadClip: {fileID: 8300000, guid: 40e7321f2722c4f4b8aff06e40eab901, type: 3}
   shootEffect: {fileID: 3462907078859049695}
   weaponRange: 500
-  fireInterval: 0.1
-  MagicInterval: 30000
+  fireInterval: 0.2
+  MagicInterval: 30
   input:
     shoot: Fire1
     reload: Reload
@@ -1686,6 +1686,7 @@ MonoBehaviour:
   lifeMaxValue: 100
   lifeSlider: {fileID: 0}
   lifeText: {fileID: 0}
+  knifeCollider: {fileID: 0}
 --- !u!114 &3410594448088228125
 MonoBehaviour:
   m_ObjectHideFlags: 0

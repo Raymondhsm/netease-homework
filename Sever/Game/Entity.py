@@ -121,6 +121,17 @@ class PlayerEntity(Entity):
         self.magicInterval = 30
         self.damage = 0
 
+    def UpdateInfo(self, hid, info):
+        self.pos = Vector3(info['pos'])
+        self.direction = Vector3(info['direction'])
+        self.velocity = Vector3(info['velocity'])
+
+    def prepareInfo(self, num):
+        return True
+
+    def ProcessUpdateInfo(self):
+        return
+
     def ProcessMagic(self):
         if self.nextMagicTime <= time.time():
             self.nextMagicTime += self.magicInterval

@@ -15,6 +15,21 @@ public class StartGameController : MonoBehaviour
     private NetworkSocket m_network;
     private bool isLogin;
     private float _nextUpdateTime;
+    private string m_account;
+
+    public GameObject controller;
+    private Controller m_controller;
+
+    void Awake()
+    {
+        GameObject c = GameObject.Find("Controller");
+        if(!c)
+        {
+            GameObject gc = Instantiate(controller);
+            gc.name = "Controller";
+            DontDestroyOnLoad(gc);
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -25,12 +40,13 @@ public class StartGameController : MonoBehaviour
         Service.Instance().updateInfoCallback = new Service.RecvHandler(this.updateInfoCallback);
         Service.Instance().beginGameCallback = new Service.RecvHandler(this.BeginGameCallback);
         Service.Instance().checkLogin = new Service.RecvHandler(this.CheckLogin);
+        
+        m_controller = GameObject.Find("Controller").GetComponent<Controller>();
 
-        if(PlayerPrefs.HasKey("sessionID") && PlayerPrefs.HasKey("fightEnd"))
+        if(m_controller.fightEnd)
         {
-            string sID = PlayerPrefs.GetString("sessionID");
-            m_network.send(Config.COMMAND_CHECK_LOGIN, "{\"sessionID\":\""+sID+"\"}");
-            PlayerPrefs.DeleteKey("fightEnd");
+            m_network.send(Config.COMMAND_CHECK_LOGIN, "{\"sessionID\":\""+m_controller.sessionID+"\"}");
+            m_controller.fightEnd = false;
         }
         else
         {
@@ -39,15 +55,15 @@ public class StartGameController : MonoBehaviour
 
         isLogin = false;
         _nextUpdateTime = 0;
+
     }
 
     void Update()
     {
         _nextUpdateTime += Time.deltaTime;
-        if(_nextUpdateTime >= 5)
+        if(_nextUpdateTime >= 5 && m_controller.sessionID!="")
         {
-            string sID = PlayerPrefs.GetString("sessionID");
-            m_network.send(Config.COMMAND_UPDATE_INFO, "{\"sessionID\":\""+sID+"\"}");
+            m_network.send(Config.COMMAND_UPDATE_INFO, "{\"sessionID\":\""+m_controller.sessionID+"\"}");
             _nextUpdateTime = 0;
         }
     }
@@ -72,7 +88,7 @@ public class StartGameController : MonoBehaviour
         if(loginRecv.loginStatus)
         {
             loginPlane.SetActive(false);
-            PlayerPrefs.SetString("sessionID", loginRecv.sessionID);
+            m_controller.sessionID = loginRecv.sessionID;
             m_network.send(Config.COMMAND_UPDATE_INFO, "{\"sessionID\":\""+loginRecv.sessionID+"\"}");
             isLogin = true;
         }
@@ -88,8 +104,7 @@ public class StartGameController : MonoBehaviour
         if(ss.status)
         {
             loginPlane.SetActive(false);
-            string sID = PlayerPrefs.GetString("sessionID");
-            m_network.send(Config.COMMAND_UPDATE_INFO, "{\"sessionID\":\""+sID+"\"}");
+            m_network.send(Config.COMMAND_UPDATE_INFO, "{\"sessionID\":\""+m_controller.sessionID+"\"}");
             isLogin = true;
         }
         else
@@ -133,8 +148,7 @@ public class StartGameController : MonoBehaviour
     public void BeginGame()
     {
         if(!isLogin)return;
-        string sessionId = PlayerPrefs.GetString("sessionID");
-        m_network.send(Config.COMMAND_ATTEND_GAME, "{\"sessionID\":\""+sessionId+"\"}");
+        m_network.send(Config.COMMAND_ATTEND_GAME, "{\"sessionID\":\""+m_controller.sessionID+"\"}");
     }
 
     public void BeginGameCallback(string RecvStr)

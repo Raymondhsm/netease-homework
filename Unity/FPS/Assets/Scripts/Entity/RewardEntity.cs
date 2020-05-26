@@ -18,10 +18,11 @@ public class RewardEntity : Entity
     }
 
 
-    public override void PickedUp(PickUpRecv pickUpRecv)
+    public override void PickedUp(PickUpRecv pickUpRecv, string publicID)
     {
-        if(pickUpRecv.publicID == PlayerPrefs.GetString("publicID"))
+        if(pickUpRecv.publicID == publicID)
             Debug.Log("1");
+        Status = 2;
         Destroy(gameObject);
     }
 }

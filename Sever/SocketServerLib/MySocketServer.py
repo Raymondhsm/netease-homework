@@ -48,7 +48,7 @@ class SimpleSocketServer(object):
                     status = True
                     self.onlineClient[User.findID(dataJson["sessionID"])] = hid
                     del self.fightClient[dataJson["sessionID"]]
-                else:
+                else:   
                     status = False
                 self.send(hid, data[0:config.COMMAND_LENGTH_SIZE], {"status": status})
             else:

@@ -12,21 +12,43 @@ public class GameController : MonoBehaviour
 
     public Text RewardMtext;
     public Text RewardBtext;
+    public Text MagicText;
 
     public GameObject endPlane;
 
     private FpsInput m_input;
+    private ShootingInput m_sInput;
     private AsyncOperation endLoad;
+    private NetworkSocket m_network;
+    private float m_magicTime;
+    private Controller m_controller;
 
     // Start is called before the first frame update
     void Start()
     {
         Service.Instance().endGameCallback = new Service.RecvHandler(this.EndGame);
+        m_network = GameObject.Find("NetworkController").GetComponent<NetworkSocket>();
+        m_controller = GameObject.Find("Controller").GetComponent<Controller>();
+        m_magicTime = 0;
+        m_input = new FpsInput();
+        m_sInput = new ShootingInput();
     }
 
     // Update is called once per frame
     void Update()
     {
+        SetMagicTime();
+
+        if(m_input.ESC)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        if(m_sInput.Shoot)
+        {
+            Cursor.lockState = CursorLockMode.Confined;
+            Cursor.visible = false;
+        }
     }
 
     public void UpdateProp(int m, int b)
@@ -51,11 +73,28 @@ public class GameController : MonoBehaviour
         endLoad.allowSceneActivation = false;
 
         Cursor.visible = true;
-        PlayerPrefs.SetString("fightEnd","end");
     }
 
     public void EndButtonClick()
     {
         endLoad.allowSceneActivation = true;
+        m_controller.fightEnd = true;
+    }
+
+    public void QuitButtonClick()
+    {
+        m_network.send(Config.COMMAND_PLAYER_QUIT,"{}");
+    }
+
+    public void SetMagicTime()
+    {
+        m_magicTime -= Time.deltaTime;
+        if(m_magicTime <=0 ) m_magicTime = 0;
+        MagicText.text = ((int)m_magicTime).ToString();
+    }
+
+    public float MagicTime
+    {
+        set { m_magicTime = value; }
     }
 }

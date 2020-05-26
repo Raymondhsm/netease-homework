@@ -21,7 +21,7 @@ public class ShootController : MonoBehaviour
 	public float weaponRange = 500f;
 	public float fireInterval = 100f;
 
-	public float MagicInterval = 30000f;
+	public float MagicInterval = 30f;
 
 	[Header("UI Component")]
 	private Text textBullet;
@@ -42,6 +42,8 @@ public class ShootController : MonoBehaviour
 	private bool _IsReloading;
 	private bool _reloadRecv;
 
+	private GameController m_gameController;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -51,8 +53,9 @@ public class ShootController : MonoBehaviour
 		_IsReloading = false;
 		_reloadRecv = false;
 
-		textBullet = GameObject.Find("GameController").GetComponent<GameController>().textBullet;
-		textWeaponMode = GameObject.Find("GameController").GetComponent<GameController>().textWeaponMode;
+		m_gameController = GameObject.Find("GameController").GetComponent<GameController>();
+		textBullet = m_gameController.textBullet;
+		textWeaponMode = m_gameController.textWeaponMode;
 
 		_bulletPrefab = (GameObject)Resources.Load("Prefabs/bullet");
 		_magicPrefab = (GameObject)Resources.Load("Prefabs/MagicArrow");
@@ -197,8 +200,8 @@ public class ShootController : MonoBehaviour
 		if(!input.Magic || _nextMagicTime > Time.time)
 			return;
 
-		// _nextMagicTime = Time.time + MagicInterval;
-		_nextMagicTime = Time.time + 1;
+		_nextMagicTime = Time.time + MagicInterval;
+		m_gameController.MagicTime = MagicInterval;
 
 		Vector3 rayOrigin = camera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0.0f));
 		RaycastHit hit;

@@ -29,6 +29,9 @@ class FpsInput
     [SerializeField]
     private string p2 = "p2";
 
+    [SerializeField]
+    private string esc = "Esc";
+
 
     /// Returns the value of the virtual axis mapped to rotate the camera around the y axis.
     public float RotateX
@@ -84,6 +87,11 @@ class FpsInput
     public bool isChange
     {
         get { return Move != 0 || Strafe != 0 || Run || Jump || RotateX != 0 || RotateY != 0; }
+    }
+
+    public bool ESC
+    {
+        get { return Input.GetButtonDown(esc); }
     }
 }
 

@@ -12,9 +12,13 @@ public class PlayerOtherEntity : Entity
 	public AudioClip shootClip;
 	public AudioClip reloadClip;
 	public ParticleSystem shootEffect;
+    public GameObject _magicPrefab;
+    public GameObject _magicPos;
 
     private FpsInput m_fpsInput;
-    private MoveController m_moveController;
+    private OtherMoveController m_moveController;
+
+    private float _nextUpdateTime;
 
     // Start is called before the first frame update
     public override void Start()
@@ -22,13 +26,20 @@ public class PlayerOtherEntity : Entity
         base.Start();
         Type = Config.ENTITY_PLAYER_OTHER;
         m_fpsInput = new FpsInput();
-        m_moveController = gameObject.GetComponent<MoveController>();
+        m_moveController = gameObject.GetComponent<OtherMoveController>();
+        _nextUpdateTime = Time.time;
     }
     public override void ProcessMoveRecv(EntityMoveInfo entity)
     {
-        m_moveController.moveCharactor(entity.strafe, entity.move, entity.run);
-        m_moveController.Jump();
+        m_moveController.SetMoveData(entity.move, entity.strafe, entity.run);
+        if(entity.jump) m_moveController.Jump();
         m_moveController.RotateCharactor(entity.rotateX, entity.rotateY);
+    }
+
+    public override void ProcessUpdateInfoRecv(PlayerUpdateRecv pur)
+    { 
+        m_moveController.RightPos = pur.pos;
+        m_moveController.RightDir = pur.direction;
     }
 
     public override void ProcessShootRecv(EntityShootInfo esi)
@@ -66,21 +77,19 @@ public class PlayerOtherEntity : Entity
 		}
     }
 
-    public override void UpdateInfo()
+    public override void ProcessMagicRecv(EntityShootInfo esi)
     {
-        PlayerUpdateInfo playerUpdateInfo;
-        playerUpdateInfo.eid = m_eid;
-        playerUpdateInfo.pos = transform.position;
-        playerUpdateInfo.direction = transform.forward;
+        Vector3 endPoint = new Vector3(esi.endPointX, esi.endPointY, esi.endPointZ);
 
-        Rigidbody rigidbody = gameObject.GetComponent<Rigidbody>();
-        if(rigidbody == null)
-            playerUpdateInfo.velocity = new Vector3(0,0,0);
-        else
-            playerUpdateInfo.velocity = rigidbody.velocity;
+        // 计算方向
+		var startPoint = _magicPos.transform.position;
+		var direction = endPoint - startPoint;
 
-        string data = JsonUtility.ToJson(playerUpdateInfo);
-        m_network.send(Config.COMMAND_UPDATE_ENTITY, data);
+		GameObject magic = Instantiate(_magicPrefab);
+		magic.transform.position = startPoint;
+		MagicArrowController ma = magic.GetComponent<MagicArrowController>();
+		ma.Direction = direction;
+		ma.Eid = esi.bulletEid;
     }
 
 }

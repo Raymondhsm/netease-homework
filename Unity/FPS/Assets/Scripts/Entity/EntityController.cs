@@ -17,6 +17,10 @@ public class EntityController : MonoBehaviour
     private int m_entityIndex;
     private NetworkSocket m_network;
     private float m_time;
+    private Entity m_player;
+
+    public string publicID;
+    public string privateID;
 
 
     // Start is called before the first frame update
@@ -32,6 +36,7 @@ public class EntityController : MonoBehaviour
         Service.Instance().EntityDeadCallback = new Service.RecvHandler(this.EntityDead);
         Service.Instance().PlayerPickUp = new Service.RecvHandler(this.PlayerPickUp);
         Service.Instance().EntityMagicCallback = new Service.RecvHandler(this.EntityMagicCallback);
+        Service.Instance().newClientCallback = new Service.RecvHandler(this.ProcessNewClient);
 
         m_entities = new Dictionary<int, Entity>();
         m_updateEntity = new List<int>();
@@ -42,11 +47,6 @@ public class EntityController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetButtonDown("Mode")){
-            Vector3[] a = {new Vector3(),new Vector3(),new Vector3()};
-            RegisterEntity(Config.ENTITY_PLAYER, a);
-        }
-
         m_time += Time.deltaTime;
         if(m_time > updateInterval)
         {
@@ -55,19 +55,19 @@ public class EntityController : MonoBehaviour
         }
     }
 
-    public void RegisterEntity(int entity, Vector3[] pdv, int life = 100)
-    {
-        EntityInfo entityInfo;
-        entityInfo.privateID = PlayerPrefs.GetString("privateID");
-        entityInfo.entityCommand = entity;
-        entityInfo.pos = pdv[0];
-        entityInfo.direction = pdv[1];
-        entityInfo.velocity = pdv[2];
-        entityInfo.life = life;
+    // public void RegisterEntity(int entity, Vector3[] pdv, int life = 100)
+    // {
+    //     EntityInfo entityInfo;
+    //     entityInfo.privateID = PlayerPrefs.GetString("privateID");
+    //     entityInfo.entityCommand = entity;
+    //     entityInfo.pos = pdv[0];
+    //     entityInfo.direction = pdv[1];
+    //     entityInfo.velocity = pdv[2];
+    //     entityInfo.life = life;
 
-        string sendMsg = JsonUtility.ToJson(entityInfo);
-        m_network.send(Config.COMMAND_NEW_ENTITY, sendMsg);
-    }
+    //     string sendMsg = JsonUtility.ToJson(entityInfo);
+    //     m_network.send(Config.COMMAND_NEW_ENTITY, sendMsg);
+    // }
 
     public void RegisterEntityCallback(string data)
     {
@@ -77,15 +77,18 @@ public class EntityController : MonoBehaviour
         {       
             case Config.ENTITY_PLAYER:
                 GameObject go;
-                if(entity.publicID == PlayerPrefs.GetString("publicID"))
+                if(entity.publicID == publicID)
+                {
                     go = Instantiate(playerPrefab);
+                    m_player = go.GetComponent<PlayerEntity>();
+                }
                 else
                     go = Instantiate(playerOther);
 
                 go.transform.position = entity.pos;
                 go.GetComponent<Entity>().eid = entity.eid;
 
-                m_entities.Add(entity.eid, go.GetComponent<PlayerEntity>());
+                m_entities.Add(entity.eid, go.GetComponent<Entity>());
                 m_updateEntity.Add(entity.eid);
                 break;
 
@@ -196,6 +199,27 @@ public class EntityController : MonoBehaviour
         PickUpRecv pickUpRecv = JsonUtility.FromJson<PickUpRecv>(data);
 
         if(m_entities[pickUpRecv.eid].Type == Config.ENTITY_REWARD)
-            m_entities[pickUpRecv.eid].PickedUp(pickUpRecv);
+            m_entities[pickUpRecv.eid].PickedUp(pickUpRecv, publicID);
+    }
+    
+    public void ProcessNewClient(string data)
+    {
+        IDs ids = JsonUtility.FromJson<IDs>(data);
+        publicID = ids.publicID;
+        privateID = ids.privateID;
+    }
+
+    public GameObject Player
+    {
+        get { 
+            if(m_player != null)
+                return m_player.gameObject; 
+            else return null;
+        }
+    }
+
+    public Dictionary<int, Entity> Entities
+    {
+        get { return m_entities; }
     }
 }

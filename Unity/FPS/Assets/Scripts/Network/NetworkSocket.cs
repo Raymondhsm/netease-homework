@@ -29,12 +29,14 @@ public class NetworkSocket : MonoBehaviour
         public string data;
     }
 
+    private Controller m_controller;
+
     void Start()
     {
+        m_controller = GameObject.Find("Controller").GetComponent<Controller>();
         recv_buff = new Queue<Recv_data>();
         if(fightServer){
-            string sID = PlayerPrefs.GetString("sessionID");
-            send(Config.COMMAND_ATTEND_GAME, "{\"sessionID\":\""+sID+"\"}");
+            send(Config.COMMAND_ATTEND_GAME, "{\"sessionID\":\""+m_controller.sessionID+"\"}");
         }
     }
 

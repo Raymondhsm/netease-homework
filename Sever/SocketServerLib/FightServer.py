@@ -26,9 +26,12 @@ class FightServer(object):
 
     def HandleClientLeave(self, hid):
         # delete own entity
-        self.entityManager.deleteOwnEntity(hid)
-        if hid in self.clientDict:
-            del self.clientDict[hid]
+        try:
+            self.entityManager.deleteOwnEntity(hid)
+            if hid in self.clientDict:
+                del self.clientDict[hid]
+        except:
+            pass
 
     def HandleData(self, hid, data):
         command = struct.unpack(config.NET_HEAD_LENGTH_FORMAT, data[0:config.COMMAND_LENGTH_SIZE])[0]
@@ -77,6 +80,9 @@ class FightServer(object):
         
         elif command == config.COMMAND_UPDATE_ENTITY:
             self.entityManager.updateEntityInfo(hid, dataJson)
+
+        elif command == config.COMMAND_PLAYER_QUIT:
+            self.entityManager.entityPlayers[hid].status = 1
 
     def Tick(self):
         self.host.process()
@@ -127,14 +133,14 @@ class FightServer(object):
                     "privateID" : privateID
                 }
                 self.send(hid, config.COMMAND_NEW_CLIENT, data)
-                
-                self.entityManager.RegisterPlayer(hid, publicID, privateID, value[1], value[2])
 
                 # create charactor
                 for key in self.entityManager.entities:
                     if self.entityManager.entities[key].status == 0:
                         self.send(hid, config.COMMAND_NEW_ENTITY, self.entityManager.entities[key].InfoDict())
-                
+                e = self.entityManager.RegisterPlayer(hid, publicID, privateID, value[1], value[2])
+                self.boardcastCommand(config.COMMAND_NEW_ENTITY, e)
+
                 self.receiptQueue.remove(value)
                 break
 
@@ -162,7 +168,8 @@ class FightServer(object):
 
     def boardcast(self, allData):
         for client in self.host.clients:
-            self.host.sendClient(client.hid, allData)
+            if client is not None:
+                self.host.sendClient(client.hid, allData)
 
 fightServer = FightServer()
 

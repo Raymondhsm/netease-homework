@@ -20,7 +20,7 @@ class EntityManager:
         entity.publicID = publicID
         entity.privateID = privateID
         entity.eType = config.ENTITY_PLAYER
-        entity.pos = newVector3(0,0,0)
+        entity.pos = newVector3(len(self.entityPlayers),0,0)
         entity.direction = newVector3(0,0,1)
         entity.velocity = newVector3(0,0,0)
         entity.life = blood
@@ -34,6 +34,7 @@ class EntityManager:
         self.entityPlayers[hid] = entity
         self.clientOwnEntities[hid].append(self.eidIndex)
         self.eidIndex += 1
+        return entity.InfoDict()
 
     def RegisterReward(self, eType, pos):
         entity = Entity(self.eidIndex)

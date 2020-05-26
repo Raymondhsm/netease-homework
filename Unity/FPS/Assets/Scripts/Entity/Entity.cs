@@ -54,20 +54,12 @@ public class Entity : MonoBehaviour
         return;
     }
 
-    public virtual void PickedUp(PickUpRecv pickUpRecv){}
+    public virtual void PickedUp(PickUpRecv pickUpRecv, string publicID){}
 
     public virtual void ProcessMagicRecv(EntityShootInfo esi){}
 
     public virtual void ProcessUpdateInfoRecv(PlayerUpdateRecv pur)
     {
-        // if(Vector3.Distance(pur.pos, transform.position) > 10f)
-        // {
-        //     transform.position = pur.pos;
-        // }
-        // if(Vector3.Angle(pui.direction, transform.forward) > Mathf.PI / 2)
-        // {
-        //     transform.forward = pui.direction;
-        // }
         if(m_lifeController)
             m_lifeController.ProcessLifeRecv(pur.life);
     }

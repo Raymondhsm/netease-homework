@@ -10,6 +10,7 @@ class Service
     public RecvHandler updateInfoCallback;
     public RecvHandler beginGameCallback;
     public RecvHandler endGameCallback;
+    public RecvHandler newClientCallback;
     public RecvHandler checkLogin;
     public RecvHandler EntityNewRecvCallback;
     public RecvHandler EntityMoveCallback;
@@ -72,9 +73,8 @@ class Service
                 break;
 
             case Config.COMMAND_NEW_CLIENT:
-                IDs ids = JsonUtility.FromJson<IDs>(dataStr);
-                PlayerPrefs.SetString("publicID", ids.publicID);
-                PlayerPrefs.SetString("privateID", ids.privateID);
+                if(newClientCallback != null)
+                    newClientCallback(dataStr);
                 break;
 
             case Config.COMMAND_NEW_ENTITY:

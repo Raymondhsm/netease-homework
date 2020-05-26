@@ -6,7 +6,7 @@ import Database.Database as DB
 def updateUserInfo(dataJson):
     db = DB.database
     sID = dataJson["sessionID"]
-    (status, result) = db.select("user, userInfo", "blood, bullet, level, experience","sessionID = '%s'"%sID)
+    (status, result) = db.select("user, userInfo on user.id=userInfo.id", "blood, bullet, level, experience","sessionID = '%s'"%sID)
     
     if not status:
         return False
@@ -23,7 +23,7 @@ def updateUserInfo(dataJson):
 def attendGame(dataJson):
     sID = dataJson['sessionID']
     db = DB.database
-    (status, result) = db.select("user, userInfo", "blood, bullet","sessionID = '%s'"%sID)
+    (status, result) = db.select("user, userInfo on user.id=userInfo.id", "blood, bullet","sessionID = '%s'"%sID)
 
     if status and result != []:
         return (True, result[0][0], result[0][1])
