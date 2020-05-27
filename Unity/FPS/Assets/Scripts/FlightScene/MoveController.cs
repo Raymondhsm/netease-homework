@@ -61,8 +61,6 @@ public class MoveController : MonoBehaviour
 
 		_isGround = true;
 		_isJump = false;
-
-		Cursor.visible = false;
 	}
 
     // Update is called once per frame
@@ -86,7 +84,6 @@ public class MoveController : MonoBehaviour
 		var rigidbodyVelocity = _rigidbody.velocity;
 		var force = new Vector3(smoothX - rigidbodyVelocity.x, 0.0f, smoothZ - rigidbodyVelocity.z);
 		transform.Translate(force * Time.fixedDeltaTime);
-		//_rigidbody.AddForce(force, ForceMode.Force);
 	}
 
 	private void AnimatorChange()
@@ -148,8 +145,8 @@ public class MoveController : MonoBehaviour
 		if (camXAngle < 180) camXAngle = -camXAngle;
 		else camXAngle = 360 - camXAngle;
 
-		float yRot = _rotationX.Update(RotationXRaw, rotationSmoothness);
-		float xRot = _rotationY.Update(RotationYRaw, rotationSmoothness);
+		float yRot = _rotationX.Update(RotateX, rotationSmoothness);
+		float xRot = _rotationY.Update(RotateY, rotationSmoothness);
 		this.transform.Rotate(new Vector3(0f, yRot, 0f));
 
 		camXAngle += xRot;

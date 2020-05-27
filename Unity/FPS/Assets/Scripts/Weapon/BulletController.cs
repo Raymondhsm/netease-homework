@@ -49,15 +49,15 @@ public class BulletController : MonoBehaviour
 			Destroy(go, 5);
 			Destroy(gameObject);
 		}
-		else if(obj.CompareTag("Terrain"))
-		{
-			GameObject bulletHole = Instantiate(_bulletHole);
-			bulletHole.transform.position = _staticHitPos;
-			bulletHole.transform.LookAt(transform);
-			bulletHole.transform.Translate(Vector3.back * 0.01f);
-			Destroy(bulletHole, 5);
-			Destroy(gameObject);
-		}
+		// else if(obj.CompareTag("Terrain"))
+		// {
+		// 	GameObject bulletHole = Instantiate(_bulletHole);
+		// 	bulletHole.transform.position = _staticHitPos;
+		// 	bulletHole.transform.LookAt(transform);
+		// 	bulletHole.transform.Translate(Vector3.back * 0.01f);
+		// 	Destroy(bulletHole, 5);
+		// 	Destroy(gameObject);
+		// }
 		else if(obj.CompareTag("Player") && _owner == 1)
 		{
 			Destroy(gameObject);

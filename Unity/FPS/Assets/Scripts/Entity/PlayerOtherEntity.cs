@@ -32,14 +32,13 @@ public class PlayerOtherEntity : Entity
     public override void ProcessMoveRecv(EntityMoveInfo entity)
     {
         m_moveController.SetMoveData(entity.move, entity.strafe, entity.run);
-        if(entity.jump) m_moveController.Jump();
-        m_moveController.RotateCharactor(entity.rotateX, entity.rotateY);
+        // if(entity.jump) m_moveController.Jump();
     }
 
     public override void ProcessUpdateInfoRecv(PlayerUpdateRecv pur)
     { 
-        m_moveController.RightPos = pur.pos;
-        m_moveController.RightDir = pur.direction;
+        transform.position = pur.pos;
+        transform.forward = pur.direction;
     }
 
     public override void ProcessShootRecv(EntityShootInfo esi)

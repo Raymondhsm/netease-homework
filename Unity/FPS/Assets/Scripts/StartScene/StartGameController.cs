@@ -56,6 +56,8 @@ public class StartGameController : MonoBehaviour
         isLogin = false;
         _nextUpdateTime = 0;
 
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     void Update()

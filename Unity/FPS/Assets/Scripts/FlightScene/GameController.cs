@@ -22,6 +22,7 @@ public class GameController : MonoBehaviour
     private NetworkSocket m_network;
     private float m_magicTime;
     private Controller m_controller;
+    private bool m_endGame;
 
     // Start is called before the first frame update
     void Start()
@@ -32,6 +33,8 @@ public class GameController : MonoBehaviour
         m_magicTime = 0;
         m_input = new FpsInput();
         m_sInput = new ShootingInput();
+
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
@@ -44,9 +47,12 @@ public class GameController : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
-        if(m_sInput.Shoot)
+        if(m_sInput.Shoot && !m_endGame)
         {
-            Cursor.lockState = CursorLockMode.Confined;
+            if(Cursor.lockState == CursorLockMode.None)
+                Cursor.lockState = CursorLockMode.Confined;
+            else
+                Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
     }
@@ -72,7 +78,10 @@ public class GameController : MonoBehaviour
         endLoad = SceneManager.LoadSceneAsync(0);
         endLoad.allowSceneActivation = false;
 
+        Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
+        m_endGame = true;
     }
 
     public void EndButtonClick()

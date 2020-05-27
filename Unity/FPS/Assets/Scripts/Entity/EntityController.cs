@@ -53,6 +53,7 @@ public class EntityController : MonoBehaviour
             this.UpdateEntityInfo();
             m_time = 0;
         }
+        this.UpdatePlayerInfo();
     }
 
     // public void RegisterEntity(int entity, Vector3[] pdv, int life = 100)
@@ -171,10 +172,16 @@ public class EntityController : MonoBehaviour
         }
     }
 
+    public void UpdatePlayerInfo()
+    {
+        if(m_player.Status == 0)
+            m_player.UpdateInfo();
+    }
+
     public void UpdateEntityCallback(string data)
     {
         PlayerUpdateRecv playerUpdateRecv = JsonUtility.FromJson<PlayerUpdateRecv>(data);
-        if(m_entities[playerUpdateRecv.eid].Status == 0)
+        if(m_entities.ContainsKey(playerUpdateRecv.eid) && m_entities[playerUpdateRecv.eid].Status == 0)
             m_entities[playerUpdateRecv.eid].ProcessUpdateInfoRecv(playerUpdateRecv);
     }
 
@@ -183,13 +190,13 @@ public class EntityController : MonoBehaviour
         if(command == Config.COMMAND_NPC_SHOOT)
         {
             NPCShoot npcShoot = JsonUtility.FromJson<NPCShoot>(data);
-            if(m_entities[npcShoot.eid].Status == 0)
+            if(m_entities.ContainsKey(npcShoot.eid) && m_entities[npcShoot.eid].Status == 0)
                 m_entities[npcShoot.eid].EnemyBehavior(npcShoot);
         }
         else
         {
             EnemyBehavior enemyBehavior = JsonUtility.FromJson<EnemyBehavior>(data);
-            if(m_entities[enemyBehavior.eid].Status == 0)
+            if(m_entities.ContainsKey(enemyBehavior.eid) && m_entities[enemyBehavior.eid].Status == 0)
                 m_entities[enemyBehavior.eid].EnemyBehavior(command, enemyBehavior);
         }
     }

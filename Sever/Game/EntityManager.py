@@ -99,12 +99,12 @@ class EntityManager:
                     if entity.eType == config.ENTITY_PLAYER:
                         returnData = entity.ProcessEndGameData()
                         data.append((config.COMMAND_END_GAME, returnData, entity.hid))
-                if entity.status == 2:
+                elif entity.status == 2:
                     continue
-                if entity.prepareInfo(hnum) or time.time() - self.updateTime > 0.5:
+                elif time.time() - self.updateTime > 0.06:
                     entity.ProcessUpdateInfo()
                     data.append((config.COMMAND_UPDATE_ENTITY,entity.InfoDict()))
-        if data != [] and time.time() - self.updateTime > 0.5:
+        if data != [] and time.time() - self.updateTime > 0.06:
             self.updateTime = time.time()
         return data
 
